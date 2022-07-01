@@ -1,5 +1,5 @@
 import * as Particle from './Particle';
-import { Events, Event, DeepEvent } from "./Event";
+import { Events, Event, DeepEvent, EventState } from "./Event";
 import View from './View';
 import * as Graphics from './Graphics';
 
@@ -216,7 +216,7 @@ const sleepAnim = (isPlayer: boolean, sfx: boolean) => (view: View) => {
 		? [54, 68, -1]
 		: [108, 32, 1];
 	return Events.flatten([
-		sfx ? view.sfx("sleeping", false, isPlayer ? -0.5 : 0.5) : null,
+		sfx ? view.sfx("sleeping", false, isPlayer ? -0.5 : 0.5) : undefined,
 		view.particle("Z", x, y, dx),
 		Events.wait(48),
 		view.particle("Z", x, y, dx),
@@ -629,8 +629,8 @@ const effects: { [attack: string]: Effect } = {
 			},
 			Events.wait(30),
 			{
-				init: state => {
-					view.setPlayerTexture(state.playerId);
+				init: (state?: EventState) => {
+					view.setPlayerTexture(state!.playerId);
 					view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X;
 					view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y;
 				}

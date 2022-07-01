@@ -63,7 +63,7 @@ for (let i = 0; i < 4; i++) {
 
 /* Create textures for icon frames. */
 
-const icons = [];
+const icons: [PIXI.Texture, PIXI.Texture][] = [];
 
 for (let i = 0; i < 37; i++) {
   icons.push([

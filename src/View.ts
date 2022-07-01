@@ -5,7 +5,6 @@ import { HPStatsView, StatsView } from "./StatsView";
 import { OpponentTeamStatus, PlayerTeamStatus } from "./TeamStatus";
 import Textbox from "./Textbox";
 import effects from "./Effect";
-import { Resources } from "./Resources";
 import { AnimObject, MemberObject } from "./BattleObjects";
 import { Event, DeepEvent, Events } from "./Event";
 import { default as PIXI_SOUND } from "pixi-sound";
@@ -373,7 +372,7 @@ class View implements IView {
     }
 
     particle(t: string, ...args: (number | string | string[])[]): Event {
-        const Type: (new (stage: PIXI.Container, ...args: any[]) => Particle.Particle) = Particle[t];
+        const Type: (new (stage: PIXI.Container, ...args: any[]) => Particle.Particle) = (Particle as any)[t];
         if (typeof Type !== "function") {
             console.error(`Unknown particle: "${t}".`);
             return {};
@@ -382,7 +381,7 @@ class View implements IView {
     }
 
     saveParticle(t: string, ...args: any[]): Event {
-        const Type: (new (stage: PIXI.Container, ...args: any[]) => Particle.Particle) = Particle[t];
+        const Type: (new (stage: PIXI.Container, ...args: any[]) => Particle.Particle) = (Particle as any)[t];
         return { 
             init: state => {
                 const p = new Type(this.particleStage, ...args);

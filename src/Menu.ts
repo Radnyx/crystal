@@ -512,7 +512,7 @@ abstract class TeamView extends Menu {
 	}
 	*/
 
-	exit(then: DeepEvent = null) {
+	exit(then?: DeepEvent) {
 		this.game.getEventDriver().append(Events.flatten([
 			() => this.arrowSpr.texture = arrowTexture2,
 			Events.wait(10),
@@ -535,6 +535,9 @@ abstract class TeamView extends Menu {
 	}
 
 	update() {
+		if (this.stats == null || this.iconSpr == null) {
+			throw new Error("TeamView.update: updating TeamView before shown");
+		}
 		super.update();
 		// this.game.teamViewIndex = this.state;
 
@@ -606,29 +609,35 @@ abstract class TeamView extends Menu {
 
 	_show() {
 		this.generateGraphics();
-		this.game.view.hidePlayer()?.init();
-		this.game.view.hideOpponent().init(null);
-		this.game.view.hidePlayerStats().init(null);
-		this.game.view.hideOpponentStats().init(null);
+		const driver = this.game.getEventDriver();
+		driver.force(this.game.view.hidePlayer());
+		driver.force(this.game.view.hideOpponent());
+		driver.force(this.game.view.hidePlayerStats());
+		driver.force(this.game.view.hideOpponentStats());
 		this.stage.addChild(this.messageSpr);
 		this.messageTxt.change(this.message);
 		// render icon sprites from bottom to top
-		for (let i = this.iconSpr.length - 1; i >= 0; i--) {
-			this.stage.addChild(this.iconSpr[i]);
+		for (let i = this.iconSpr!.length - 1; i >= 0; i--) {
+			this.stage.addChild(this.iconSpr![i]);
 		}
 	}
 
 	_hide() {
+		if (this.stats == null || this.iconSpr == null || this.fntText == null || this.cancelTxt == null) {
+			throw new Error("TeamView._hide: hiding TeamView before shown");
+		}
 		this.stats.forEach(s => s.hide());
 		this.iconSpr.forEach(s => this.stage.removeChild(s));
 		this.fntText.forEach(t => t.clear());
 		this.stage.removeChild(this.messageSpr);
 		this.cancelTxt.clear();
 		this.messageTxt.clear();
-		this.game.view.showPlayer().init(null);
-		this.game.view.showOpponent().init(null);
-		this.game.view.showPlayerStats().init(null);
-		this.game.view.showOpponentStats().init(null);
+		
+		const driver = this.game.getEventDriver();
+		driver.force(this.game.view.showPlayer());
+		driver.force(this.game.view.showOpponent());
+		driver.force(this.game.view.showPlayerStats());
+		driver.force(this.game.view.showOpponentStats());
 	}
 }
 

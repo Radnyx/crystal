@@ -16,14 +16,14 @@ interface EventState {
 }
 
 interface Event {
-    init?: (() => void) | ((state?: EventState) => void);
+    init?: (() => void) | ((state: EventState) => void);
     done?: ((tick: number, state: EventState) => boolean);
     next?: Event;
     // reference to last event, this allows O(1) appending to list
     last?: Event;
 }
 
-type DeepEvent = (() => void) | Event | DeepEvent[] | null;
+type DeepEvent = (() => void) | Event | DeepEvent[] | undefined;
 
 namespace Events {
     export function append(event: Event, next?: Event) {
@@ -123,6 +123,10 @@ class EventDriver {
 
     running(): boolean {
         return this.current != null;
+    }
+
+    force(event: Event) {
+        event.init!(this.state);
     }
 }
 

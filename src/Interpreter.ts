@@ -76,7 +76,7 @@ class Interpreter {
 
     private step(game: IGame, command?: Script): DeepEvent {
         if (command == null) {
-            return null;
+            return undefined;
         }
         if (Scripts.isSubCommand(command)) {
             return command.map(s => this.step(game, s));
