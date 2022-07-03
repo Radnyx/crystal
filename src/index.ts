@@ -7,3 +7,4 @@ export * as moveInfo from "./MoveInfo";
 export * from "./View";
 export * from "./Event";
 export * as Graphics from "./Graphics";
+export * as Input from "./Input";
