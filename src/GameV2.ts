@@ -167,9 +167,9 @@ class GameV2 implements IGame {
         return this.interpreter;
     }
 
-    currentMenu(): Menu {
+    currentMenu(): Menu | null {
         if (this.menuStack.length === 0) {
-            throw new Error("GameV2.currentMenu: menu stack is empty");
+            return null;
         }
         return this.menuStack[this.menuStack.length - 1];
     }
@@ -203,10 +203,13 @@ class GameV2 implements IGame {
     }
 
     popMenu() {
-        this.currentMenu().hide();
+        if (this.menuStack.length === 0) {
+            throw new Error("GameV2.popMenu: menu stack is empty");
+        }
+        this.currentMenu()?.hide();
         this.menuStack.pop();
-        this.currentMenu().show();
-        this.currentMenu().continue();
+        this.currentMenu()?.show();
+        this.currentMenu()?.continue();
     }
 
     popAllMenus() {
@@ -236,7 +239,7 @@ class GameV2 implements IGame {
         this.popAllMenus();
         this.eventDriver.append(Events.flatten([
             this.view.text([
-                `${this.getSimulatedPlayer().name}, that's`, 
+                `${GameV2.getTrueName(this.getSimulatedPlayer().name)}, that's`, 
                 "enough! Come back!"
             ], true),
             Events.wait(24),
@@ -282,6 +285,10 @@ class GameV2 implements IGame {
 
     getOpponentTeamHealth(): number[] {
         return GameV2.getTeamHealth(this.battle.p2);
+    }
+
+    static getTrueName(name: string) {
+        return name.substring(1);
     }
 }
 

@@ -115,6 +115,9 @@ class View implements IView {
     }
 
     startMusic() {
+        if (this.resources.getMusic().isPlaying) {
+            this.resources.getMusic().stop();
+        }
         this.resources.getMusic().play({ loop: true, volume: 0.1 });
     }
     

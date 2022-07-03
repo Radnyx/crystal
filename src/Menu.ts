@@ -4,7 +4,7 @@ import * as Input from './Input.js';
 import * as Graphics from './Graphics';
 import Text from './Text';
 import { HPStatsView } from './StatsView';
-import GameV2 from './GameV2.jsx';
+import GameV2 from './GameV2';
 import { DeepEvent, Events } from './Event';
 import { Pokemon } from '@pkmn/sim';
 
@@ -403,7 +403,8 @@ class SwitchStats extends Menu {
 				if (member.hp <= 0) {
 					this.selectMessage(["There's no will to ", "battle!" ]);
 				} else if (member === this.game.getSimulatedPlayer()) {
-					this.selectMessage([`${this.game.getSimulatedPlayer().name}`, "is already out."]);
+					const name = GameV2.getTrueName(this.game.getSimulatedPlayer().name);
+					this.selectMessage([name, "is already out."]);
 				} else {
 					this.game.switch(this.index);
 				}
@@ -655,9 +656,9 @@ class SwitchoutTeamView extends TeamView {
 			this.selectMessage(["There's no will to ", "battle!" ]);
 		} else if (member === this.game.getSimulatedPlayer()) {
 			if (this.roar) {
-				this.selectMessage([`${member.name}`, "is too afraid!"]);
+				this.selectMessage([`${GameV2.getTrueName(member.name)}`, "is too afraid!"]);
 			} else {
-				this.selectMessage([`${member.name}`, "is already out."]);
+				this.selectMessage([`${GameV2.getTrueName(member.name)}`, "is already out."]);
 			}
 		} else {
 			this.exit(() => this.game.switch(this.state));
