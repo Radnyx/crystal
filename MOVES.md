@@ -4,40 +4,40 @@ Here is a list of every move that has been fully animated thus far. Animating mo
 
 Among other gameplay videos, this is my main reference: https://www.youtube.com/watch?v=oBMqOSxaLC8
 
-[ ] 1 - Pound
-[ ] 2 - Karate Chop
-[ ] 3 - Double Slap
-[ ] 4 - Comet Punch
-[x] 10 - Scratch
-[x] 14 - Swords Dance 
-[x] 19 - Fly
-[x] 22 - Vine Whip
-[ ] 26 - Jump Kick
+- [ ] 1 - Pound
+- [ ] 2 - Karate Chop
+- [ ] 3 - Double Slap
+- [ ] 4 - Comet Punch
+- [x] 10 - Scratch
+- [x] 14 - Swords Dance 
+- [x] 19 - Fly
+- [x] 22 - Vine Whip
+- [ ] 26 - Jump Kick
   - [x] Animation
   - [ ] Crash damage handling
-[x] 33 - Tackle
-[x] 39 - Tail Whip
-[x] 45 - Growl
-[x] 46 - Roar
+- [x] 33 - Tackle
+- [x] 39 - Tail Whip
+- [x] 45 - Growl
+- [x] 46 - Roar
   - [ ] please unit test this
-[x] 47 - Sing
-[x] 48 - Supersonic
-[x] 58 - Ice Beam
-[ ] 85 - Thunderbolt
+- [x] 47 - Sing
+- [x] 48 - Supersonic
+- [x] 58 - Ice Beam
+- [ ] 85 - Thunderbolt
   - [x] black ball
   - [ ] thunder particles
-[x] 99 - Rage
+- [x] 99 - Rage
   - actually has modern mechanics, report gen 2 bug
-[x] 111 - Defense Curl
-[x] 116 - Focus Energy
-[x] 118 - Metronome
-[x] 163 - Slash
-[x] 164 - Substitute
+- [x] 111 - Defense Curl
+- [x] 116 - Focus Energy
+- [x] 118 - Metronome
+- [x] 163 - Slash
+- [x] 164 - Substitute
   - [ ] please unit test this
-[x] 188 - Sludge Bomb
-[x] 223 - Dynamic Punch
-[x] 236 - Moonlight
-[x] 242 - Crunch
-[x] 245 - Extreme Speed
-[X] 247 - Shadow Ball
-[x] 251 - Beat Up
+- [x] 188 - Sludge Bomb
+- [x] 223 - Dynamic Punch
+- [x] 236 - Moonlight
+- [x] 242 - Crunch
+- [x] 245 - Extreme Speed
+- [X] 247 - Shadow Ball
+- [x] 251 - Beat Up
