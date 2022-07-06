@@ -1,5 +1,6 @@
 import { AnimObject, MemberObject } from "./BattleObjects";
 import { Event } from "./Event";
+import { Music } from "./IResources";
 import Status from "./Status";
 
 interface IView {
@@ -13,6 +14,7 @@ interface IView {
     setOpponentTexture(id?: string): void;
 
     slideInTrainers(): Event;
+    slideInOpponentTrainer(): Event;
     slideOutPlayerTrainer(): Event;
     slideOutOpponentTrainer(): Event;
     showPlayerTeamStatus(hp: number[]): Event;
@@ -29,6 +31,7 @@ interface IView {
     hideOpponent(): Event;
     screenShake(): Event;
     invertColors(): Event;
+    toggleGrayScale(): Event;
     clearTextbox(): Event;
     text(text: string[], auto?: boolean): Event;
     effect(name: string, isPlayer: boolean): Event | undefined;
@@ -37,6 +40,8 @@ interface IView {
     shader(isPlayer: boolean, name: string, steps: number, delay: number, reverse: boolean): Event
     particle(t: string, ...args: (number | string | string[])[]): Event;
     anim(id: string, anim: AnimObject): Event;
+
+    startMusic(music: Music): void;
 }
 
 export default IView;

@@ -1,7 +1,10 @@
 
+type Music = "battle" | "victory";
+
 interface IResources {
     uniforms: { [index: string]: { step: number } };
-    getMusic(): PIXI.sound.Sound;
+    playingMusic: PIXI.sound.Sound | null;
+    getMusic(music: Music): PIXI.sound.Sound | undefined;
     getShader(name: string): PIXI.Filter;
     getCry(id: string): string;
     getOpponentTrainerTexture(): PIXI.Texture | undefined;
@@ -10,4 +13,4 @@ interface IResources {
     getBack(id: string): PIXI.Texture;
 }
 
-export default IResources;
+export { IResources, Music };

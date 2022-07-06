@@ -92,6 +92,7 @@ function poisonAnim(isPlayer: boolean): Script {
 }
 
 interface State {
+    trainerName?: string;
     index?: number;
     substituted?: boolean;
     flying?: boolean;
@@ -190,6 +191,8 @@ class BattleScript {
                     return this.handleSwitch(action, true);
                 case "cant":
                     return this.handleCant(action);
+                case "win":
+                    return this.handleWin(action);
                 case "-supereffective":
                     this.moveResults.effectiveness = "supereffective";
                     break;
@@ -230,12 +233,18 @@ class BattleScript {
                         return "PASS";
                     }
                     return "OPTIONS";
+                case "player":
+                    if (getIsPlayer(action[2])) {
+                        this.playerState.trainerName = action[3];
+                    } else {
+                        this.opponentState.trainerName = action[3];
+                    }
+                    break;
                 // ignore these messages
                 case "":
                 case "-fail":
                 case "t:":
                 case "gametype":
-                case "player":
                 case "teamsize":
                 case "gen":
                 case "tier":
@@ -359,6 +368,26 @@ class BattleScript {
             "HIDE_OPPONENT",
             { do: "TEXT", text: [name, "fainted!"] }
         ];
+    }
+
+    private handleWin(action: string[]): Script {
+        if (action[2] === this.playerState.trainerName) {
+            return [
+                { do: "TEXT", text: [ this.opponentState.trainerName!, "was defeated!" ] },
+                "PLAY_VICTORY_MUSIC",
+                "SLIDE_IN_OPPONENT_TRAINER",
+                { do: "TEXT", text: [ "I won't lose next", "time, all right?" ] }
+            ];
+        } else {
+            return [
+                "TOGGLE_GRAY_SCALE",
+                { do: "TEXT", text: [ 
+                    `${this.playerState.trainerName} is out of`, 
+                    "useable members!"
+                ] },
+                { do: "TEXT", text: [ `${this.playerState.trainerName} whited`, "out!"], auto: true }
+            ];
+        }
     }
 
     /* 

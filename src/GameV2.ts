@@ -15,23 +15,6 @@ import IGame from './IGame';
 import View from './View';
 import { ObjectReadWriteStream } from '@pkmn/streams';
 
-function buildPSDex(battle: BattleInfo) {
-    const species: { [index: string]: any } = {};
-    const addSpecies = (member: MemberObject) => {
-        const { name, types, baseHp, baseAtk, baseDef, baseSpAtk, baseSpDef, baseSpd } = battle.data[member.id];
-        species[name] = {
-            name, types,
-            baseStats: {
-                hp: baseHp, atk: baseAtk, def: baseDef,
-                spa: baseSpAtk, spd: baseSpDef, spe: baseSpd
-            }
-        };
-    };
-    battle.info.player.team.forEach(addSpecies);
-    battle.info.opponent.team.forEach(addSpecies);
-    return species;
-}
-
 function buildPSGender(gender: "male" | "female" | "none"): string {
     switch (gender) {
         case "male": return "M";
@@ -121,16 +104,13 @@ class GameV2 implements IGame {
             throw new Error("GameV2.constructor: battleStream.battle is null");
         }
         this.battle = battleStream.battle;
-        /*
-        battleStream.battle.dex = Dex.mod('test' as ID, {
-            Pokedex: buildPSDex(this.battleInfo),
-            Species: buildPSDex(this.battleInfo),
-        } as ModData);
-        */
+
         const playerTeam = PSTeams.pack(buildPSTeam(this.battleInfo.info.player.team, this.battleInfo.data));
         const opponentTeam = PSTeams.pack(buildPSTeam(this.battleInfo.info.opponent.team, this.battleInfo.data));
-        streams.omniscient.write(`>player p1 ${JSON.stringify({ team: playerTeam })}`);
-        streams.omniscient.write(`>player p2 ${JSON.stringify({ team: opponentTeam })}`);
+        streams.omniscient.write(`>player p1 ${JSON.stringify({ 
+            name: battleInfo.info.player.name, team: playerTeam })}`);
+        streams.omniscient.write(`>player p2 ${JSON.stringify({ 
+            name: battleInfo.info.opponent.name, team: opponentTeam })}`);
         this.streams = streams;
 
         this.view.restart();
@@ -217,8 +197,10 @@ class GameV2 implements IGame {
     }
 
     forcePlayerSwitch() {
-        this.currentMenu()?.hide();
-        this.pushMenu(new SwitchoutTeamView(this, false));
+        if (this.battle.p1.pokemon.some(member => member.hp > 0)) {
+            this.currentMenu()?.hide();
+            this.pushMenu(new SwitchoutTeamView(this, false));
+        }
     }
 
     inTeamView() {

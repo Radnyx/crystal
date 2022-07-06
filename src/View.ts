@@ -10,7 +10,7 @@ import { Event, DeepEvent, Events } from "./Event";
 import { default as PIXI_SOUND } from "pixi-sound";
 import IView from "./IView";
 import Status from "./Status";
-import IResources from "./IResources";
+import { IResources, Music } from "./IResources";
 
 function animate(
     sprite: PIXI.Sprite, 
@@ -31,9 +31,10 @@ function animate(
 }
 
 class View implements IView {
-    private readonly app: PIXI.Application;
-    private readonly resources: IResources;
+    public readonly app: PIXI.Application;
+    public readonly resources: IResources;
     private matrixFilter: PIXI.filters.ColorMatrixFilter;
+    private grayScale: boolean = false;
 
     // comprises all of the following containers
     private readonly fullStage = new PIXI.Container();
@@ -114,23 +115,30 @@ class View implements IView {
         this.textbox.show();
     }
 
-    startMusic() {
-        if (this.resources.getMusic().isPlaying) {
-            this.resources.getMusic().stop();
+    startMusic(musicType: Music) {
+        this.stopMusic();
+        const music = this.resources.getMusic(musicType);
+        if (music != null) {
+            music.play({ loop: true, volume: 0.1 });
+            this.resources.playingMusic = music;
         }
-        this.resources.getMusic().play({ loop: true, volume: 0.1 });
     }
     
     stopMusic() {
-        this.resources.getMusic().stop();
+        if (this.resources.playingMusic != null) {
+            if (this.resources.playingMusic.isPlaying) {
+                this.resources.playingMusic.stop();
+            }
+            this.resources.playingMusic = null;
+        }
     }
 
     resumeMusic() {
-        this.resources.getMusic().resume();
+        this.resources.playingMusic?.resume();
     }
 
     pauseMusic() {
-        this.resources.getMusic().pause();
+        this.resources.playingMusic?.pause();
     }
 
     restart() {
@@ -157,6 +165,19 @@ class View implements IView {
                 } else {
                     this.app.renderer.backgroundColor = 0xF8F8F8;
                 }
+            }
+        };
+    }
+
+    toggleGrayScale(): Event {
+        return { 
+            init: () => { 
+                if (this.grayScale) {
+                    this.matrixFilter.reset();
+                } else {
+                    this.matrixFilter.desaturate();
+                }
+                this.grayScale = !this.grayScale;
             }
         };
     }
@@ -297,6 +318,21 @@ class View implements IView {
 				return t >= SLIDE_IN_LIMIT;
 			}
 		};
+    }
+
+    slideInOpponentTrainer(): Event {
+        const OPP_SLIDE_OUT_LIMIT = 18;
+        return Events.flatten([
+            {
+                init: () => this.stage.addChild(this.trainerSprites.opponent),
+                done: t => {
+                    const progress = t / OPP_SLIDE_OUT_LIMIT;
+                    const x = progress * Graphics.OPPONENT_SPRITE_X + (1.0 - progress) * Graphics.GAMEBOY_WIDTH;
+                    this.trainerSprites.opponent.x = Math.floor(x / 8) * 8;
+                    return t >= OPP_SLIDE_OUT_LIMIT;
+                }
+            }
+        ]);
     }
 
     slideOutPlayerTrainer(): Event {

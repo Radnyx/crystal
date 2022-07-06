@@ -25,25 +25,38 @@ class Interpreter {
         return this.membersOut;
     }
 
-    private stepNoArgs(game: IGame, command: string): Event {
+    private static assertGameNotNull(game: IGame | null): asserts game {
+        if (game == null) {
+            throw new Error("Interpreter.interpet: game is null");
+        }
+    }
+
+    private stepNoArgs(game: IGame | null, command: string): Event {
         switch (command) {
             case "FORCE_PLAYER_SWITCH":
+                Interpreter.assertGameNotNull(game);
                 return { init: () => game.forcePlayerSwitch() };
             case "PASS":
+                Interpreter.assertGameNotNull(game);
                 return { init: () => game.pass() };
             case "OPTIONS":
+                Interpreter.assertGameNotNull(game);
                 return { init: () => game.showOptions() };
             case "CLEAR_TEXT":
                 return this.view.clearTextbox();
             case "SLIDE_IN_TRAINERS":
                 return this.view.slideInTrainers();
+            case "SLIDE_IN_OPPONENT_TRAINER":
+                return this.view.slideInOpponentTrainer();
             case "SLIDE_OUT_PLAYER_TRAINER":
                 return this.view.slideOutPlayerTrainer();
             case "SLIDE_OUT_OPPONENT_TRAINER":
                 return this.view.slideOutOpponentTrainer();
             case "SHOW_PLAYER_TEAM_STATUS":
+                Interpreter.assertGameNotNull(game);
                 return this.view.showPlayerTeamStatus(game.getPlayerTeamHealth());
             case "SHOW_OPPONENT_TEAM_STATUS":
+                Interpreter.assertGameNotNull(game);
                 return this.view.showOpponentTeamStatus(game.getOpponentTeamHealth());
             case "HIDE_PLAYER_TEAM_STATUS":
                 return this.view.hidePlayerTeamStatus();
@@ -61,6 +74,8 @@ class Interpreter {
                 return this.view.screenShake();
             case "INVERT_COLORS":
                 return this.view.invertColors();
+            case "TOGGLE_GRAY_SCALE":
+                return this.view.toggleGrayScale();
             case "SHOW_PLAYER":
                 return this.view.showPlayer();
             case "HIDE_PLAYER":
@@ -69,12 +84,14 @@ class Interpreter {
                 return this.view.showOpponent();
             case "HIDE_OPPONENT":
                 return this.view.hideOpponent();
+            case "PLAY_VICTORY_MUSIC":
+                return { init: () => this.view.startMusic("victory") };
             default:
                 throw new Error(`Unsupported script command: ${command}.`);
         } 
     }
 
-    private step(game: IGame, command?: Script): DeepEvent {
+    private step(game: IGame | null, command?: Script): DeepEvent {
         if (command == null) {
             return undefined;
         }
@@ -140,7 +157,7 @@ class Interpreter {
         }
     }
 
-    public interpret(game: IGame, script?: Script): Event {
+    public interpret(game: IGame | null, script?: Script): Event {
         return Events.flatten(this.step(game, script))
     }
 

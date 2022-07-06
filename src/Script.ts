@@ -20,6 +20,7 @@ type Script =
     { do: "ANIMATE", index: number } |
     "CLEAR_TEXT" |
     "SLIDE_IN_TRAINERS" |
+    "SLIDE_IN_OPPONENT_TRAINER" |
     "SLIDE_OUT_PLAYER_TRAINER" |
     "SLIDE_OUT_OPPONENT_TRAINER" |
     "SHOW_PLAYER_TEAM_STATUS" |
@@ -32,12 +33,14 @@ type Script =
     "HIDE_OPPONENT_STATS" |
     "SCREEN_SHAKE" |
     "INVERT_COLORS" |
+    "TOGGLE_GRAY_SCALE" |
     "SHOW_PLAYER" |
     "HIDE_PLAYER" |
     "SHOW_OPPONENT" |
     "HIDE_OPPONENT" |
     "SLIDE_OUT_PLAYER" |
     "SLIDE_OUT_OPPONENT" |
+    "PLAY_VICTORY_MUSIC" |
     // interaction commands
     "OPTIONS" | // move to options
     "PASS" | // skip options, for moves like Fly

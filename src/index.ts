@@ -1,13 +1,13 @@
 import View from "./View";
 import BattleScript from "./BattleScript";
 import GameV2 from "./GameV2";
-import IResources from "./IResources";
 import Interpreter from "./Interpreter";
 import moveInfo from "./MoveInfo";
 export * from "./BattleObjects";
 export * from "./View";
 export * from "./Event";
 export * from "./Script";
+export * from "./IResources";
 export * as Graphics from "./Graphics";
 export * as Input from "./Input";
-export { View, BattleScript, GameV2, IResources, Interpreter, moveInfo };
+export { View, BattleScript, GameV2, Interpreter, moveInfo };
