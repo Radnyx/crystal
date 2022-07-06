@@ -42,6 +42,15 @@ function getStatus(status: string): Partial<Status> {
     return result;
 }
 
+function parseDetails(details: string) {
+    const split = details.split(", ");
+    // PS will not include L100, so we add it
+    if (split[1][0] !== 'L') {
+        split.splice(1, 0, "L100");
+    }
+    return split;
+}
+
 function confuseAnim(isPlayer: boolean): Script {
 	const [x, y] = isPlayer
 		? [40, 42]
@@ -358,7 +367,7 @@ class BattleScript {
         exact same traits, since visually they will be indistinguishable.
     */
     private findMember(team: MemberObject[], name: string, details: string): number {
-        const [ species, level, gender, shiny ] = details.split(", ");
+        const [ species, level, gender, shiny ] = parseDetails(details);
         const data = this.battleInfo.data;
         return team.findIndex(member =>
             // don't want to compare by uppercase here, but if the nickname is the same as

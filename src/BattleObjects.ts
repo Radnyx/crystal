@@ -66,7 +66,7 @@ function cloneTeamObject(obj: TeamObject): TeamObject {
 	}
 }
 
-function cloneBattleObject(obj: BattleObject): BattleObject | null {
+function cloneBattleObject(obj: BattleObject | null): BattleObject | null {
 	if (obj == null) return null;
 	return {
 		player: cloneTeamObject(obj.player),
@@ -85,8 +85,9 @@ function teamsEqual(obj1: TeamObject, obj2: TeamObject): boolean {
 		obj1.team.every((member, i) => membersEqual(member, obj2.team[i]));
 }
 
-function objectsEqual(obj1: BattleObject, obj2: BattleObject): boolean {
+function objectsEqual(obj1: BattleObject | null, obj2: BattleObject | null): boolean {
 	if (obj1 == null && obj2 == null) return true;
+	if (obj1 == null || obj2 == null) return false;
 	return teamsEqual(obj1.player, obj2.player) && teamsEqual(obj1.opponent, obj2.opponent);
 }
 
