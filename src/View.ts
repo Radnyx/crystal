@@ -120,6 +120,7 @@ class View implements IView {
         this.stopMusic();
         const music = this.resources.getMusic(musicType);
         if (music != null) {
+            music.stop();
             music.play({ loop: true, volume: 0.1 });
             this.resources.playingMusic = music;
         }
@@ -127,19 +128,21 @@ class View implements IView {
     
     stopMusic() {
         if (this.resources.playingMusic != null) {
-            if (this.resources.playingMusic.isPlaying) {
-                this.resources.playingMusic.stop();
-            }
+            this.resources.playingMusic.stop();
             this.resources.playingMusic = null;
         }
     }
 
     resumeMusic() {
-        this.resources.playingMusic?.resume();
+        if (this.resources.playingMusic?.paused) {
+            this.resources.playingMusic?.resume();
+        }
     }
 
     pauseMusic() {
-        this.resources.playingMusic?.pause();
+        if (this.resources.playingMusic?.isPlaying) {
+            this.resources.playingMusic?.pause();
+        }
     }
 
     restart() {

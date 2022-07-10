@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import * as Graphics from './Graphics';
 import Ease from "./Ease";
 

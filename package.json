@@ -1,6 +1,6 @@
 {
   "name": "@radnyx/crystal",
-  "version": "0.3.1",
+  "version": "0.3.4",
   "description": "Pokemon Crystal battle simulator.",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
