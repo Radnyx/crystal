@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js';
-import { default as PIXI_SOUND } from 'pixi-sound';
+import * as PIXI from 'pixi.js-legacy';
+import { sound as PIXI_SOUND } from '@pixi/sound';
 import * as Input from './Input.js';
 import * as Graphics from './Graphics';
 import Text from './Text';

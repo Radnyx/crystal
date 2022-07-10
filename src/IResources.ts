@@ -1,10 +1,12 @@
+import * as PIXI from "pixi.js-legacy";
+import pixiSound from "@pixi/sound";
 
 type Music = "battle" | "victory";
 
 interface IResources {
     uniforms: { [index: string]: { step: number } };
-    playingMusic: PIXI.sound.Sound | null;
-    getMusic(music: Music): PIXI.sound.Sound | undefined;
+    playingMusic: pixiSound.Sound | null;
+    getMusic(music: Music): pixiSound.Sound | undefined;
     getShader(name: string): PIXI.Filter;
     getCry(id: string): string;
     getOpponentTrainerTexture(): PIXI.Texture | undefined;

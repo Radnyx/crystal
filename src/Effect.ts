@@ -2,6 +2,7 @@ import * as Particle from './Particle';
 import { Events, Event, DeepEvent, EventState } from "./Event";
 import View from './View';
 import * as Graphics from './Graphics';
+import * as PIXI from "pixi.js-legacy";
 
 const TACKLE_DUR = 6;
 

@@ -1,5 +1,6 @@
 import * as Graphics from "./Graphics";
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
+import * as PIXI_SOUND from '@pixi/sound';
 import * as Particle from "./Particle";
 import { HPStatsView, StatsView } from "./StatsView";
 import { OpponentTeamStatus, PlayerTeamStatus } from "./TeamStatus";
@@ -7,10 +8,10 @@ import Textbox from "./Textbox";
 import effects from "./Effect";
 import { AnimObject, MemberObject } from "./BattleObjects";
 import { Event, DeepEvent, Events } from "./Event";
-import { default as PIXI_SOUND } from "pixi-sound";
 import IView from "./IView";
 import Status from "./Status";
 import { IResources, Music } from "./IResources";
+import { ColorMatrixFilter } from "@pixi/filter-color-matrix";
 
 function animate(
     sprite: PIXI.Sprite, 
@@ -33,7 +34,7 @@ function animate(
 class View implements IView {
     public readonly app: PIXI.Application;
     public readonly resources: IResources;
-    private matrixFilter: PIXI.filters.ColorMatrixFilter;
+    private matrixFilter: ColorMatrixFilter;
     private grayScale: boolean = false;
 
     // comprises all of the following containers
@@ -464,7 +465,7 @@ class View implements IView {
 
     sfx(name: string, wait: boolean = false, panning: number = 0): Event {
         if (name == null) return {};
-        const sound: PIXI_SOUND.Sound = PIXI_SOUND.find(name);
+        const sound: PIXI_SOUND.Sound = PIXI_SOUND.sound.find(name);
         if (sound == null) {
             console.error(`Could not play sound: "${name}".`);
             return {};

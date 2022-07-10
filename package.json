@@ -1,6 +1,6 @@
 {
   "name": "@radnyx/crystal",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "description": "Pokemon Crystal battle simulator.",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -14,17 +14,25 @@
     ".": "./build/index.js"
   },
   "devDependencies": {
+    "@pkmn/sim": "^0.5.11",
     "@types/node": "^18.0.0",
-    "pixi-sound": "^3.0.5",
-    "pixi.js": "^5.3.10",
+    "pixi.js-legacy": "^6.4.2",
+    "@pixi/sound": "^4.2.0",
+    "pixi-filters": "^4.1.6",
     "typescript": "^4.7.4",
-    "@pkmn/sim": "^0.5.11"
+    "@pixi/filter-color-matrix": "6.4.2"
   },
   "peerDependencies": {
-    "pixi-sound": "^3.0.5",
-    "pixi.js": "^5.3.10",
-    "@pkmn/sim": "^0.5.11"
+    "@pkmn/sim": "^0.5.11",
+    "@pixi/sound": "^4.2.0",
+    "pixi-filters": "^4.1.6",
+    "pixi.js-legacy": "^6.4.2",
+    "@pixi/filter-color-matrix": "6.4.2"
   },
   "homepage": "https://github.com/radnyx/crystal",
-  "keywords": [ "pokemon", "crystal", "simulator" ]
+  "keywords": [
+    "pokemon",
+    "crystal",
+    "simulator"
+  ]
 }
