@@ -77,7 +77,19 @@ const attackTex: { [index: string]: PIXI.Texture } = {
 	SUBSTITUTE_BACK: Graphics.attack(48/8+2,152/8,2,2),
 	SPARKLE_1: Graphics.attack(64/8,168/8, 1, 1),
 	SPARKLE_2: Graphics.attack(64/8,168/8+1, 1, 1),
-	HAND: Graphics.attack(48/8,168/8, 2, 2)
+	HAND: Graphics.attack(48/8,168/8, 2, 2),
+	DISABLE_DARK_5: Graphics.attack(128 / 8, 176 / 8, 6, 5),
+	DISABLE_DARK_4: Graphics.attack(128 / 8, 176 / 8 + 1, 6, 4),
+	DISABLE_DARK_3: Graphics.attack(128 / 8, 176 / 8 + 2, 6, 3),
+	DISABLE_DARK_2: Graphics.attack(128 / 8, 176 / 8 + 3, 6, 2),
+	DISABLE_DARK_1: Graphics.attack(128 / 8, 176 / 8 + 4, 6, 1),
+	DISABLE_LIGHT_5: Graphics.attack(128 / 8, 216 / 8, 6, 5),
+	DISABLE_LIGHT_4: Graphics.attack(128 / 8, 216 / 8 + 1, 6, 4),
+	DISABLE_LIGHT_3: Graphics.attack(128 / 8, 216 / 8 + 2, 6, 3),
+	DISABLE_LIGHT_2: Graphics.attack(128 / 8, 216 / 8 + 3, 6, 2),
+	DISABLE_LIGHT_1: Graphics.attack(128 / 8, 216 / 8 + 4, 6, 1),
+	CLAP: Graphics.attack(72 / 8, 168 / 8, 1, 2),
+	STAR: Graphics.attack(72 / 8 + 1, 168 / 8, 2, 2),
 };
 
 const notes = [
@@ -179,6 +191,11 @@ class Particle {
 
 	setFlicker(n: number) {
 		this.flickerFrames = n;
+		return this;
+	}
+
+	flipHorizontally() {
+		this.sprites[0].scale.x = -this.sprites[0].scale.x;
 		return this;
 	}
 
@@ -502,6 +519,44 @@ class Sword extends Rotate {
 	}
 }
 
+class Disable extends Particle {
+
+	private static readonly TEXTURES = [
+		[
+			attackTex.DISABLE_LIGHT_1,
+			attackTex.DISABLE_LIGHT_2,
+			attackTex.DISABLE_LIGHT_3,
+			attackTex.DISABLE_LIGHT_4,
+			attackTex.DISABLE_LIGHT_5,
+		],
+		[
+			attackTex.DISABLE_DARK_1,
+			attackTex.DISABLE_DARK_2,
+			attackTex.DISABLE_DARK_3,
+			attackTex.DISABLE_DARK_4,
+			attackTex.DISABLE_DARK_5,
+		]
+	];
+
+	constructor(stage: PIXI.Container, x: number, y: number) {
+		super(stage, x, y);
+		this.addSprite(x, y);
+	}
+
+	_update() {
+		const lightOrDark = Math.floor(this.timer / 6) % 2;
+		if (this.timer < 30) {
+			const keyFrame = Math.floor(this.timer / (30 / 5));
+			this.sprites[0].y = this.y + (4 - keyFrame) * 4;
+			this.sprites[0].texture = Disable.TEXTURES[lightOrDark][keyFrame];
+		} else {
+			this.sprites[0].y = this.y;
+			this.sprites[0].texture = Disable.TEXTURES[lightOrDark][4];
+		}
+		if (this.timer >= 120) this.die();
+	}
+}
+
 class Paralysis extends Particle {
 	protected dir: number;
 
@@ -703,12 +758,11 @@ class RisingIceWall extends Particle {
 }
 
 export {
-	Particle,
-	Slash, Open, attackTex, Static,
+	Particle, Slash, Open, attackTex, Static,
 	VineWhip, Growl, Note, Z, Ring, Bird,
 	Paralysis, Bomb, PoisonBubble,
 	Speed, ShadowBall, Sword, IceWall,
 	RisingIceWall,
 	Explosion, Sequence, Sphere, Twinkle,
-	Fly
+	Fly, Disable
 };

@@ -596,6 +596,11 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch (condition) {
+            case "Encore":
+                return { do: "TEXT", text: [ name, "got an ENCORE!" ] };
+            case "Disable":
+                const move = action[4];
+                return { do: "TEXT", text: [ `${name}'s`, `${move} was`, "DISABLED!" ] };
             case "Substitute":
                 this.moveResults.substitute = true;
                 this.getState(isPlayer).substituted = true;
@@ -603,7 +608,7 @@ class BattleScript {
             case "confusion":
                 return [
                     confuseAnim(isPlayer),
-                    { do: "TEXT", text: [`${name}`,"became confused!"] }
+                    { do: "TEXT", text: [name,"became confused!"] }
                 ];
             case "move: Focus Energy":
                 return {do:"TEXT", text: [`${name}'s`,"getting pumped!"]};
@@ -617,6 +622,13 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch(action[3]) {
+            case "Encore":
+                return { do: "TEXT", text: [`${name}'s`, "ENCORE ended!"] };
+            case "move: Disable":
+                return {
+                    do: "TEXT",
+                    text: [ `${name}'s`, "disabled no more!" ]
+                };
             case "Substitute":
                 this.getState(isPlayer).substituted = false;
                 return [

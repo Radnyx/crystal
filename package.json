@@ -1,33 +1,33 @@
 {
   "name": "@radnyx/crystal",
-  "version": "0.3.4",
+  "version": "0.4.7",
   "description": "Pokemon Crystal battle simulator.",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "scripts": {
     "build": "rm -f -r ./build/* && tsc"
   },
   "files": [
-    "build"
+    "build/src/"
   ],
   "exports": {
-    ".": "./build/index.js"
+    ".": "./build/src/index.js"
   },
   "devDependencies": {
-    "@pkmn/sim": "^0.5.11",
-    "@types/node": "^18.0.0",
-    "pixi.js-legacy": "^6.4.2",
-    "@pixi/sound": "^4.2.0",
+    "pixi.js-legacy": "^6.5.1",
+    "@pixi/sound": "^4.3.0",
     "pixi-filters": "^4.1.6",
+    "@pixi/filter-color-matrix": "^6.5.1",
+    "@pkmn/sim": "0.5.11",
     "typescript": "^4.7.4",
-    "@pixi/filter-color-matrix": "6.4.2"
+    "@types/node": "^18.0.0"
   },
   "peerDependencies": {
-    "@pkmn/sim": "^0.5.11",
-    "@pixi/sound": "^4.2.0",
+    "pixi.js-legacy": "^6.5.1",
+    "@pixi/sound": "^4.3.0",
     "pixi-filters": "^4.1.6",
-    "pixi.js-legacy": "^6.4.2",
-    "@pixi/filter-color-matrix": "6.4.2"
+    "@pixi/filter-color-matrix": "^6.5.1",
+    "@pkmn/sim": "0.5.11"
   },
   "homepage": "https://github.com/radnyx/crystal",
   "keywords": [

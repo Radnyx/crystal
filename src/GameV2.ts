@@ -4,7 +4,7 @@
  * Interprets game state to be drawn accordingly.
  */
 
-import { AnyObject, Battle, BattleStreams, Dex, ID, ModData, Pokemon, PokemonSet, RandomPlayerAI, Side, Teams as PSTeams } from '@pkmn/sim';
+import { AnyObject, Battle, BattleStreams, Pokemon, PokemonSet, RandomPlayerAI, Side, Teams as PSTeams } from '@pkmn/sim';
 import { GeneralTeamView, Menu, Moves, Options, SwitchoutTeamView, SwitchStats, TeamView } from './Menu';
 
 import { BattleInfo, FighterObject, MemberObject } from './BattleObjects';

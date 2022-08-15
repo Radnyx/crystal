@@ -165,14 +165,26 @@ class Options extends Menu {
 				}
 				const moves = player.moves;
 				PIXI_SOUND.play('pressab');
-				game.showMoves(moves);
+
+				const simulatedPlayer = this.game.getSimulatedPlayer();
+				if (simulatedPlayer.moveSlots.every(move => move.pp <= 0)) {
+					// struggle
+					this.game.popAllMenus();
+					this.game.submit(0);
+				} else if (simulatedPlayer.getVolatile('encore') != null) {
+					// must use previous move
+					const moveIndex = simulatedPlayer.moveSlots.findIndex(move => move.move === simulatedPlayer.lastMove?.name);
+					this.game.popAllMenus();
+					this.game.submit(moveIndex);
+				} else {
+					game.showMoves(moves);
+				}
 			}
 		});
 		this.compose(1, () => {
 			if (Input.selected()) {
 				Input.releaseSelect();
 				PIXI_SOUND.play('pressab');
-				// TODO: general team view ...
 				game.showGeneralTeamView();
 			}
 		});
@@ -276,15 +288,30 @@ class Moves extends Menu {
 			Input.releaseBack();
 			PIXI_SOUND.play('pressab');
 			this.game.popMenu();
-		} else if (
-			Input.selected() && 
-			(this.game.getSimulatedPlayer().moveSlots[moveIndex].pp > 0 ||
-			 this.game.getSimulatedPlayer().moveSlots.every(move => move.pp === 0))
-		) {
+		} else if (Input.selected()) {
 			Input.releaseSelect();
 			PIXI_SOUND.play('pressab');
-			this.game.popAllMenus();
-			this.game.submit(moveIndex);
+			const player = this.game.getSimulatedPlayer();
+			if (player.moveSlots[moveIndex].disabled) {
+				this.game.getEventDriver().append(Events.flatten([
+					this.game.view.text([
+						"This move is",
+						"DISABLED!"
+					]),
+					this.game.view.clearTextbox()
+				]));
+			} else if (this.game.getSimulatedPlayer().moveSlots[moveIndex].pp <= 0) {
+				this.game.getEventDriver().append(Events.flatten([
+					this.game.view.text([
+						"There's no PP left",
+                        "for this move!"
+					]),
+					this.game.view.clearTextbox()
+				]));
+			} else {
+				this.game.popAllMenus();
+				this.game.submit(moveIndex);
+			}
 		} else {
 			super.listen();
 		}

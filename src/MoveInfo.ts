@@ -313,11 +313,8 @@ const moveInfo: { [move: string]: any } = {
     "accuracy": 90
   },
   "DISABLE": {
-    "type": "NORMAL",
-    "category": "STATUS",
-    "pp": 20,
-    "power": null,
-    "accuracy": 55
+    "sfx": "Disable",
+    "pan": 1
   },
   "ACID": {
     "type": "POISON",
@@ -1613,11 +1610,8 @@ const moveInfo: { [move: string]: any } = {
     "accuracy": null
   },
   "ENCORE": {
-    "type": "NORMAL",
-    "category": "STATUS",
-    "pp": 5,
-    "power": null,
-    "accuracy": 100
+    "sfx": "Encore", 
+    "pan": -1
   },
   "PURSUIT": {
     "type": "DARK",

@@ -313,7 +313,51 @@ const slideOut = (speed: number, isPlayer: boolean) => (view: View) => {
 	}) as Event;
 } 
 
+const disable = (x: number, y: number) => (view: View) => {
+	return Events.flatten([
+		view.particle("Paralysis", x - 32, y - 20, 1),
+		view.particle("Paralysis", x + 20, y - 20, -1),
+		view.particle("Disable", x - 6, y - 20),
+		Events.wait(120)
+	]);
+};
+
+const encore = (x: number, y: number) => (view: View) => {
+	const DURATION = 66;
+	return Events.flatten([
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y, "CLAP", 66)
+				.offsetX(t => 16 * -Math.abs(Math.cos(2 * Math.PI * t)))),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y, "CLAP", 66)
+				.offsetX(t => 16 * Math.abs(Math.cos(2 * Math.PI * t)))
+				.flipHorizontally()),
+		Events.wait(16),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y - 8, "STAR", 16)
+				.offsetX(t => -8 * t)
+				.offsetY(t => -16 * t)),
+		Events.wait(17),
+		Events.wait(16),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y - 8, "STAR", 16)
+				.offsetX(t => 8 * t)
+				.offsetY(t => -16 * t)),
+		Events.wait(17)
+	]);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	ENCORE: {
+		ply: encore(56, 64),
+		opp: encore(100, 24),
+	},
+
+	DISABLE: {
+		ply: disable(128, 40 + 16),
+		opp: disable(40, 76 + 20)
+	},
 
 	FLICKER: {
 		opp: view => ({

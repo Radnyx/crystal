@@ -10,4 +10,5 @@ export * from "./Script";
 export * from "./IResources";
 export * as Graphics from "./Graphics";
 export * as Input from "./Input";
+export * as Context from "./Context";
 export { View, BattleScript, GameV2, Interpreter, moveInfo };
