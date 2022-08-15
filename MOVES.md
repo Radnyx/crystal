@@ -22,6 +22,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [ ] please unit test this
 - [x] 47 - Sing
 - [x] 48 - Supersonic
+- [x] 50 - Disable
 - [x] 58 - Ice Beam
 - [ ] 85 - Thunderbolt
   - [x] black ball
@@ -36,6 +37,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [ ] please unit test this
 - [x] 188 - Sludge Bomb
 - [x] 223 - Dynamic Punch
+- [x] 227 - Encore
 - [x] 236 - Moonlight
 - [x] 242 - Crunch
 - [x] 245 - Extreme Speed
