@@ -314,7 +314,7 @@ const moveInfo: { [move: string]: any } = {
   },
   "DISABLE": {
     "sfx": "Disable",
-    "pan": 1
+    "pan": -1
   },
   "ACID": {
     "type": "POISON",
@@ -1611,7 +1611,7 @@ const moveInfo: { [move: string]: any } = {
   },
   "ENCORE": {
     "sfx": "Encore", 
-    "pan": -1
+    "pan": 1
   },
   "PURSUIT": {
     "type": "DARK",
