@@ -30,6 +30,7 @@ abstract class Menu {
 	private machine: Machine = {};
 	protected arrowSpr: PIXI.Sprite;
 	protected stage: PIXI.Container;
+	private touchContainers: PIXI.Container[] = [];
 
 	private showing: boolean = false;
 
@@ -37,12 +38,44 @@ abstract class Menu {
 		protected game: GameV2,
 		trans: Transition[], 
 		arrowPos: [number, number][], 
-		onStateChange = () => {}
+		onStateChange = () => {},
+		// If the user clicks in these areas, then go to that state
+		touchAreas: (PIXI.Rectangle | undefined)[] = []
 	) {
 		this.stage = game.view.getStage();
 		this.arrowSpr = new PIXI.Sprite(arrowTexture);
 		this.reset(trans, arrowPos, onStateChange);
 		this.states = arrowPos.length;
+		const scale = Math.floor(game.view.app.renderer.width / Graphics.GAMEBOY_WIDTH);
+		let i = 0;
+		for (const area of touchAreas) {
+			if (area == null) continue;
+			area.x *= scale;
+			area.y *= scale;
+			area.width *= scale;
+			area.height *= scale;
+			const container = new PIXI.Container();
+			container.interactive = true;
+			container.hitArea = area;
+			container.cursor = "pointer";
+			const state = i;
+			const fn = (event: any) => {
+				if (this.game.currentMenu() != this) {
+					return;
+				}
+				event.stopPropagation();
+				if (this != null) {
+					this.state = state;
+					Input.forceAdvance();
+				} else {
+					console.warn("Menu: this == null on touch container event");
+				}
+			};
+			container.on("click", fn);
+			container.on("tap", fn);
+			this.touchContainers.push(container);
+			i++;
+		}
 	}
 
 	reset(trans: [number, number, Dir][], arrowPos: [number, number][], onStateChange: () => void) {
@@ -113,6 +146,9 @@ abstract class Menu {
 			this.arrowSpr.x = this.arrowPos[this.state][0];
 			this.arrowSpr.y = this.arrowPos[this.state][1];
 			this.game.view.getStage().addChild(this.arrowSpr);
+			for (const container of this.touchContainers) {
+				this.game.view.app.stage.addChild(container);
+			}
 			this.showing = true;
 		}
 	}
@@ -121,6 +157,9 @@ abstract class Menu {
 		if (this.showing) {
 			this._hide();
 			this.game.view.getStage().removeChild(this.arrowSpr);
+			for (const container of this.touchContainers) {
+				this.game.view.app.stage.removeChild(container);
+			}
 			this.showing = false;
 		}
 	}
@@ -154,7 +193,12 @@ class Options extends Menu {
 	constructor(game: GameV2) {
 		super(game, [[0, 1, "right"], [0, 2, "down"],
 					 [1, 3, "down"], [2, 3, "right"]],
-					 [[72, 112], [120, 112], [72, 128], [120, 128]]);
+					 [[72, 112], [120, 112], [72, 128], [120, 128]], 
+					 undefined,
+					 [ new PIXI.Rectangle(64, 99, 59, 26),
+					   new PIXI.Rectangle(64 + 59, 99, 37, 26),
+					   new PIXI.Rectangle(64, 99 + 26, 59, 26),
+					   new PIXI.Rectangle(64 + 59, 99 + 26, 37, 26) ]);
 		this.compose(0, () => {
 			if (Input.selected()) {
 				Input.releaseSelect();
@@ -248,8 +292,9 @@ class Moves extends Menu {
 		moves = [...moves, ...[...new Array(4 - moves.length)].map(_ => "")];
 		let trans: Transition[] = [];
 		let lastMove: number | undefined = undefined;
+		const exists = moves.map(move => move === "" ? undefined : true);
 		for (let i = 0; i < 4; i++) {
-			if (moves[i] !== "") {
+			if (exists[i]) {
 				if (lastMove !== undefined) {
 					trans.push([lastMove, i, "down"]);
 				}
@@ -264,7 +309,12 @@ class Moves extends Menu {
 				() => {
 					this.updateMoveInfo();
 					Input.releaseArrows();
-				});
+				}, [
+					exists[0] && new PIXI.Rectangle(34, 99, 126, 12),
+					exists[1] && new PIXI.Rectangle(34, 111, 126, 8),
+					exists[2] && new PIXI.Rectangle(34, 111 + 8, 126, 8),
+					exists[3] && new PIXI.Rectangle(34, 111 + 16, 126, 16)
+				]);
 		this.stateToSimulatedIndex = stateToSimulatedIndex;
 		this.state = state;
 		while (moves[this.state] === "") this.state = (this.state + 1) % 4;
@@ -411,7 +461,11 @@ class SwitchStats extends Menu {
 	constructor(game: GameV2, index: number) {
 		super(game, [[0, 1, "down"], [1, 2, "down"]],
 					 [[96, 96], [96, 112], [96, 128]],
-					 () => Input.releaseArrows());
+					 () => Input.releaseArrows(), [
+						new PIXI.Rectangle(89, 91, 71, 17),
+						new PIXI.Rectangle(89, 108, 71, 16),
+						new PIXI.Rectangle(89, 124, 71, 20)
+					 ]);
 		this.index = index;
 		this.switchstatsSpr = new PIXI.Sprite(switchstatsTexture);
 		this.switchstatsSpr.x = 88;
@@ -436,7 +490,7 @@ class SwitchStats extends Menu {
 					this.game.switch(this.index);
 				}
 			} else if (this.state === 1) {
-				/* SHOW STATS */
+				this.selectMessage(["STATS menu is", "not finished." ]);
 			} else {
 				this.game.popMenu();
 			}
@@ -466,6 +520,17 @@ function createTeamViewTransitions(length: number): [Transition[], [number, numb
 	return [ trans, pos ];
 }
 
+function createTeamViewTouchAreas(length: number): PIXI.Rectangle[] {
+	const areas: PIXI.Rectangle[] = [
+		new PIXI.Rectangle(0, 0, 160, 23)
+	];
+	for (let i = 0; i < length - 1; i++) {
+		areas.push(new PIXI.Rectangle(0, 23 + i * 16, 160, 16));
+	}
+	areas.push(new PIXI.Rectangle(0, 23 + (length - 1) * 16, 100, 13));
+	return areas;
+}
+
 abstract class TeamView extends Menu {
 	private message: string;
 	private canCancel: boolean;
@@ -479,7 +544,8 @@ abstract class TeamView extends Menu {
 	constructor(game: GameV2, message: string, canCancel = true) {
 		const teamLength = game.battleInfo.info.player.team.length;
 		const [ trans, pos ] = createTeamViewTransitions(teamLength);
-		super(game, trans, pos, Input.releaseArrows);
+		super(game, trans, pos, Input.releaseArrows, 
+			createTeamViewTouchAreas(teamLength));
 		this.message = message;
 
 		this.messageSpr = new PIXI.Sprite(messageTexture);
@@ -584,6 +650,7 @@ abstract class TeamView extends Menu {
 	}
 
 	protected deny() {
+		Input.releaseBack();
 		this.game.getEventDriver().append(Events.flatten([
 			() => this.arrowSpr.texture = arrowTexture2,
 			this.game.view.sfx("pressab", true),
@@ -708,4 +775,13 @@ class GeneralTeamView extends TeamView {
 	}
 }
 
-export { Menu, Options, Moves, /* YesNo, */ SwitchStats, SwitchoutTeamView, GeneralTeamView, TeamView };
+export { 
+	Menu, 
+	Options,
+	Moves, 
+	/* YesNo, */ 
+	SwitchStats, 
+	SwitchoutTeamView, 
+	GeneralTeamView, 
+	TeamView 
+};

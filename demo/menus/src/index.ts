@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
-import effects from "../../src/Effect";
-import { EventDriver, Events, Graphics, View } from "../../src/index";
+import { Input, GameV2, Graphics, MemberObject, View } from "../../../src/index";
 import Resources from "./Resources";
 
 const SCALE = 3;
@@ -35,52 +34,63 @@ function initWindow() {
 	sprite.height = APP_HEIGHT;
 	app.stage.addChild(sprite);
 	app.stage.interactive = true;
-	app.stage.cursor = "pointer";
+	Input.focus();
+	document.addEventListener("keydown", (e: any) => Input.keyDown(e));
+	document.addEventListener("keyup", (e: any) => Input.keyUp(e));
 }
 
 initWindow();
 
-const state = {
-	setOnClick: false,
-	move: "DISABLE"
-}
+const exampleMember: MemberObject = {
+	id: "demo",
+	level: 5,
+	gender: "none",
+	moves: ["TACKLE","SCRATCH"],
+	name: "BLASTOISE"
+};
 
 const resources = new Resources();
 const view = new View(app!, resources);
-const eventDriver = new EventDriver();
+const game = new GameV2(view, {
+	info: {
+		player: {
+			name: "PLAYER",
+			trainer: "demoback.png",
+			team: [ exampleMember, exampleMember, exampleMember, exampleMember ]
+		},
+		opponent: {
+			name: "OPPONENT",
+			trainer: "demofront.png",
+			team: [ { ...exampleMember, level: 20 } ]
+		}
+	},
+	data: {
+		"demo": {
+			baseAtk: 5,
+			baseDef: 5,
+			baseHp: 5,
+			baseSpAtk: 5,
+			baseSpDef: 5,
+			baseSpd: 5,
+			cry: "",
+			front: "demofront.png",
+			back: "demoback.png",
+			name: "BLASTOISE",
+			types: ["NORMAL"],
+			anim: { delay: [ 0 ], ref: [ 0 ] }
+		}
+	}
+});
 
 view.setPlayerTexture("demo");
 view.setOpponentTexture("demo");
 
-eventDriver.append(Events.flatten([
-	view.showPlayer(),
-	view.showOpponent()
-]));
-
-app!.stage.addListener("click", () => {
-    eventDriver.append(Events.flatten([
-		effects[state.move].ply!(view),
-		effects[state.move].opp!(view)
-	]));
-});
-
 function tick() {
-	if (!state.setOnClick) {
-		const useMoveButton = document.getElementById("useMove") as HTMLButtonElement;
-		if (useMoveButton != null) {
-			useMoveButton.onclick = useMove;
-			state.setOnClick = true;
-		}
-	}
-    eventDriver.update();
-	view.update();
+	game.update();
     app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
 }
 
-app!.ticker.add(tick);
 
-function useMove() {
-	state.move = (document.getElementById("move") as HTMLInputElement).value;
-}
+app!.ticker.add(tick);
 
 

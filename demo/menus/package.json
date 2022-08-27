@@ -1,0 +1,14 @@
+{
+    "name": "menus",
+    "version": "0.1.0",
+    "description": "",
+    "scripts": {
+      "dev": "cd ../../ && npm run build && cd demo/menus && esbuild ./src/index.ts --bundle --outfile=public/main.js --servedir=public"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "esbuild": "^0.14.39"
+    }
+  }
+  

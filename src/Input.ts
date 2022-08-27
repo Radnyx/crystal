@@ -21,6 +21,14 @@ function advance() {
 	return selected() || back();
 }
 
+function forceAdvance() {
+	pressed['KeyX'] = true;
+}
+
+function forceBack() {
+	pressed['KeyZ'] = true;
+}
+
 function up() {
 	return pressed['ArrowUp'];
 }
@@ -93,5 +101,7 @@ export {
 	left,
 	right,
 	focus,
-	unfocus
+	unfocus,
+	forceAdvance,
+	forceBack
 };

@@ -67,7 +67,9 @@ class GameV2 implements IGame {
 
     private streams: { p1: ObjectReadWriteStream<string> };
 
-    private frames: number
+    private frames: number;
+
+    private movesState: number = 0;
 
     constructor (view: View, battleInfo: BattleInfo) {
         this.view = view;
@@ -161,7 +163,7 @@ class GameV2 implements IGame {
 
     showMoves(moves: string[]) {
         this.currentMenu()?.hide();
-        this.pushMenu(new Moves(this, moves, 0));
+        this.pushMenu(new Moves(this, moves, this.movesState));
     }
 
     showGeneralTeamView() {
@@ -183,10 +185,14 @@ class GameV2 implements IGame {
     }
 
     popMenu() {
-        if (this.menuStack.length === 0) {
+        const menu = this.currentMenu();
+        if (menu == null) {
             throw new Error("GameV2.popMenu: menu stack is empty");
         }
-        this.currentMenu()?.hide();
+        menu.hide();
+        if (menu instanceof Moves) {
+			this.movesState = menu.state;
+        }
         this.menuStack.pop();
         this.currentMenu()?.show();
         this.currentMenu()?.continue();
@@ -217,6 +223,7 @@ class GameV2 implements IGame {
     }
 
     switch(index: number) {
+        this.movesState = 0;
         const member = this.getSimulatedPlayerMember(index);
         this.popAllMenus();
         this.eventDriver.append(Events.flatten([

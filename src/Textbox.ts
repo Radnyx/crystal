@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js-legacy';
-import { sound as PIXI_SOUND } from '@pixi/sound';
+import * as PIXI_SOUND from '@pixi/sound';
 import * as Graphics from './Graphics';
 import * as Input from './Input.js';
 
@@ -19,8 +19,8 @@ enum State {
 }
 
 class Textbox {
+	private forceAdvance: boolean = false;
 	data?: string[];
-	waiting = false;
 	showArrow = false;
 	line = 0;
 	idx =  0;
@@ -33,6 +33,10 @@ class Textbox {
 
 	constructor(stage: PIXI.Container) {
 		this.stage = stage;
+	}
+
+	advance() {
+		this.forceAdvance = true;
 	}
 
 	hide() {
@@ -115,9 +119,9 @@ class Textbox {
 					this.ticks = 0;
 				}
 
-				if (Input.advance() || doAuto) {
-					if (Input.advance()) {
-						if (!doAuto) PIXI_SOUND.play('pressab');
+				if (Input.advance() || doAuto || this.forceAdvance) {
+					if (Input.advance() || this.forceAdvance) {
+						if (!doAuto) PIXI_SOUND.sound.play('pressab');
 						Input.releaseSelect();
 						Input.releaseBack();
 					}
@@ -161,6 +165,8 @@ class Textbox {
 			default:
 		}
 
+		
+		this.forceAdvance = false;
 		this.ticks++;
 	}
 
@@ -171,7 +177,6 @@ class Textbox {
 		this.line = 0;
 		this.data = lines;
 		this.showArrow = false;
-		this.waiting = false;
 		this.sprites.forEach(spr => this.stage.removeChild(spr));
 		this.sprites = [];
 		this.state = State.SHOW;

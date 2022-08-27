@@ -12,6 +12,7 @@ import IView from "./IView";
 import Status from "./Status";
 import { IResources, Music } from "./IResources";
 import { ColorMatrixFilter } from "@pixi/filter-color-matrix";
+import { Input } from ".";
 
 function animate(
     sprite: PIXI.Sprite, 
@@ -113,6 +114,14 @@ class View implements IView {
         this.particleStage.zIndex = 2;
         this.particleStage.sortableChildren = true;
 
+        app.stage.on("click", () => { 
+            Input.forceBack(); 
+            this.textbox.advance();
+        });
+        app.stage.on("tap", () => { 
+            Input.forceBack();
+            this.textbox.advance(); 
+         });
         this.textbox.show();
     }
 
@@ -507,7 +516,14 @@ class View implements IView {
         for (let i = 0; i < steps; i++) {
             const j = reverse ? steps - i - 1 : i;
             script.push([
-                { init: () => this.resources.uniforms[name].step = j },
+                { 
+                    init: () => {
+                        const uniform = this.resources.uniforms[name];
+                        if (uniform != null) {
+                            uniform.step = j;
+                        }
+                    }
+                },
                 { done: t => t >= delay }
             ])
         }
