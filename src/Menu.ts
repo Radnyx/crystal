@@ -60,6 +60,7 @@ abstract class Menu {
 			container.cursor = "pointer";
 			const state = i;
 			const fn = (event: any) => {
+				Input.releaseBack();
 				if (this.game.currentMenu() != this) {
 					return;
 				}

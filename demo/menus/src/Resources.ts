@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
+import { Context } from "../../../src";
 import * as PIXI_SOUND from "@pixi/sound";
 import { IResources, Music } from "../../../src";
 
@@ -15,7 +16,7 @@ export default class Resources implements IResources {
         this.demoFrontTexture = PIXI.Texture.from("demofront.png");
         this.demoBackTexture = PIXI.Texture.from("demoback.png");
         this.defaultFilter = new PIXI.Filter();
-        PIXI_SOUND.sound.add("pressab", "pressab.wav");
+        Context.createPIXILoader().add("pressab", "pressab.wav").load();
     }
 
     getMusic(music: Music): PIXI_SOUND.Sound | undefined {

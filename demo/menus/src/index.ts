@@ -50,7 +50,7 @@ const exampleMember: MemberObject = {
 };
 
 const resources = new Resources();
-const view = new View(app!, resources);
+const view = new View(app!, resources, true);
 const game = new GameV2(view, {
 	info: {
 		player: {
@@ -80,7 +80,7 @@ const game = new GameV2(view, {
 			anim: { delay: [ 0 ], ref: [ 0 ] }
 		}
 	}
-});
+}, true);
 
 view.setPlayerTexture("demo");
 view.setOpponentTexture("demo");

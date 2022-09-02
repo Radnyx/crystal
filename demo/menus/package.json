@@ -9,6 +9,13 @@
     "license": "ISC",
     "devDependencies": {
       "esbuild": "^0.14.39"
+    },
+    "dependencies": {
+      "pixi.js-legacy": "^6.5.1",
+      "@pixi/sound": "^4.3.0",
+      "pixi-filters": "^4.1.6",
+      "@pixi/filter-color-matrix": "^6.5.1",
+      "@pkmn/sim": "0.5.11"
     }
   }
   
