@@ -40,9 +40,9 @@ function buildPSTeam(members: MemberObject[], fighters: { [id: string]: FighterO
 
 class PlayerController extends RandomPlayerAI {
     receiveRequest(request: AnyObject): void {
-        if (process.env.NODE_ENV === "development") {
-            console.log("received:\n", request);
-        }
+        //if (process.env.NODE_ENV === "development") {
+        //    console.log("received:\n", request);
+        //}
     }
 } 
 
@@ -71,26 +71,36 @@ class GameV2 implements IGame {
 
     private movesState: number = 0;
 
-    constructor (view: View, battleInfo: BattleInfo) {
+    constructor (view: View, battleInfo: BattleInfo, private debug: boolean = false) {
         this.view = view;
         this.battleInfo = battleInfo;
-        if (process.env.NODE_ENV === "development") {
-            console.log("RESTARTING GAME");
+        if (this.debug) {
+            console.log("GameV2.constructor: initializing");
         }
         this.frames = 0;
         this.menuStack = [];
 
-        this.battleScript = new BattleScript(this.battleInfo);
+        this.battleScript = new BattleScript(this.battleInfo, debug);
         this.interpreter = new Interpreter(this.view, this.battleInfo);
         this.eventDriver = new EventDriver();
 
+        if (this.debug) {
+            console.log("GameV2.constructor: creating battle stream");
+        }
         const battleStream = new BattleStreams.BattleStream();
         const streams = BattleStreams.getPlayerStreams(battleStream);
         const spec = {formatid: 'gen2randombattle'};
 
-        //const p1 = new Player
+        if (this.debug) {
+            console.log("GameV2.constructor: creating player streams");
+        }
+
         const p1 = new PlayerController(streams.p1);
         const p2 = new RandomPlayerAI(streams.p2);
+
+        if (this.debug) {
+            console.log("GameV2.constructor: starting player streams");
+        }
 
         p1.start();
         p2.start();
@@ -106,6 +116,10 @@ class GameV2 implements IGame {
             throw new Error("GameV2.constructor: battleStream.battle is null");
         }
         this.battle = battleStream.battle;
+
+        if (this.debug) {
+            console.log("GameV2.constructor: building stream teams");
+        }
 
         const playerTeam = PSTeams.pack(buildPSTeam(this.battleInfo.info.player.team, this.battleInfo.data));
         const opponentTeam = PSTeams.pack(buildPSTeam(this.battleInfo.info.opponent.team, this.battleInfo.data));
@@ -176,7 +190,7 @@ class GameV2 implements IGame {
     }
 
     private pushMenu(menu: Menu) {
-        if (process.env.NODE_ENV === "development") {
+        if (this.debug) {
             console.log("Pushed menu:", menu);
         }
         this.menuStack.push(menu);

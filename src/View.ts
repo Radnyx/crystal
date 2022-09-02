@@ -67,7 +67,7 @@ class View implements IView {
     private playerMember?: MemberObject;
     private opponentMember?: MemberObject;
 
-    constructor(app: PIXI.Application, resources: IResources) {
+    constructor(app: PIXI.Application, resources: IResources, private debug: boolean = false) {
         this.app = app;
         this.resources = resources;
         this.matrixFilter = new PIXI.filters.ColorMatrixFilter();
@@ -155,6 +155,10 @@ class View implements IView {
     }
 
     restart() {
+        if (this.debug) {
+            console.log("View.restart: clearing stages and showing textbox");
+        }
+
         this.stage.removeChildren();
         this.particleStage.removeChildren();
         this.textboxStage.removeChildren();
@@ -475,7 +479,7 @@ class View implements IView {
         ]);
     }
 
-    sfx(name: string, wait: boolean = false, panning: number = 0): Event {
+    sfx(name: string | undefined, wait: boolean = false, panning: number = 0): Event {
         if (name == null) return {};
         const sound: PIXI_SOUND.Sound = PIXI_SOUND.sound.find(name);
         if (sound == null) {
@@ -487,11 +491,22 @@ class View implements IView {
         }
         return {
             init: state => { 
+                if (this.debug) {
+                    console.log(`View.sfx: sound started, name=${name} wait=${wait} isPlayer=${panning}`);
+                }
                 if (wait) state.waiting = true;
                 sound.play({
                     complete: () => {
+                        if (this.debug) {
+                            console.log(`View.sfx: sound completed, name=${name} wait=${wait} isPlayer=${panning}`);
+                        }
                         sound.filters = [];
                         state.waiting = false;
+                    },
+                    loaded: () => {
+                        if (this.debug) {
+                            console.log(`View.sfx: sound loaded, name=${name} wait=${wait} isPlayer=${panning}`);
+                        }
                     }
                 })
             },
@@ -500,7 +515,14 @@ class View implements IView {
     }
 
     cry(id: string, wait: boolean, isPlayer: boolean): Event {
-        return this.sfx(this.resources.getCry(id), wait, isPlayer ? -0.5 : 0.5);
+        if (this.debug) {
+            console.log(`View.cry: id=${id} wait=${wait} isPlayer=${isPlayer}`);
+        }
+        const cry = this.resources.getCry(id);
+        if (cry == null) {
+            console.error(`View.cry: cry id "${id}" does not exist`);
+        }
+        return this.sfx(cry, wait, isPlayer ? -0.5 : 0.5);
     }
 
     shader(isPlayer: boolean, name: string, steps: number, delay: number, reverse: boolean = false): Event {

@@ -24,8 +24,8 @@ export default class Resources implements IResources {
     getShader(name: string): PIXI.Filter {
         return this.defaultFilter;
     }
-    getCry(id: string): string {
-        return "";
+    getCry(id: string): string | undefined {
+        return undefined;
     }
     getOpponentTrainerTexture(): PIXI.Texture<PIXI.Resource> | undefined {
         return undefined;

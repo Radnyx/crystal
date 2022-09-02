@@ -15,7 +15,7 @@ class Interpreter {
     private view: IView;
     private membersOut: MembersOut;
 
-    constructor(view: IView, battleInfo: BattleInfo) {
+    constructor(view: IView, battleInfo: BattleInfo, private debug: boolean = false) {
         this.battleInfo = battleInfo;
         this.view = view;
         this.membersOut = {};
@@ -32,6 +32,9 @@ class Interpreter {
     }
 
     private stepNoArgs(game: IGame | null, command: string): Event {
+        if (this.debug) {
+            console.log("Interpreter.stepNoArgs:", JSON.stringify(command));
+        }
         switch (command) {
             case "FORCE_PLAYER_SWITCH":
                 Interpreter.assertGameNotNull(game);
@@ -100,6 +103,9 @@ class Interpreter {
         }
         if (typeof command === 'string') {
             return this.stepNoArgs(game, command);
+        }
+        if (this.debug) {
+            console.log("Interpreter.step:", JSON.stringify(command));
         }
         let member: MemberObject;
         let id: string;

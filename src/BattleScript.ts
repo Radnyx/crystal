@@ -116,7 +116,10 @@ class BattleScript {
         ((opponentSwitch: Script) => Script) |
         Script;
 
-    constructor(battleInfo: BattleInfo) {
+    constructor(battleInfo: BattleInfo, private debug: boolean = false) {
+        if (debug) {
+            console.log("BattleScript.constructor: initializing");
+        }
         this.battleInfo = battleInfo;
         this.introduction = (playerSwitch: Script) => (opponentSwitch: Script) => 
         [
@@ -144,8 +147,8 @@ class BattleScript {
     }
 
     load(chunk: string) {
-        if (process.env.NODE_ENV === "development") {
-            console.log("Loaded chunk:");
+        if (this.debug) {
+            console.log("BattleScript.load:");
             console.log(chunk);
         }
         chunk.split("\n").forEach(x => this.stream.push(x.split("|")));
@@ -155,8 +158,9 @@ class BattleScript {
         const script: Script[] = [];
         while (this.stream.length > 0) {
             const command = Scripts.flatten(this.build());
-            if (process.env.NODE_ENV === "development") {
-                console.log(command);
+            if (this.debug) {
+                console.log("BattleScript.buildAll:")
+                console.log(JSON.stringify(command));
             }
             script.push(command);
         }
@@ -167,9 +171,6 @@ class BattleScript {
         if (this.stream.length === 0) return null;
         while (this.stream.length > 0) {
             const action = this.stream.shift()!;
-            //if (process.env.NODE_ENV === "development") {
-            //    console.log(JSON.stringify(action));
-            //}
             switch (action[1]) {
                 case "move":
                     return this.handleMove(action);
