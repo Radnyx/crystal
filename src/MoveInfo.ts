@@ -374,7 +374,7 @@ const moveInfo: { [move: string]: any } = {
     "pp": 10,
     "power": 95,
     "accuracy": 100,
-    "sfx": "Icebeam",
+    "sfx": "IceBeam",
     "anim": "ICE BEAM"
   },
   "BLIZZARD": {
