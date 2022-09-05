@@ -8,6 +8,8 @@ interface MoveInfo {
   text?: string;
   // specify that NO sfx should be played
   noSfx?: boolean;
+  // specify what shaders to load
+  shaders?: string[];
 }
 
 const moveInfo: { [move: string]: MoveInfo } = {
@@ -320,7 +322,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
     "QUICK ATTACK":{
     },
     "RAGE":{
-      "sfx":"Rage"
+      sfx: "Rage",
+      pan: 0,
+      shaders: [ "rage" ]
     },
     "TELEPORT":{
       
