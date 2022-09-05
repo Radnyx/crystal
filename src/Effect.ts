@@ -371,6 +371,20 @@ const earthquake = (view: View) => Events.flatten([
 	Events.wait(90)
 ]);
 
+const burned = (x: number, y: number, dir: number = 1) => (view: View) => {
+	const seq = ["FIRE_SMALL_1","FIRE_SMALL_2", "FIRE_BIG_1","FIRE_BIG_2"];
+	const e: Event[] = [];
+	for (let i = 0; i < 4; i++) {
+		const theta = (t: number) => Math.PI + Math.PI * 2 * t / 3;
+		e.push(view.particleV1(stage => new Particle.Sequence(stage, x, y, seq, i * 2, 20)
+			.offsetX(t => Math.cos(theta(t)) * 16 * dir)
+			.offsetY(t => -Math.sin(theta(t)) * 24)));
+		e.push(Events.wait(5));
+	}
+	e.push(Events.wait(30));
+	return Events.flatten(e);
+}
+
 const effects: { [attack: string]: Effect } = {
 
 	ENCORE: {
@@ -434,6 +448,11 @@ const effects: { [attack: string]: Effect } = {
 		])
 	},
 
+	"BURNED": {
+		ply: burned(46, 76, -1),
+		opp: burned(112, 28)
+	},
+
 	"FLAMETHROWER": {
 		ply: flamethrower(56, 76, 136, 28),
 		opp: flamethrower(106, 32, 28, 80),
@@ -444,7 +463,7 @@ const effects: { [attack: string]: Effect } = {
 		opp: earthquake,
 	},
 
-	RAGE: {
+	"RAGE": {
 		ply: rage(108, 56, true),
 		opp: rage(ATTACK_PLY_X - 8, ATTACK_PLY_Y + 16, false)
 	},

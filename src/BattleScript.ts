@@ -571,9 +571,10 @@ class BattleScript {
                 ];
                 break;
             case "brn":
-                // TODO: brn anim?
                 event = [
-                    {do:"TEXT",text:[`${name}'s`, "hurt by its burn!"]}
+                    {do:"TEXT",text:[`${name}'s`, "hurt by its burn!"]},
+                    {do: "SFX", name: "brn"},
+                    { do: "EFFECT", name: "BURNED", isPlayer }
                 ];
                 break;
             case "psn":
@@ -671,7 +672,8 @@ class BattleScript {
                 script.push({ do: "TEXT", text: [`${name}'s`, "paralyzed! Maybe", "it can't attack!"] });
                 break;
             case "brn":
-                // TODO: BURN ANIM
+                script.push({do: "SFX", name: "brn"});
+                script.push({ do: "EFFECT", name: "BURNED", isPlayer });
                 script.push(setStatus);
                 script.push({ do: "TEXT", text: [name, "was burned!"] });
                 break;
