@@ -3,6 +3,7 @@ import { Events, Event, DeepEvent, EventState } from "./Event";
 import View from './View';
 import * as Graphics from './Graphics';
 import * as PIXI from "pixi.js-legacy";
+import { lerp } from "./MathUtil";
 
 const TACKLE_DUR = 6;
 
@@ -313,6 +314,24 @@ const slideOut = (speed: number, isPlayer: boolean) => (view: View) => {
 	}) as Event;
 } 
 
+const flamethrower = (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
+	const DURATION = 230;
+	const e: Event[] = [];
+	for (let i = 0; i < 8; i++) {
+		const l = lerp(i / 8);
+		const d = l(2, 8);
+		e.push(view.particleV1(stage =>
+			new Particle.Sequence(stage, l(x1, x2), l(y1, y2), 
+				[ "FIRE_BIG_1", "FIRE_BIG_2" ], 8, DURATION - i * 2)
+				.offsetX(t => Math.cos(2 * Math.PI * t * 3) * d)
+				.offsetY(t => Math.sin(2 * Math.PI * t * 3) * d)
+				.priority(-i)))
+		e.push(Events.wait(i * 2));
+	}
+	e.push(Events.wait(DURATION));
+	return Events.flatten(e);
+};
+
 const disable = (x: number, y: number) => (view: View) => {
 	return Events.flatten([
 		view.particle("Paralysis", x - 32, y - 20, 1),
@@ -346,6 +365,11 @@ const encore = (x: number, y: number) => (view: View) => {
 		Events.wait(17)
 	]);
 }
+
+const earthquake = (view: View) => Events.flatten([
+	view.screenShake(120, 5, 4, false),
+	Events.wait(90)
+]);
 
 const effects: { [attack: string]: Effect } = {
 
@@ -408,6 +432,16 @@ const effects: { [attack: string]: Effect } = {
 				}
 			}
 		])
+	},
+
+	"FLAMETHROWER": {
+		ply: flamethrower(56, 76, 136, 28),
+		opp: flamethrower(106, 32, 28, 80),
+	},
+
+	"EARTHQUAKE": {
+		ply: earthquake,
+		opp: earthquake,
 	},
 
 	RAGE: {

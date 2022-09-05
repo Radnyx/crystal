@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js-legacy";
 import effects from "../../../src/Effect";
-import { EventDriver, Events, Graphics, View } from "../../../src/index";
+import { EventDriver, Events, Graphics, moveInfo, View } from "../../../src/index";
 import Resources from "./Resources";
+import Cookies from "js-cookie";
 
 const SCALE = 3;
 const APP_WIDTH = Graphics.GAMEBOY_WIDTH * SCALE;
@@ -40,13 +41,15 @@ function initWindow() {
 
 initWindow();
 
+const defaultMove = Cookies.get("move");
 const state = {
 	setOnClick: false,
-	move: "DISABLE"
+	setDefaultValue: defaultMove != null,
+	move: defaultMove
 }
 
-const resources = new Resources();
-const view = new View(app!, resources);
+const resources = new Resources(defaultMove);
+const view = new View(app!, resources, true);
 const eventDriver = new EventDriver();
 
 view.setPlayerTexture("demo");
@@ -58,10 +61,16 @@ eventDriver.append(Events.flatten([
 ]));
 
 app!.stage.addListener("click", () => {
-    eventDriver.append(Events.flatten([
-		effects[state.move].ply!(view),
-		effects[state.move].opp!(view)
-	]));
+	if (state.move) {
+		const pan = moveInfo[state.move].pan || 1;
+		const sfx = moveInfo[state.move].sfx;
+		eventDriver.append(Events.flatten([
+			view.sfx(sfx, false, pan),
+			effects[state.move].ply!(view),
+			view.sfx(sfx, false, -pan),
+			effects[state.move].opp!(view)
+		]));
+	}
 });
 
 function tick() {
@@ -80,7 +89,10 @@ function tick() {
 app!.ticker.add(tick);
 
 function useMove() {
-	state.move = (document.getElementById("move") as HTMLInputElement).value;
+	const val = (document.getElementById("move") as HTMLInputElement).value.toUpperCase();
+	state.move = val;
+	Cookies.set("move", val);
+	resources.loadMove(val);
 }
 
 

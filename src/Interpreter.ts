@@ -168,26 +168,23 @@ class Interpreter {
     }
 
     private moveSfx(moveName: string, isPlayer: boolean): Event {
-        const move = moveStats[moveName];
-        let sfx;
-        let pan: number = 1;
-        if (typeof move === "string") {
-            sfx = move;
-        } else {
-            sfx = move?.sfx;
-            pan = move?.pan || pan;
-        }
         const member = isPlayer
             ? this.membersOut.player
             : this.membersOut.opponent;
         if (member == null) {
             throw new Error("Interpreter.moveSfx: member is null");
         }
+        const move = moveStats[moveName];
+        if (move.noSfx) {
+            return {};
+        }
+        const sfx = move?.sfx;
+        const pan: number = move?.pan || 0;
 	  	// play the member's cry if no sound effect
 		if (sfx == null) {
             return this.view.cry(member.id, false, isPlayer);
         }
-        return this.view.sfx(sfx, false, pan * (isPlayer ? -0.5 : 0.5));
+        return this.view.sfx(sfx, false, pan * (isPlayer ? 0.5 : -0.5));
     }
 }
 

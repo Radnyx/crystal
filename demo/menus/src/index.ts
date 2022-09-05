@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
-import { Input, GameV2, Graphics, MemberObject, View } from "../../../src/index";
+import { Input, GameV2, Graphics, MemberObject, View, BattleInfo } from "../../../src/index";
 import Resources from "./Resources";
 
 const SCALE = 3;
@@ -41,27 +41,33 @@ function initWindow() {
 
 initWindow();
 
-const exampleMember: MemberObject = {
+const exampleMember1: MemberObject = {
 	id: "demo",
-	level: 5,
+	level: 15,
 	gender: "none",
-	moves: ["TACKLE","SCRATCH"],
+	moves: ["FLAMETHROWER","SCRATCH"],
 	name: "BLASTOISE"
 };
 
-const resources = new Resources();
-const view = new View(app!, resources, true);
-const game = new GameV2(view, {
+const exampleMember2: MemberObject = {
+	id: "demo",
+	level: 20,
+	gender: "none",
+	moves: ["FLAMETHROWER","SCRATCH"],
+	name: "BLASTOISE"
+};
+
+const battleInfo: BattleInfo = {
 	info: {
 		player: {
 			name: "PLAYER",
 			trainer: "demoback.png",
-			team: [ exampleMember, exampleMember, exampleMember, exampleMember ]
+			team: [ exampleMember1, exampleMember1, exampleMember1, exampleMember1 ]
 		},
 		opponent: {
 			name: "OPPONENT",
 			trainer: "demofront.png",
-			team: [ { ...exampleMember, level: 20 } ]
+			team: [ exampleMember2, exampleMember2 ]
 		}
 	},
 	data: {
@@ -80,7 +86,11 @@ const game = new GameV2(view, {
 			anim: { delay: [ 0 ], ref: [ 0 ] }
 		}
 	}
-}, true);
+};
+
+const resources = new Resources(battleInfo.info);
+const view = new View(app!, resources, true);
+const game = new GameV2(view, battleInfo, true);
 
 view.setPlayerTexture("demo");
 view.setOpponentTexture("demo");

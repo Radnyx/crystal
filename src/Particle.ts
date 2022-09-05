@@ -90,6 +90,10 @@ const attackTex: { [index: string]: PIXI.Texture } = {
 	DISABLE_LIGHT_1: Graphics.attack(128 / 8, 216 / 8 + 4, 6, 1),
 	CLAP: Graphics.attack(72 / 8, 168 / 8, 1, 2),
 	STAR: Graphics.attack(72 / 8 + 1, 168 / 8, 2, 2),
+	FIRE_SMALL_1: Graphics.attack(96/8, 40/8, 1, 1),
+	FIRE_SMALL_2: Graphics.attack(96/8 + 1, 40/8, 1, 1),
+	FIRE_BIG_1: Graphics.attack(96/8, 40/8 + 1, 2, 2),
+	FIRE_BIG_2: Graphics.attack(96/8, 40/8 + 3, 2, 2),
 };
 
 const notes = [

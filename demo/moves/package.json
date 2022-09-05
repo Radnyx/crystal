@@ -3,12 +3,20 @@
     "version": "0.1.0",
     "description": "",
     "scripts": {
-      "dev": "cd ../../ && npm run build && cd demo/moves && esbuild ./src/index.ts --bundle --outfile=public/main.js --servedir=public"
+        "dev": "cd ../../ && npm run build && cd demo/moves && esbuild ./src/index.ts --bundle --outfile=../public/moves.js --servedir=../public"
     },
     "author": "",
     "license": "ISC",
     "devDependencies": {
-      "esbuild": "^0.14.39"
+        "@types/js-cookie": "^3.0.2",
+        "esbuild": "^0.14.39"
+    },
+    "dependencies": {
+        "@pixi/filter-color-matrix": "^6.5.1",
+        "@pixi/sound": "^4.3.0",
+        "@pkmn/sim": "0.5.11",
+        "js-cookie": "^3.0.1",
+        "pixi-filters": "^4.1.6",
+        "pixi.js-legacy": "^6.5.1"
     }
-  }
-  
+}

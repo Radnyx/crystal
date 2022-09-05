@@ -492,21 +492,16 @@ class View implements IView {
         return {
             init: state => { 
                 if (this.debug) {
-                    console.log(`View.sfx: sound started, name=${name} wait=${wait} isPlayer=${panning}`);
+                    console.log(`View.sfx: sound started, name=${name} wait=${wait} panning=${panning}`);
                 }
                 if (wait) state.waiting = true;
                 sound.play({
                     complete: () => {
                         if (this.debug) {
-                            console.log(`View.sfx: sound completed, name=${name} wait=${wait} isPlayer=${panning}`);
+                            console.log(`View.sfx: sound completed, name=${name} wait=${wait} panning=${panning}`);
                         }
                         sound.filters = [];
                         state.waiting = false;
-                    },
-                    loaded: () => {
-                        if (this.debug) {
-                            console.log(`View.sfx: sound loaded, name=${name} wait=${wait} isPlayer=${panning}`);
-                        }
                     }
                 })
             },

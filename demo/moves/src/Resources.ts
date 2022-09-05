@@ -1,17 +1,26 @@
 import * as PIXI from "pixi.js-legacy";
 import { Sound } from "@pixi/sound";
-import { IResources, Music } from "../../../src";
+import { Context, IResources, moveInfo, Music } from "../../../src";
 
 export default class Resources implements IResources {
     uniforms: { [index: string]: { step: number; }; } = {};
     playingMusic: Sound | null = null;
+    private readonly loader = Context.createPIXILoader();
 
     private readonly demoFrontTexture: PIXI.Texture;
     private readonly demoBackTexture: PIXI.Texture;
 
-    constructor() {
+    constructor(move?: string) {
         this.demoFrontTexture = PIXI.Texture.from("demofront.png");
         this.demoBackTexture = PIXI.Texture.from("demoback.png");
+        move && this.loadMove(move);
+    }
+
+    loadMove(move: string) {
+        const moveData = moveInfo[move];
+        if (moveData.sfx)
+            this.loader.add(moveData.sfx, `attacksfx/${moveData.sfx}.wav`);
+        this.loader.load();
     }
 
     getMusic(music: Music): Sound | undefined {

@@ -1,7 +1,11 @@
 import * as PIXI from "pixi.js-legacy";
-import { Context } from "../../../src";
+import { BattleObject, Context, moveInfo, TeamObject } from "../../../src";
 import * as PIXI_SOUND from "@pixi/sound";
 import { IResources, Music } from "../../../src";
+
+function getMovesFromTeam(team: TeamObject): string[] {
+    return team.team.map(member => member.moves).flat().filter(m => m !== "");
+}
 
 export default class Resources implements IResources {
     uniforms: { [index: string]: { step: number; }; } = {};
@@ -12,11 +16,25 @@ export default class Resources implements IResources {
 
     private readonly defaultFilter: PIXI.Filter;
 
-    constructor() {
+    constructor(battleObject: BattleObject) {
         this.demoFrontTexture = PIXI.Texture.from("demofront.png");
         this.demoBackTexture = PIXI.Texture.from("demoback.png");
         this.defaultFilter = new PIXI.Filter();
-        Context.createPIXILoader().add("pressab", "pressab.wav").load();
+        const loader = Context.createPIXILoader();
+        loader.add("pressab", "pressab.wav");
+        const moves = new Set([getMovesFromTeam(battleObject.player), getMovesFromTeam(battleObject.opponent)].flat());
+        for (const move of [...moves]) {
+            const moveStill = move + "_STILL";
+            if (moveInfo[moveStill] != null) {
+                moves.add(moveStill);
+            }
+        }
+        for (const move of moves) {
+            const moveData = moveInfo[move];
+            if (moveData.sfx)
+                loader.add(moveData.sfx, `../../attacksfx/${moveData.sfx}.wav`);
+        }
+        loader.load();
     }
 
     getMusic(music: Music): PIXI_SOUND.Sound | undefined {

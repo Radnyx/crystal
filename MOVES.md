@@ -23,15 +23,18 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 47 - Sing
 - [x] 48 - Supersonic
 - [x] 50 - Disable
+- [x] 53 - Flamethrower
 - [x] 58 - Ice Beam
 - [ ] 85 - Thunderbolt
   - [x] black ball
   - [ ] thunder particles
-- [x] 99 - Rage
+- [x] 89 - Earthquake
+- [ ] 99 - Rage
   - actually has modern mechanics, report gen 2 bug
 - [x] 111 - Defense Curl
 - [x] 116 - Focus Energy
 - [x] 118 - Metronome
+- [x] 156 - Rest
 - [x] 163 - Slash
 - [x] 164 - Substitute
   - [ ] please unit test this
