@@ -405,7 +405,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "FIRE BLAST":{
-      "sfx":"FireBlast"
+      sfx: "FireBlast",
+      pan: 1
     },
     "WATERFALL":{
       

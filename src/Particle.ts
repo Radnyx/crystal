@@ -279,12 +279,19 @@ class Sequence extends Particle {
 		}
 	}
 
+	delayStart(frames: number) {
+		this.delayFrames = frames;
+		this.sprites[0].visible = false;
+		return this;
+	}
+
 	_update() {
-		if (this.timer >= this.life) {
+		if (this.timer >= this.delayFrames) this.sprites[0].visible = true;
+		if (this.timer - this.delayFrames >= this.life) {
 			this.die();
 			return;
 		}
-		this.sprites[0].texture = this.texs[Math.floor(this.timer / this.delay) % this.texs.length];
+		this.sprites[0].texture = this.texs[Math.floor((this.timer - this.delayFrames) / this.delay) % this.texs.length];
 	}
 }
 

@@ -447,6 +447,15 @@ class View implements IView {
         };
     }
 
+    clearParticles(): Event {
+        return {
+            init: () => {
+                for (const p of this.particles)
+                    p.die();
+            }
+        }
+    }
+
     static waitForParticle(): Event {
         return { done: (_, state) => (state.object as Particle.Particle).dead }
     }

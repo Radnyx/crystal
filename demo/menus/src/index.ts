@@ -45,7 +45,7 @@ const exampleMember1: MemberObject = {
 	id: "demo",
 	level: 15,
 	gender: "none",
-	moves: ["GIGA DRAIN","SCRATCH"],
+	moves: ["FIRE BLAST","SCRATCH"],
 	name: "BLASTOISE"
 };
 

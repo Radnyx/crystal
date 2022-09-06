@@ -423,7 +423,61 @@ const longTwinkle = (x: number, y: number) => (view: View) => Events.flatten([
 	Events.wait(30)
 ]);
 
+const fireBlast = (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
+	const e: Event[] = [];
+	const lifespan1 = 40 + 8; 
+	const lifespan2 = 135;
+	const lifespan3 = 4 * 8;
+	const count1 = 11;
+	const count2 = 9;
+	for (let i = 0; i < count1; i++) {
+		const deltaX = (t: number) => lerp(t)(x1, x2) - x1;
+		const deltaY = (t: number) => lerp(t)(y1, y2) - y1;
+		e.push(view.particleV1(stage => new Particle.Sequence(stage, x1, y1, [ "FIRE_BIG_1", "FIRE_BIG_2" ], 3 + (i % 2 == 0 ? 1 : 0), lifespan1)
+		.offsetX(t => deltaX(t))
+		.offsetY(t => deltaY(t))
+		.delayStart(i * 8)));
+	}
+	e.push(Events.wait(lifespan1));
+	let totalDelay = 0;
+	for (let i = 0; i < count2; i++) {
+		const theta = (t: number) => 4 * Math.PI * t;
+		const td = totalDelay;
+		e.push(view.particleV1(stage => new Particle.Sequence(stage, x2, y2, [ "FIRE_SMALL_1", "FIRE_SMALL_2" ], 3 + (i % 2 == 0 ? 1 : 0), 135)
+		.offsetX(t => Math.cos(theta(t)) * 16)
+		.offsetY(t => Math.sin(theta(t)) * 16)
+		.delayStart(td)));
+		totalDelay += (i % 2 === 0) ? 7 : 8;
+	}
+	e.push(Events.wait(lifespan2));
+	e.push(view.clearParticles());
+	
+	const dirs: [number,number][] = [ 
+		[0, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]
+	];
+	const lastFlame = (dir: [number, number], delay: number = 0) => view.particleV1(stage => new Particle.Sequence(stage, x2, y2, [
+			"FIRE_SMALL_1", "FIRE_SMALL_2",
+			"FIRE_BIG_1", "FIRE_BIG_2",
+			"FIRE_BIG_1", "FIRE_BIG_2",
+			"FIRE_BIG_1", "FIRE_BIG_2"
+		], 4, lifespan3)
+		.offsetX(t => t * dir[0] * 32)
+		.offsetY(t => t * dir[1] * 32)
+		.delayStart(delay));
+	for (const dir of dirs) {
+		e.push(lastFlame(dir));
+		e.push(lastFlame(dir, 16));
+	}
+	e.push(Events.wait(lifespan3 + 120));
+	return Events.flatten(e);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"FIRE BLAST": {
+		ply: fireBlast(56, 76, 126, 32),
+		opp: fireBlast(108, 28, 36, 74)
+	},
 
 	"GIGA DRAIN": {
 		ply: view => Events.flatten([
