@@ -600,7 +600,7 @@ class BattleScript {
                 break;
             case "brn":
                 event = [
-                    {do:"TEXT",text:[`${name}'s`, "hurt by its burn!"]},
+                    {do:"TEXT",text:[`${name}'s`, "hurt by its burn!"], auto: true},
                     {do: "SFX", name: "brn"},
                     { do: "EFFECT", name: "BURNED", isPlayer }
                 ];
