@@ -342,7 +342,6 @@ const disable = (x: number, y: number) => (view: View) => {
 };
 
 const encore = (x: number, y: number) => (view: View) => {
-	const DURATION = 66;
 	return Events.flatten([
 		view.particleV1(stage =>
 			new Particle.Static(stage, x, y, "CLAP", 66)
@@ -473,6 +472,71 @@ const fireBlast = (x1: number, y1: number, x2: number, y2: number) => (view: Vie
 }
 
 const effects: { [attack: string]: Effect } = {
+
+	"BODY SLAM": {
+		ply: view => Events.flatten([
+			view.particleV1(stage => new Particle.Static(stage, 128, 28, "BOOM_MED", 6).delayStart(TACKLE_DUR)),
+			view.particleV1(stage => new Particle.Static(stage, 128 + 8, 28, "BOOM_MED", 6).delayStart(TACKLE_DUR + 6)),
+			{
+				done: t => {
+					view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X + lerp(t / TACKLE_DUR)(0, 12);
+					return t >= TACKLE_DUR;
+				}
+			},
+			{
+				done: t => {
+					view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X + lerp(t / TACKLE_DUR)(12, 0);
+					return t >= TACKLE_DUR;
+				}
+			},
+			Events.wait(24)
+		]),
+		opp: view => Events.flatten([
+			
+			view.particleV1(stage => new Particle.Static(stage, 34, 72, "BOOM_MED", 6).delayStart(TACKLE_DUR)),
+			view.particleV1(stage => new Particle.Static(stage, 34 - 8, 72, "BOOM_MED", 6).delayStart(TACKLE_DUR + 6)),
+			{
+				done: t => {
+					view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X + lerp(t / TACKLE_DUR)(0, -12);
+					return t >= TACKLE_DUR;
+				}
+			},
+			{
+				done: t => {
+					view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X + lerp(t / TACKLE_DUR)(-12, 0);
+					return t >= TACKLE_DUR;
+				}
+			},
+			Events.wait(24)
+		]),
+	},
+
+	"BODY SLAM_PRE": {
+		ply: view => Events.flatten([
+			{
+				done: t => {
+					view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y + 4 * 8 * Math.sin(Math.PI * (t / 30));
+					return t >= 30;
+				}
+			}
+		]),
+		opp: view => Events.flatten([
+			{
+				init: state => {
+					state.object = view.getOpponentSprite().texture;
+				},
+				done: (t, state) => {
+					const tex = state.object as PIXI.Texture;
+					const offset = 4 * 8 * Math.sin(Math.PI * (t / 30));
+					view.getOpponentSprite().texture = new PIXI.Texture(tex.baseTexture, 
+						new PIXI.Rectangle(0, 0, Graphics.OPPONENT_SPRITE_WIDTH, Graphics.OPPONENT_SPRITE_HEIGHT - offset));
+					view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y + offset;
+					return t >= 30;
+				}
+			}
+
+		])
+	},
 
 	"FIRE BLAST": {
 		ply: fireBlast(56, 76, 126, 32),

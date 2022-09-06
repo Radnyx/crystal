@@ -64,11 +64,21 @@ app!.stage.addListener("click", () => {
 	if (state.move) {
 		const pan = moveInfo[state.move].pan || 1;
 		const sfx = moveInfo[state.move].sfx;
+
+		const preEffect = effects[state.move+"_PRE"];
+		const mainEffect = effects[state.move];
+		const postEffect = effects[state.move+"_POST"];
 		eventDriver.append(Events.flatten([
+			preEffect && preEffect.ply!(view),
 			view.sfx(sfx, false, pan),
-			effects[state.move].ply!(view),
+			mainEffect && mainEffect.ply!(view),
+			postEffect && postEffect.ply!(view),
+
+			
+			preEffect && preEffect.opp!(view),
 			view.sfx(sfx, false, -pan),
-			effects[state.move].opp!(view)
+			mainEffect && mainEffect.opp!(view),
+			postEffect && postEffect.opp!(view),
 		]));
 	}
 });

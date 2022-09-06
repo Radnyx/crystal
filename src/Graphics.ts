@@ -3,6 +3,9 @@ import * as PIXI from 'pixi.js-legacy';
 const GAMEBOY_WIDTH = 160;
 const GAMEBOY_HEIGHT = 144;
 
+const OPPONENT_SPRITE_WIDTH = 56;
+const OPPONENT_SPRITE_HEIGHT = 56;
+
 const PLAYER_SPRITE_X = 12;
 const PLAYER_SPRITE_Y = 40;
 
@@ -96,5 +99,7 @@ export {
   teamStatus,
   icons,
   tileHorizontal,
-  attack
+  attack,
+  OPPONENT_SPRITE_WIDTH,
+  OPPONENT_SPRITE_HEIGHT
 }

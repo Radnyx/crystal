@@ -16,6 +16,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] Animation
   - [ ] Crash damage handling
 - [x] 33 - Tackle
+- [x] 34 - Body Slam
 - [x] 39 - Tail Whip
 - [x] 45 - Growl
 - [x] 46 - Roar
@@ -34,6 +35,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 111 - Defense Curl
 - [x] 116 - Focus Energy
 - [x] 118 - Metronome
+- [x] 126 - Fire Blast 
 - [x] 156 - Rest
 - [x] 163 - Slash
 - [x] 164 - Substitute

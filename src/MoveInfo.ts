@@ -123,7 +123,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       "pan":1
     },
     "BODY SLAM":{
-      "sfx":"BodySlam"
+      sfx: "BodySlam",
+      pan: 1 
     },
     "WRAP":{
       

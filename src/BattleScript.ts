@@ -65,6 +65,18 @@ function parseDetails(details: string) {
     return split;
 }
 
+function paralysisAnim(isPlayer: boolean): Script {
+    const [x, y] = isPlayer
+        ?  [40, 76 + 20]
+        : [128, 40 + 16];
+    return [
+        { do: "WAIT", frames: 24 },
+        { do: "PARTICLE", type: "Paralysis", args: [x - 32, y - 20, 1] },
+        { do: "PARTICLE", type: "Paralysis", args: [x + 20, y - 20, -1] },
+        { do: "WAIT", frames: 120 }
+    ];
+}
+
 function confuseAnim(isPlayer: boolean): Script {
 	const [x, y] = isPlayer
 		? [40, 42]
@@ -311,6 +323,8 @@ class BattleScript {
                 : "HIDE_OPPONENT_STATS",
             {do:"WAIT",frames:16},
             substituted ? {do:"EFFECT",name:"SUBSTITUTE_LEAVE",isPlayer} : null,
+            // pre anim
+            { do: "EFFECT", name:move+"_PRE", isPlayer },
             {do:"MOVE_SFX",move,isPlayer},
             {do:"EFFECT",name:move,isPlayer},
             {do:"WAIT",frames:16},
@@ -682,6 +696,7 @@ class BattleScript {
                 ]);
                 break;
             case "par":
+                script.push(paralysisAnim(isPlayer));
                 script.push(setStatus);
                 script.push({ do: "TEXT", text: [`${name}'s`, "paralyzed! Maybe", "it can't attack!"] });
                 break;
