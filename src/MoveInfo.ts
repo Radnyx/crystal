@@ -636,7 +636,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "GIGA DRAIN":{
-      "sfx":"GigaDrain"
+      sfx: "GigaDrain",
+      pan: 0
     },
     "ENDURE":{
       

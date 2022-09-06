@@ -39,6 +39,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 164 - Substitute
   - [ ] please unit test this
 - [x] 188 - Sludge Bomb
+- [x] 202 - Giga Drain
 - [x] 223 - Dynamic Punch
 - [x] 227 - Encore
 - [x] 236 - Moonlight

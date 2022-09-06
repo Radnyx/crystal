@@ -94,6 +94,9 @@ const attackTex: { [index: string]: PIXI.Texture } = {
 	FIRE_SMALL_2: Graphics.attack(96/8 + 1, 40/8, 1, 1),
 	FIRE_BIG_1: Graphics.attack(96/8, 40/8 + 1, 2, 2),
 	FIRE_BIG_2: Graphics.attack(96/8, 40/8 + 3, 2, 2),
+	BUBBLE_1: Graphics.attack(10, 10, 1, 1),
+	BUBBLE_2: Graphics.attack(10, 11, 2, 2),
+	BUBBLE_3: Graphics.attack(10, 13, 2, 2),
 };
 
 const notes = [

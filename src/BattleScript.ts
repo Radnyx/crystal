@@ -42,6 +42,20 @@ function getStatus(status: string): Partial<Status> {
     return result;
 }
 
+function getFrom(from: string) {
+    if (from.startsWith("[from] ")) {
+        return from.split(" ")[1];
+    }
+    return "";
+}
+
+function getOf(ofText: string) {
+    if (ofText.startsWith("[of] ")) {
+        return getTextName(ofText.replace("[of] ", ""));
+    }
+    return "";
+}
+
 function parseDetails(details: string) {
     const split = details.split(", ");
     // PS will not include L100, so we add it
@@ -719,10 +733,19 @@ class BattleScript {
         if (status.hp == null) {
             throw new Error("BattleScript.handleHeal: status.hp is undefined");
         }
-        return [
-            {do:"HEALTH",hp:status.hp,isPlayer},
-            {do:"TEXT",text:[name, "regained health!"]}
-        ];
+        const from = getFrom(action[4]);
+        switch (from) {
+            case "drain":
+                return [
+                    {do:"HEALTH",hp:status.hp,isPlayer},
+                    {do:"TEXT",text:["Sucked health from", `${getOf(action[5])}!`]}
+                ];
+            default:
+                return [
+                    {do:"HEALTH",hp:status.hp,isPlayer},
+                    {do:"TEXT",text:[name, "regained health!"]}
+                ];
+        }
     }
    
 }

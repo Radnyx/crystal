@@ -371,6 +371,21 @@ const earthquake = (view: View) => Events.flatten([
 	Events.wait(90)
 ]);
 
+const gigaDrain = (x1: number, y1: number, x2: number, y2: number) => (view: View) => {
+	const e: Event[] = [];
+	for (let i = 0; i < 8; i++) {
+		const deltaX = (t: number) => lerp(t)(x1, x2) - x1;
+		const deltaY = (t: number) => lerp(t)(y1, y2) - y1;
+		const theta = (t: number) => 2 * Math.PI * 3 * t + (2 * Math.PI * i / 8);
+		const r = (t: number) => Math.sin(1 * Math.PI * t) * Graphics.GAMEBOY_WIDTH / 2;
+		e.push(view.particleV1(stage => new Particle.Static(stage, x1, y1, "BUBBLE_1", 60 * 3)
+			.offsetX(t => deltaX(t) + Math.cos(theta(t)) * r(t))
+			.offsetY(t => deltaY(t) + Math.sin(theta(t)) * r(t))));
+	}
+	e.push(Events.wait(60 * 3 + 30));
+	return Events.flatten(e);
+};
+
 const burned = (x: number, y: number, dir: number = 1) => (view: View) => {
 	const seq = ["FIRE_SMALL_1","FIRE_SMALL_2", "FIRE_BIG_1","FIRE_BIG_2"];
 	const e: Event[] = [];
@@ -383,9 +398,43 @@ const burned = (x: number, y: number, dir: number = 1) => (view: View) => {
 	}
 	e.push(Events.wait(30));
 	return Events.flatten(e);
-}
+};
+
+const longTwinkle = (x: number, y: number) => (view: View) => Events.flatten([
+	view.particle("Twinkle", x - 16, y - 16),
+	Events.wait(6),
+	view.particle("Twinkle", x - 16, y + 16),
+	Events.wait(6),
+	view.particle("Twinkle", x + 16, y + 16),
+	Events.wait(6),
+	view.particle("Twinkle", x + 16, y - 16),
+	Events.wait(6),
+	view.particle("Twinkle", x, y),
+	Events.wait(6),
+	view.particle("Twinkle", x - 16, y - 16),
+	Events.wait(6),
+	view.particle("Twinkle", x - 16, y + 16),
+	Events.wait(6),
+	view.particle("Twinkle", x + 16, y + 16),
+	Events.wait(6),
+	view.particle("Twinkle", x + 16, y - 16),
+	Events.wait(6),
+	view.particle("Twinkle", x, y),
+	Events.wait(30)
+]);
 
 const effects: { [attack: string]: Effect } = {
+
+	"GIGA DRAIN": {
+		ply: view => Events.flatten([
+			gigaDrain(114, 26, 40, 68)(view),
+			longTwinkle(32, 68)(view)
+		]),
+		opp: view => Events.flatten([
+			gigaDrain(40, 68, 114, 26)(view),
+			longTwinkle(122, 30)(view)
+		])
+	},
 
 	ENCORE: {
 		ply: encore(56, 64),
