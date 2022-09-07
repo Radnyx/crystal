@@ -46,9 +46,9 @@ namespace Events {
         const events = (script as DeepEvent[]).map(flatten);
         if (events.length === 0) return {};
         for (let i = 0; i < events.length - 1; i++) {
-            append(events[i], events[i + 1]);
+            append(events[i]!, events[i + 1]);
         }
-        return events[0];
+        return events[0]!;
     }
 
     export function wait(frames: number): Event {

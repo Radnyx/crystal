@@ -31,11 +31,17 @@ function getStatus(status: string): Partial<Status> {
     const result: Partial<Status> = { hp: 0 };
     if (status.includes(" ")) {
         const [ health, cond ] = status.split(" ");
+        if (health == null) {
+            throw new Error(`BattleScript.getStatus: unexpected status, ${status}`);
+        }
         status = health;
         result.condition = cond;
     }
     if (status.includes("/")) {
         const [ hp, maxHp ] = status.split("/");
+        if (hp == null || maxHp == null) {
+            throw new Error(`BattleScript.getStatus: unexpected hp, ${status}`);
+        }
         result.hp = Number.parseInt(hp);
         result.maxHp = Number.parseInt(maxHp);
     }
@@ -58,6 +64,9 @@ function getOf(ofText: string) {
 
 function parseDetails(details: string) {
     const split = details.split(", ");
+    if (split[1] == null) {
+        throw new Error(`BattleScript.parseDetails: unexpected, ${details}`);
+    }
     // PS will not include L100, so we add it
     if (split[1][0] !== 'L') {
         split.splice(1, 0, "L100");
@@ -238,7 +247,7 @@ class BattleScript {
                     break;
                 case "-prepare":
                     if (action[3] === "Fly") {
-                        if (getIsPlayer(action[2])) {
+                        if (getIsPlayer(action[2]!)) {
                             this.playerState.flying = true;
                         } else {
                             this.opponentState.flying = true;
@@ -261,7 +270,7 @@ class BattleScript {
                     }
                     return "OPTIONS";
                 case "player":
-                    if (getIsPlayer(action[2])) {
+                    if (getIsPlayer(action[2]!)) {
                         this.playerState.trainerName = action[3];
                     } else {
                         this.opponentState.trainerName = action[3];
@@ -288,14 +297,22 @@ class BattleScript {
     
     private handleMove(action: string[]): Script {
         this.moveResults = { effectiveness: undefined, crit: false, substitute: false };
+        if (action[3] == null) {
+            throw new Error(`BattleScript.handleMove: unexpected move, ${JSON.stringify(action)}`);
+        }
         let move = action[3].toUpperCase();
         if (move.length > 12) move = move.replace(" ", "");
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleMove: unexpected name, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = action[2][1] === "1";
         const miss = action[5] === "[miss]";
         const still = action[5] === "[still]";
         const actualMove = move + (still ? "_STILL" : "");
-
+        if (this.stream[0] == null) {
+            throw new Error(`BattleScript.handleMove: stream is empty, ${JSON.stringify(action)}`);
+        }
         const fail = (this.stream[0][1] === "-fail") ||
             // for SLEEP TALK, if nothing happens and the opponent starts their
             // move, consider that a failure. 
@@ -351,6 +368,9 @@ class BattleScript {
     }
 
     private handleBoost(action: string[], direction: boolean): Script {
+        if (action[2] == null || action[3] == null || action[4] == null) {
+            throw new Error(`BattleScript.handleBoost: unexpected, ${JSON.stringify(action)}`);
+        }
         const amount = Number.parseInt(action[4]);
         const target = getTextName(action[2]);
         const statTxt = convertPSStat[action[3]];
@@ -372,6 +392,9 @@ class BattleScript {
     }
 
     private handleFaint(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleFaint: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         if (isPlayer) {
@@ -423,18 +446,32 @@ class BattleScript {
         Find the first member of the team that matches the conditions. 
         It shouldn't really matter if there are multiple team members with the
         exact same traits, since visually they will be indistinguishable.
+
+        TODO: prefix each name with a different letter so they're easier to find??
     */
     private findMember(team: MemberObject[], name: string, details: string): number {
-        const [ species, level, gender, shiny ] = parseDetails(details);
+        const [ species, level, gender, /* shiny */ ] = parseDetails(details);
+        if (level == null || species == null) {
+            throw new Error(`BattleScript.findMember: unexpected null in details, name="${name}" details="${details}"`);
+        }
         const data = this.battleInfo.data;
-        return team.findIndex(member =>
+        return team.findIndex(member => {
+            const dataMemberId = data[member.id];
+            if (dataMemberId == null) {
+                throw new Error(`BattleScript.findMember: unexpected null data[member.id], member.id="${member.id}" name="${name}" details="${details}"`);
+            }
+
+            if (member.gender[0] == null) {
+                throw new Error(`BattleScript.findMember: unexpected null member.gender[0], member.gender="${member.gender}" name="${name}" details="${details}"`);
+            }
+            
             // don't want to compare by uppercase here, but if the nickname is the same as
             // the species name it reformats the name... 
-            member.name.toUpperCase() === name.toUpperCase() && 
-            data[member.id].name.toUpperCase() === species.toUpperCase() &&
-            member.level === Number.parseInt(level.substring(1)) &&
-            (member.gender === "none" || member.gender[0].toUpperCase() === gender)
-        );
+            return member.name.toUpperCase() === name.toUpperCase() && 
+                dataMemberId.name.toUpperCase() === species.toUpperCase() &&
+                member.level === Number.parseInt(level.substring(1)) &&
+                (member.gender === "none" || member.gender[0].toUpperCase() === gender);
+        });
     }
 
     sendOutPlayer(name: string, index: number, status: Partial<Status>, 
@@ -487,6 +524,9 @@ class BattleScript {
     }
 
     private handleSwitch(action: string[], altText: boolean = false): Script {
+        if (action[2] == null || action[3] == null || action[4] == null) {
+            throw new Error(`BattleScript.handleSwitch: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getName(action[2]);
         const status = getStatus(action[4]);
         if (action[2][1] === "1") {
@@ -522,6 +562,9 @@ class BattleScript {
     }
 
     private handleCant(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleCant: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch (action[3]) {
@@ -545,10 +588,16 @@ class BattleScript {
     }
 
     private handleActivate(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleActivate: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch(action[3]) {
             case "move: Beat Up":
+                if (action[4] == null) {
+                    throw new Error(`BattleScript.handleActivate: Beat Up has no attacker, ${JSON.stringify(action)}`);
+                }
                 const attacker = getTextName(action[4]);
                 return [
                     {do:"TEXT",text:[`${attacker}'s`, "attack!"]},
@@ -568,6 +617,9 @@ class BattleScript {
     }
 
     private handleDamage(action: string[]): Script {
+        if (action[2] == null || action[3] == null) {
+            throw new Error(`BattleScript.handleDamage: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         const status = getStatus(action[3]);
@@ -622,6 +674,9 @@ class BattleScript {
     }
 
     private handleStart(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleStart: unexpected, ${JSON.stringify(action)}`);
+        }
         const condition = action[3];
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
@@ -649,6 +704,9 @@ class BattleScript {
     }
 
     private handleEnd(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleEnd: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch(action[3]) {
@@ -679,6 +737,9 @@ class BattleScript {
     }
 
     private handleStatus(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleStatus: unexpected, ${JSON.stringify(action)}`);
+        }
         const condition = action[3];
         const isPlayer = getIsPlayer(action[2]);
         const name = getTextName(action[2]);
@@ -727,6 +788,9 @@ class BattleScript {
     }
 
     private handleCureStatus(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleCureStatus: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch (action[3]) {
@@ -742,6 +806,9 @@ class BattleScript {
     }
 
     private handleHeal(action: string[]): Script {
+        if (action[2] == null || action[3] == null || action[4] == null ) {
+            throw new Error(`BattleScript.handleHeal: unexpected, ${JSON.stringify(action)}`);
+        }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         const status = getStatus(action[3]);
@@ -751,6 +818,9 @@ class BattleScript {
         const from = getFrom(action[4]);
         switch (from) {
             case "drain":
+                if (action[5] == null ) {
+                    throw new Error(`BattleScript.handleHeal: drain is missing [of], ${JSON.stringify(action)}`);
+                }
                 return [
                     {do:"HEALTH",hp:status.hp,isPlayer},
                     {do:"TEXT",text:["Sucked health from", `${getOf(action[5])}!`]}

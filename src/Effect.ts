@@ -100,7 +100,7 @@ const psnBubbles = (x: number, y: number) => (view: View) => {
 	let evt: DeepEvent = [];
 	for (let i = 0; i < 15; i++) {
 		evt.push([
-			view.particle("PoisonBubble", x + xx[i % 3], y),
+			view.particle("PoisonBubble", x + xx[i % 3]!, y),
 			Events.wait(12)
 		]);
 	}
@@ -134,7 +134,7 @@ const focusEnergy = (x: number, y: number) => (view: View) => {
 	for (let i = 0; i < 3; i++) {
 		for (let j = 0; j < 7; j++) {
 			evt.push([
-				view.particleV1(stage => new Particle.Sequence(stage, x + POS[j], y,
+				view.particleV1(stage => new Particle.Sequence(stage, x + POS[j]!, y,
 					["ENERGY_2", "ENERGY_1"], 3, 10)
 					.transformY(-6)),
 				Events.wait(4)
@@ -386,7 +386,7 @@ const gigaDrain = (x1: number, y1: number, x2: number, y2: number) => (view: Vie
 };
 
 const burned = (x: number, y: number, dir: number = 1) => (view: View) => {
-	const seq = ["FIRE_SMALL_1","FIRE_SMALL_2", "FIRE_BIG_1","FIRE_BIG_2"];
+	const seq: Particle.AttackTexture[] = ["FIRE_SMALL_1","FIRE_SMALL_2", "FIRE_BIG_1","FIRE_BIG_2"];
 	const e: Event[] = [];
 	for (let i = 0; i < 4; i++) {
 		const theta = (t: number) => Math.PI + Math.PI * 2 * t / 3;

@@ -5,7 +5,8 @@ import Ease from "./Ease";
 const openTexture = PIXI.Texture.from('open.png');
 const openSheet = Graphics.tileHorizontal(openTexture, 40, 40, 4);
 
-const attackTex: { [index: string]: PIXI.Texture } = {
+
+const attackTex = {
 	BOOM_SMALL: Graphics.attack(0, 0, 2, 2),
 	BOOM_MED: Graphics.attack(0, 2, 3, 3),
 	BOOM_BIG: Graphics.attack(0, 5, 4, 4),
@@ -98,6 +99,8 @@ const attackTex: { [index: string]: PIXI.Texture } = {
 	BUBBLE_2: Graphics.attack(10, 11, 2, 2),
 	BUBBLE_3: Graphics.attack(10, 13, 2, 2),
 };
+
+type AttackTexture = keyof typeof attackTex;
 
 const notes = [
 	attackTex.NOTE_QUARTER, attackTex.NOTE_EIGHTH, attackTex.NOTE_SIXTEENTH
@@ -237,7 +240,7 @@ class Particle {
 
 
 class Static extends Particle {
-	constructor(stage: PIXI.Container, x: number, y: number, tex: string, life: number) {
+	constructor(stage: PIXI.Container, x: number, y: number, tex: AttackTexture, life: number) {
 		super(stage, x, y);
 		this.addSprite(x, y).texture = attackTex[tex];
 		this.life = life;
@@ -264,7 +267,7 @@ class Sequence extends Particle {
 		stage: PIXI.Container, 
 		x: number, 
 		y: number, 
-		texs: string[], 
+		texs: AttackTexture[], 
 		delay: number, 
 		life: number | undefined = undefined
 	) {
@@ -778,5 +781,5 @@ export {
 	Speed, ShadowBall, Sword, IceWall,
 	RisingIceWall,
 	Explosion, Sequence, Sphere, Twinkle,
-	Fly, Disable
+	Fly, Disable, AttackTexture
 };

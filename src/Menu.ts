@@ -87,8 +87,8 @@ abstract class Menu {
 		// Each state action will set the position of the menu arrow
 		for (let i = 0; i < total; i++) {
 			this.machine[i] = () => {
-				this.arrowSpr.x = arrowPos[i][0];
-				this.arrowSpr.y = arrowPos[i][1];
+				this.arrowSpr.x = arrowPos[i]![0];
+				this.arrowSpr.y = arrowPos[i]![1];
 			};
 		}
 		// compose state actions with a d-pad check for
@@ -126,6 +126,9 @@ abstract class Menu {
 
 	compose(s: number, g: () => void) {
 		const f = this.machine[s];
+		if (f == null) {
+			throw new Error(`Menu.compose: bad state, state=${this.state} states=${this.states}`);
+		}
 		this.machine[s] = () => {
 			f();
 			g();
@@ -133,19 +136,31 @@ abstract class Menu {
 	}
 
 	update() {
-		this.arrowSpr.x = this.arrowPos[this.state][0];
-		this.arrowSpr.y = this.arrowPos[this.state][1];
+		const xy = this.arrowPos[this.state];
+		if (xy == null) {
+			throw new Error(`Menu.update: bad state, state=${this.state} arrowPos=${JSON.stringify(this.arrowPos)}`);
+		}
+		this.arrowSpr.x = xy[0];
+		this.arrowSpr.y = xy[1];
 	}
 
 	listen() {
-		this.machine[this.state]();
+		const f = this.machine[this.state];
+		if (f == null) {
+			throw new Error(`Menu.listen: bad state, state=${this.state} states=${this.states}`);
+		}
+		f();
 	}
 
 	show() {
 		if (!this.showing) {
 			this._show();
-			this.arrowSpr.x = this.arrowPos[this.state][0];
-			this.arrowSpr.y = this.arrowPos[this.state][1];
+			const xy = this.arrowPos[this.state];
+			if (xy == null) {
+				throw new Error(`Menu.show: bad state, state=${this.state} arrowPos=${JSON.stringify(this.arrowPos)}`);
+			}
+			this.arrowSpr.x = xy[0];
+			this.arrowSpr.y = xy[1];
 			this.game.view.getStage().addChild(this.arrowSpr);
 			for (const container of this.touchContainers) {
 				this.game.view.app.stage.addChild(container);
@@ -289,7 +304,7 @@ class Moves extends Menu {
 	constructor(game: GameV2, moves: string[], state: number) {
 		let stateToSimulatedIndex: { [index: number]: number } = {};
 		if (moves.every(m => m === "")) 
-			throw new Error("Cannot create move menu with no moves!");
+			throw new Error("Moves.constructor: Cannot create move menu with no moves!");
 		moves = [...moves, ...[...new Array(4 - moves.length)].map(_ => "")];
 		let trans: Transition[] = [];
 		let lastMove: number | undefined = undefined;
@@ -304,7 +319,7 @@ class Moves extends Menu {
 			}
 		}
 		if (trans.length > 1)
-			trans.push([lastMove!, trans[0][0], "down"]);
+			trans.push([lastMove!, trans[0]![0], "down"]);
 		super(game, trans,
 				[[40, 104], [40, 112], [40, 120], [40, 128]],
 				() => {
@@ -335,6 +350,9 @@ class Moves extends Menu {
 
 	listen() {
 		const moveIndex = this.stateToSimulatedIndex[this.state];
+		if (moveIndex == null) {
+			throw new Error(`Moves.listen: bad state, state=${this.state} states=${this.states} moves=${JSON.stringify(this.moves)}`);
+		}
 		if (Input.back()) {
 			Input.releaseBack();
 			PIXI_SOUND.play('pressab');
@@ -343,7 +361,12 @@ class Moves extends Menu {
 			Input.releaseSelect();
 			PIXI_SOUND.play('pressab');
 			const player = this.game.getSimulatedPlayer();
-			if (player.moveSlots[moveIndex].disabled) {
+			const move = player.moveSlots[moveIndex];
+			if (move == null) {
+				const simulatedMoves = JSON.stringify(player.moveSlots.map(move => move.move));
+				throw new Error(`Moves.listen: bad move, moveIndex=${moveIndex} player.moveSlots=${simulatedMoves} moves=${JSON.stringify(this.moves)}`);
+			}
+			if (move.disabled) {
 				this.game.getEventDriver().append(Events.flatten([
 					this.game.view.text([
 						"This move is",
@@ -351,7 +374,7 @@ class Moves extends Menu {
 					]),
 					this.game.view.clearTextbox()
 				]));
-			} else if (this.game.getSimulatedPlayer().moveSlots[moveIndex].pp <= 0) {
+			} else if (move.pp <= 0) {
 				this.game.getEventDriver().append(Events.flatten([
 					this.game.view.text([
 						"There's no PP left",
@@ -369,7 +392,16 @@ class Moves extends Menu {
 	}
 
 	updateMoveInfo() {
-		const stats = this.game.getSimulatedPlayer().moveSlots[this.stateToSimulatedIndex[this.state]];
+		const moveIndex = this.stateToSimulatedIndex[this.state];
+		if (moveIndex == null) {
+			throw new Error(`Moves.updateMoveInfo: bad state, state=${this.state} states=${this.states} moves=${JSON.stringify(this.moves)}`);
+		}
+		const simulatedMoveSlots = this.game.getSimulatedPlayer().moveSlots;
+		const stats = simulatedMoveSlots[moveIndex];
+		if (stats == null) {
+			const simulatedMoves = JSON.stringify(simulatedMoveSlots.map(move => move.move));
+			throw new Error(`Moves.updateMoveInfo: bad move, moveIndex=${moveIndex} player.moveSlots=${simulatedMoves} moves=${JSON.stringify(this.moves)}`);
+		}
 		const move = this.game.getSimulatedDex().moves.moveCache.get(stats.id);
 		if (move == null) {
 			throw new Error("Moves.updateMoveInfo: move is null");
@@ -394,10 +426,13 @@ class Moves extends Menu {
 
 		for (let i = 0; i < 4; i++) {
 			const move = player.moves[i];
-			if (move === undefined) {
-				this.moves[i].clear();
+			if (this.moves[i] == null) {
+				throw new Error(`Moves._show: moves should have length 4, but was ${JSON.stringify(this.moves)}`);
+			}
+			if (move == null) {
+				this.moves[i]!.clear();
 			} else {
-				this.moves[i].change(move);
+				this.moves[i]!.change(move);
 			}
 		}
 	}
@@ -565,12 +600,12 @@ abstract class TeamView extends Menu {
 		this.stats = [];
 		for (let i = 0; i < teamLength; i++) {
 			const member: Pokemon = this.game.getSimulatedPlayerMember(i);
-			const memberInfo = this.game.battleInfo.info.player.team[i];
-			const icon = this.game.battleInfo.data[memberInfo.id].icon || 0;
+			const memberInfo = this.game.battleInfo.info.player.team[i]!;
+			const icon = this.game.battleInfo.data[memberInfo.id]?.icon || 0;
 
 			this.fntText[i] = new Text(this.stage, 40, 16 + i * 16);
 			if (member.hp <= 0) {
-				this.fntText[i].change("FNT");
+				this.fntText[i]!.change("FNT");
 			}
 
 			const view = new HPStatsView(this.stage, 24, 8 + i * 16, {
@@ -584,7 +619,11 @@ abstract class TeamView extends Menu {
 				condition: member.status
 			});
 
-			const spr = new PIXI.Sprite(Graphics.icons[icon][0]);
+			const iconGraphic = Graphics.icons[icon];
+			if (iconGraphic == null) {
+				throw new Error(`TeamView.generateGraphics: bad icon, icon=${icon}`);
+			}
+			const spr = new PIXI.Sprite(iconGraphic[0]);
 			spr.x = 0;
 			spr.y = 4 + i * 16;
 			this.iconSpr.push(spr);
@@ -616,13 +655,13 @@ abstract class TeamView extends Menu {
 		]));
 	}
 
-	_jumpRate(i: number) {
+	_jumpRate(i: number): [ number, number ] {
 		const member = this.game.getSimulatedPlayerMember(i);
 		if (member.hp <= 0) return [ 1, -1000 ];
 		return [ 32, 16 ];
 	}
 
-	_animRate(i: number) {
+	_animRate(i: number): [ number, number ] {
 		const member = this.game.getSimulatedPlayerMember(i);
 		if (member.hp <= 0) return [ 270, 135 ];
 		if (member.hp <= member.maxhp / 2) return [ 135, 67 ];
@@ -639,14 +678,22 @@ abstract class TeamView extends Menu {
 		this.stats.forEach(s => s.update());
 		this.iconSpr.forEach((s, i) => {
 			const memberInfo = this.game.battleInfo.info.player.team[i];
-			const icon = this.game.battleInfo.data[memberInfo.id].icon || 0;
+			if (memberInfo == null) {
+				throw new Error(`TeamView.update: bad icon, index=${i} team.length=${this.game.battleInfo.info.player.team.length}`);
+			}
+			const icon = this.game.battleInfo.data[memberInfo.id]?.icon || 0;
 			s.x = this.state === i ? 8 : 0;
 
 			const [ jtime, jswitch ] = this._jumpRate(i);
 			const [ atime, aswitch ] = this._animRate(i);
 
 			s.y = 4 + i * 16 + (this.state === i && this.game.getFrames() % jtime < jswitch ? -2 : 0);
-			s.texture = Graphics.icons[icon][this.game.getFrames() % atime < aswitch ? 0 : 1];
+			
+			const iconGraphic = Graphics.icons[icon];
+			if (iconGraphic == null) {
+				throw new Error(`TeamView.update: bad icon, icon=${icon}`);
+			}
+			s.texture = iconGraphic[this.game.getFrames() % atime < aswitch ? 0 : 1];
 		});
 	}
 
@@ -714,7 +761,7 @@ abstract class TeamView extends Menu {
 		this.messageTxt.change(this.message);
 		// render icon sprites from bottom to top
 		for (let i = this.iconSpr!.length - 1; i >= 0; i--) {
-			this.stage.addChild(this.iconSpr![i]);
+			this.stage.addChild(this.iconSpr![i]!);
 		}
 	}
 

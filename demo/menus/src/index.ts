@@ -42,18 +42,18 @@ function initWindow() {
 initWindow();
 
 const exampleMember1: MemberObject = {
-	id: "demo",
-	level: 15,
+	id: "demo1",
+	level: 20,
 	gender: "none",
-	moves: ["BODY SLAM","SCRATCH"],
+	moves: ["CURSE","LEECH SEED","SUBMISSION", "TOXIC"],
 	name: "BLASTOISE"
 };
 
 const exampleMember2: MemberObject = {
-	id: "demo",
-	level: 20,
+	id: "demo2",
+	level: 14,
 	gender: "none",
-	moves: ["BODY SLAM","SCRATCH"],
+	moves: ["CURSE","LEECH SEED","SUBMISSION", "TOXIC"],
 	name: "BLASTOISE"
 };
 
@@ -71,7 +71,7 @@ const battleInfo: BattleInfo = {
 		}
 	},
 	data: {
-		"demo": {
+		"demo1": {
 			baseAtk: 5,
 			baseDef: 5,
 			baseHp: 5,
@@ -82,6 +82,20 @@ const battleInfo: BattleInfo = {
 			front: "demofront.png",
 			back: "demoback.png",
 			name: "BLASTOISE",
+			types: ["NORMAL"],
+			anim: { delay: [ 0 ], ref: [ 0 ] }
+		},
+		"demo2": {
+			baseAtk: 5,
+			baseDef: 5,
+			baseHp: 5,
+			baseSpAtk: 5,
+			baseSpDef: 5,
+			baseSpd: 5,
+			cry: "",
+			front: "demofront.png",
+			back: "demoback.png",
+			name: "GENGAR",
 			types: ["NORMAL"],
 			anim: { delay: [ 0 ], ref: [ 0 ] }
 		}

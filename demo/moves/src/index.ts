@@ -62,8 +62,8 @@ eventDriver.append(Events.flatten([
 
 app!.stage.addListener("click", () => {
 	if (state.move) {
-		const pan = moveInfo[state.move].pan || 1;
-		const sfx = moveInfo[state.move].sfx;
+		const pan = moveInfo[state.move]!.pan || 1;
+		const sfx = moveInfo[state.move]!.sfx;
 
 		const preEffect = effects[state.move+"_PRE"];
 		const mainEffect = effects[state.move];

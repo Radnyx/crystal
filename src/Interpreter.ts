@@ -107,12 +107,20 @@ class Interpreter {
         if (this.debug) {
             console.log("Interpreter.step:", JSON.stringify(command));
         }
-        let member: MemberObject;
         let id: string;
         switch (command.do) {
-            case "ANIMATE":
-                id = this.battleInfo.info.opponent.team[command.index].id;
-                return this.view.anim(id, this.battleInfo.data[id].anim);
+            case "ANIMATE": {
+                const member = this.battleInfo.info.opponent.team[command.index];
+                if (member == null) {
+                    throw new Error(`Interpreter.step: bad index, team.length=${this.battleInfo.info.opponent.team.length} command=${JSON.stringify(command)}`);
+                }
+                id = member.id;
+                const data = this.battleInfo.data[id];
+                if (data == null) {
+                    throw new Error(`Interpreter.step: bad id, id=${id} command=${JSON.stringify(command)}`);
+                }
+                return this.view.anim(id, data.anim);
+            }
             case "EFFECT":
                 return this.view.effect(command.name, command.isPlayer);
             case "HEALTH":
@@ -125,8 +133,11 @@ class Interpreter {
                 return this.view.particle(command.type, ...command.args);
             case "SET_STATUS":
                 return () => this.view.setStatus(command.isPlayer, command.status)
-            case "SET_PLAYER":
-                member = this.battleInfo.info.player.team[command.index];
+            case "SET_PLAYER": {
+                const member = this.battleInfo.info.player.team[command.index];
+                if (member == null) {
+                    throw new Error(`Interpreter.step: bad index, team.length=${this.battleInfo.info.player.team.length} command=${JSON.stringify(command)}`);
+                }
                 this.membersOut.player = member;
                 return {
                     init: state => {
@@ -134,8 +145,12 @@ class Interpreter {
                         this.view.setPlayerTexture(member.id);
                     }
                 };
-            case "SET_OPPONENT":
-                member = this.battleInfo.info.opponent.team[command.index];
+            }
+            case "SET_OPPONENT": {
+                const member = this.battleInfo.info.opponent.team[command.index];
+                if (member == null) {
+                    throw new Error(`Interpreter.step: bad index, team.length=${this.battleInfo.info.opponent.team.length} command=${JSON.stringify(command)}`);
+                }
                 this.membersOut.opponent = member;
                 return {
                     init: state => {
@@ -143,15 +158,24 @@ class Interpreter {
                         this.view.setOpponentTexture(member.id);
                     }
                 };
+            }
             case "TEXT":
                 return this.view.text(command.text, command.auto);
             case "SFX":
                 return this.view.sfx(command.name, command.wait, command.panning);
             case "CRY":
                 if (command.isPlayer) {
-                    id = this.battleInfo.info.player.team[command.index].id;
+                    const member = this.battleInfo.info.player.team[command.index];
+                    if (member == null) {
+                        throw new Error(`Interpreter.step: bad index, team.length=${this.battleInfo.info.player.team.length} command=${JSON.stringify(command)}`);
+                    }
+                    id = member.id;
                 } else {
-                    id = this.battleInfo.info.opponent.team[command.index].id;
+                    const member = this.battleInfo.info.opponent.team[command.index];
+                    if (member == null) {
+                        throw new Error(`Interpreter.step: bad index, team.length=${this.battleInfo.info.opponent.team.length} command=${JSON.stringify(command)}`);
+                    }
+                    id = member.id;
                 }
                 return this.view.cry(id, true, command.isPlayer);
             case "MOVE_SFX":
@@ -175,6 +199,9 @@ class Interpreter {
             throw new Error("Interpreter.moveSfx: member is null");
         }
         const move = moveStats[moveName];
+        if (move == null) {
+            throw new Error(`Interpreter.moveSfx: move ${moveName} does not exist`)
+        }
         if (move.noSfx) {
             return {};
         }

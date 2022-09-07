@@ -24,18 +24,24 @@ function buildPSGender(gender: "male" | "female" | "none"): string {
 }
 
 function buildPSTeam(members: MemberObject[], fighters: { [id: string]: FighterObject }): PokemonSet[] {
-    return members.map(member => ({
-        name: "T" + member.name,
-        species: fighters[member.id].name,
-        item: "", // TODO
-        ability: "",
-        moves: member.moves,
-        nature: "",
-        gender: buildPSGender(member.gender),
-        evs: { hp: 252, atk: 252, def: 252, spa: 252, spd: 252, spe: 252 },
-        ivs: { hp: 15, atk: 15, def: 15, spa: 15, spd: 15, spe: 15 },
-        level: member.level
-    }));
+    return members.map((member, index) => {
+        const fighter = fighters[member.id];
+        if (fighter == null) {
+            throw new Error(`GameV2.buildPSTeam: member id "${member.id}" does not exist`);
+        }
+        return {
+            name: (index.toString()) + member.name,
+            species: fighter.name,
+            item: "", // TODO
+            ability: "",
+            moves: member.moves,
+            nature: "",
+            gender: buildPSGender(member.gender),
+            evs: { hp: 252, atk: 252, def: 252, spa: 252, spd: 252, spe: 252 },
+            ivs: { hp: 15, atk: 15, def: 15, spa: 15, spd: 15, spe: 15 },
+            level: member.level
+        }
+    });
 }
 
 class PlayerController extends RandomPlayerAI {
@@ -144,7 +150,7 @@ class GameV2 implements IGame {
             menu.update();
         }
         if (!this.eventDriver.running() && this.menuStack.length > 0) {
-            this.menuStack[this.menuStack.length - 1].listen();
+            this.menuStack[this.menuStack.length - 1]!.listen();
         }
 
         this.view.update();
@@ -167,7 +173,7 @@ class GameV2 implements IGame {
         if (this.menuStack.length === 0) {
             return null;
         }
-        return this.menuStack[this.menuStack.length - 1];
+        return this.menuStack[this.menuStack.length - 1]!;
     }
 
     showOptions() {
@@ -255,7 +261,11 @@ class GameV2 implements IGame {
     }
 
     getSimulatedPlayer(): Pokemon {
-        return this.battle.p1.active[0];
+        const poke = this.battle.p1.active[0];
+        if (poke == null) {
+            throw new Error("GameV2.getSimulatedPlayer: simulator player member is null");
+        }
+        return poke;
     }
     
     getSimulatedPlayerMember(index: number): Pokemon {

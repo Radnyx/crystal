@@ -20,7 +20,7 @@ enum State {
 
 class Textbox {
 	private forceAdvance: boolean = false;
-	data?: string[];
+	data: string[] = [];
 	showArrow = false;
 	line = 0;
 	idx =  0;
@@ -51,9 +51,17 @@ class Textbox {
 		this.stage.addChild(contArrowSprite);
 	}
 
+	private currentLine(): string {
+		const line = this.data[this.line];
+		if (line == null) {
+			throw new Error(`Textbox.currentLine: bad line, line=${this.line} data=${JSON.stringify(this.data)}`);
+		}
+		return line;
+	}
+
 	apostrophe(c: string) {
-		const letter = this.data![this.line][this.idx + 1];
-		if (c === "'" && APOSTROPHE_LETTERS.includes(letter)) {
+		const letter = this.currentLine()[this.idx + 1];
+		if (c === "'" && (letter && APOSTROPHE_LETTERS.includes(letter))) {
 			this.idx += 1;
 			this.offset += 1;
 			return "'" + letter;
@@ -62,7 +70,7 @@ class Textbox {
 	}
 
 	ellipse(c: string) {
-		const l = this.data![this.line];
+		const l = this.currentLine();
 		if (c === '.' && l[this.idx + 1] === '.' && l[this.idx + 2] === '.') {
 			this.idx += 2;
 			this.offset += 2;
@@ -89,14 +97,15 @@ class Textbox {
 						Input.releaseBack();
 						return;
 					}
+					const current = this.currentLine();
 					// Finish line
-					if (this.idx >= this.data![this.line].length) {
+					if (this.idx >= current.length) {
 						this.line += 1;
 						this.idx = 0;
 						this.offset = 0;
 						return;
 					}
-					let c = this.data![this.line][this.idx];
+					let c = current[this.idx]!;
 					c = this.ellipse(this.apostrophe(c));
 					// add single character to line
 					const tex = Graphics.font[c];

@@ -44,7 +44,7 @@ const attack = (i: number, j: number, w: number, h: number) =>
 for (let i = 0; i < FONT_STR.length; i++) {
 	const x = i % 16;
 	const y = Math.floor(i / 16);
-	font[FONT_STR[i]] = charTex(x, y);
+	font[FONT_STR[i]!] = charTex(x, y);
 }
 
 font["'d"] = charTex(6, 4);

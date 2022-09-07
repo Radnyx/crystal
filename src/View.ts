@@ -24,9 +24,18 @@ function animate(
     delay[delay.length - 1] = 0;
     const script: DeepEvent = [];
     for (let i = 0; i < ref.length; i++) {
+        const index = ref[i]!;
+        const tex = textures[index];
+        const d = delay[i];
+        if (tex == null) {
+            throw new Error(`View.animate: bad animation data, index=${index} textures.length=${textures.length}`);
+        }
+        if (d == null) {
+            throw new Error(`View.animate: delay is null, frame=${i} delay.length=${delay.length}`);
+        }
         script.push({
-            init: () => sprite.texture = textures[ref[i]],
-            done: t => t >= delay[i]
+            init: () => sprite.texture = tex,
+            done: t => t >= d
         });
     }
     return Events.flatten(script);
@@ -216,10 +225,15 @@ class View implements IView {
         this.playerStats.update();
         this.opponentStats.update();
         this.stage.filters = [ this.matrixFilter ];
-        this.particles.forEach(p => p.update());
+        try {
+            this.particles.forEach(p => p.update());
+        } catch (err: any) {
+            throw new Error("Particle.update: " + (err.message || err.toString()));
+        }
+
         // cleanup dead particles
         for (let i = 0; i < this.particles.length; i++) {
-            if (this.particles[i].dead) {
+            if (this.particles[i]!.dead) {
                 this.particles.splice(i, 1);
                 i--;
             }
