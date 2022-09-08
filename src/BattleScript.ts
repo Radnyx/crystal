@@ -28,7 +28,7 @@ function getTextName(name: string): string {
 }
 
 function getStatus(status: string): Partial<Status> {
-    const result: Partial<Status> = { hp: 0 };
+    const result: Partial<Status> = { hp: 0, condition: "" };
     if (status.includes(" ")) {
         const [ health, cond ] = status.split(" ");
         if (health == null) {
@@ -436,10 +436,14 @@ class BattleScript {
         const isPlayer = getIsPlayer(action[2]);
         
         if (isPlayer) {
-            // Both die due to destiny bond, but we died first.
+            // Both fainted, but we fainted first.
             const next = this.stream[0];
-            this.waitPlayerSwitchUntilOpponentFaints = isPlayer && next != null && next[1] === "-activate" && 
-                next[3] === "move: Destiny Bond" && !this.opponentState.fainted;
+            this.waitPlayerSwitchUntilOpponentFaints = isPlayer && next != null && 
+                // opponent faints due to destiny bond
+                ((next[1] === "-activate" && next[3] === "move: Destiny Bond") ||
+                // opponent faints at all
+                 (next[1] === "faint"))
+                && !this.opponentState.fainted;
 
             this.playerState.fainted = true;
             if (this.playerState.index == null) {

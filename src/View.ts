@@ -315,14 +315,13 @@ class View implements IView {
 
     setStatus(isPlayer: boolean, status: Partial<Status>) {
         if (isPlayer) {
-            this.playerStatus.maxHp = status.maxHp || this.playerStatus.maxHp;
-            this.playerStatus.hp = status.hp || this.playerStatus.hp;
-            this.playerStatus.condition = status.condition || this.playerStatus.condition;
+            this.playerStatus.maxHp = status.maxHp ?? this.playerStatus.maxHp;
+            this.playerStatus.hp = status.hp ?? this.playerStatus.hp;
+            this.playerStatus.condition = status.condition ?? this.playerStatus.condition;
         } else {
-            this.opponentStatus.maxHp = status.maxHp || this.opponentStatus.maxHp;
-            this.opponentStatus.hp = status.hp || this.opponentStatus.hp;
-            this.opponentStatus.condition = status.condition || this.opponentStatus.condition;
-
+            this.opponentStatus.maxHp = status.maxHp ?? this.opponentStatus.maxHp;
+            this.opponentStatus.hp = status.hp ?? this.opponentStatus.hp;
+            this.opponentStatus.condition = status.condition ?? this.opponentStatus.condition;
         }
     }
 

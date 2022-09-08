@@ -90,6 +90,9 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] mechanics
   - [ ] vfx
 - [x] 227 - Encore
+- [ ] 229 - Rapid Spin
+  - [ ] mechanics (removes hazards, like leech seed)
+  - [ ] vfx
 - [x] 236 - Moonlight
 - [ ] 241 - Sunny Day
   - [x] mechanics
