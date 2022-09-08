@@ -9,6 +9,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 3 - Double Slap
 - [ ] 4 - Comet Punch
 - [x] 10 - Scratch
+- [ ] 12 - Guillotine
 - [x] 14 - Swords Dance 
 - [x] 19 - Fly
 - [x] 22 - Vine Whip
@@ -20,32 +21,83 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 39 - Tail Whip
 - [x] 45 - Growl
 - [x] 46 - Roar
-  - [ ] please unit test this
+  - is it supposed to be random, or should the player be allowed to pick
 - [x] 47 - Sing
 - [x] 48 - Supersonic
 - [x] 50 - Disable
 - [x] 53 - Flamethrower
 - [x] 58 - Ice Beam
+- [ ] 63 - Hyper Beam
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 73 - Leech Seed
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 76 - Solar Beam
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 82 - Dragon Rage
 - [ ] 85 - Thunderbolt
   - [x] black ball
   - [ ] thunder particles
 - [x] 89 - Earthquake
-- [ ] 99 - Rage
+- [ ] 92 - Toxic
+  - [x] mechanics
+  - [ ] particles
+  - [ ] background shader 
+- [x] 99 - Rage
   - actually has modern mechanics, report gen 2 bug
 - [x] 111 - Defense Curl
+- [ ] 113 - Light Screen
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 115 - Reflect
+  - [x] mechanics
+  - [ ] vfx
 - [x] 116 - Focus Energy
 - [x] 118 - Metronome
-- [x] 126 - Fire Blast 
+- [x] 126 - Fire Blast
+- [ ] 130 - Skull Bash
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 153 - Explosion
+  - [x] mechanics
+  - [ ] vfx
 - [x] 156 - Rest
 - [x] 163 - Slash
 - [x] 164 - Substitute
-  - [ ] please unit test this
+- [ ] 172 - Flame Wheel
+- [ ] 174 - Curse
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 182 - Protect
+  - [X] mechanics
+  - [ ] vfx
+- [ ] 187 - Belly Drum
+  - [x] mechanics
+  - [ ] vfx
 - [x] 188 - Sludge Bomb
+- [ ] 191 - Spikes
+  - [x] mechanics
+  - [ ] vfx
+- [ ] 194 - Destiny Bond
+  - [x] mechanics
+  - [ ] vfx
 - [x] 202 - Giga Drain
+- [x] 216 - Return
 - [x] 223 - Dynamic Punch
+- [ ] 226 - Baton Pass
+  - [x] mechanics
+  - [ ] vfx
 - [x] 227 - Encore
 - [x] 236 - Moonlight
+- [ ] 241 - Sunny Day
+  - [x] mechanics
+  - [ ] vfx
 - [x] 242 - Crunch
 - [x] 245 - Extreme Speed
 - [X] 247 - Shadow Ball
+- [ ] 248 - Future Sight
+  - [x] mechanics
+  - [ ] vfx
 - [x] 251 - Beat Up

@@ -257,6 +257,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
     "SOLAR BEAM":{
       
     },
+    "SOLAR BEAM_STILL":{
+      text: "took in sunlight"
+    },
     "POISON POWDER":{
       
     },
@@ -303,7 +306,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "TOXIC":{
-      
+      sfx: "Toxic",
+      pan: 1
     },
     "CONFUSION":{
       "sfx":"Confusion"
@@ -420,6 +424,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
     },
     "SKULL BASH":{
       
+    },
+    "SKULL BASH_STILL":{
+      "text":"lowered its head"
     },
     "SPIKE CANNON":{
       
@@ -681,7 +688,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "RETURN":{
-      
+      sfx: "Return",
+      pan: 1
     },
     "PRESENT":{
       

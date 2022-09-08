@@ -441,7 +441,7 @@ class View implements IView {
         return { init: () => this.particles.push(particle(this.particleStage)) };
     }
 
-    particle(t: string, ...args: (number | string | string[])[]): Event {
+    particle(t: string, ...args: (number | Particle.AttackTexture | Particle.AttackTexture[])[]): Event {
         const Type: (new (stage: PIXI.Container, ...args: any[]) => Particle.Particle) = (Particle as any)[t];
         if (typeof Type !== "function") {
             console.error(`Unknown particle: "${t}".`);

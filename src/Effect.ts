@@ -471,7 +471,87 @@ const fireBlast = (x1: number, y1: number, x2: number, y2: number) => (view: Vie
 	return Events.flatten(e);
 }
 
+function sinkPly(view: View, times: number = 1, duration: number = 30): Event {
+	return {
+		done: t => {
+			view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y + 16 - 16 * Math.cos(2 * Math.PI * (t / duration));
+			return t >= duration * times;
+		}
+	};
+}
+
+function sinkOpp(view: View, times: number = 1, duration: number = 30): Event {
+	return {
+		init: state => {
+			state.object = view.getOpponentSprite().texture;
+		},
+		done: (t, state) => {
+			const tex = state.object as PIXI.Texture;
+			const offset = 16 - 16 * Math.cos(2 * Math.PI * (t / duration));
+			view.getOpponentSprite().texture = new PIXI.Texture(tex.baseTexture, 
+				new PIXI.Rectangle(0, 0, Graphics.OPPONENT_SPRITE_WIDTH, Graphics.OPPONENT_SPRITE_HEIGHT - offset));
+			view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y + offset;
+			return t >= duration * times;
+		}
+	};
+}
+
+function tacklePly(view: View, tex: Particle.AttackTexture = "BOOM_BIG"): Event {
+	return Events.flatten([
+		{
+			done: t => {
+				view.getPlayerSprite().x = (1 - t / TACKLE_DUR) * Graphics.PLAYER_SPRITE_X + 
+					(t / TACKLE_DUR) * ( Graphics.PLAYER_SPRITE_X + 12);
+				return t >= TACKLE_DUR;
+			}
+		},
+		view.particle("Static", ATTACK_OPP_X, ATTACK_OPP_Y, tex, 12),
+		{ 
+			done: t => {
+				view.getPlayerSprite().x = (t / TACKLE_DUR) *  Graphics.PLAYER_SPRITE_X + 
+					(1 - t / TACKLE_DUR) * ( Graphics.PLAYER_SPRITE_X + 12);
+				return t >= TACKLE_DUR;
+			}
+		}
+	]);
+}
+
+function tackleOpp(view: View, tex: Particle.AttackTexture = "BOOM_BIG"): Event {
+	return Events.flatten([
+		{ 
+			done: t => {
+				view.getOpponentSprite().x = (1 - t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X
+															+ (t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12);
+				return t >= TACKLE_DUR;
+			}
+		},
+		view.particle("Static", ATTACK_PLY_X, ATTACK_PLY_Y, tex, 12),
+		{ 
+			done: t => {
+				view.getOpponentSprite().x = (t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X
+														+ (1 - t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12);
+				return t >= TACKLE_DUR;
+			}
+		}
+	])
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"RETURN": {
+		ply: view => Events.flatten([
+			sinkPly(view, 2, 35),
+			Events.wait(30),
+			tacklePly(view, "BOOM_MED"),
+			Events.wait(16)
+		]),
+		opp: view => Events.flatten([
+			sinkOpp(view, 2, 35),
+			Events.wait(30),
+			tackleOpp(view, "BOOM_MED"),
+			Events.wait(16)
+		])
+	},
 
 	"BODY SLAM": {
 		ply: view => Events.flatten([
@@ -513,28 +593,10 @@ const effects: { [attack: string]: Effect } = {
 
 	"BODY SLAM_PRE": {
 		ply: view => Events.flatten([
-			{
-				done: t => {
-					view.getPlayerSprite().y = Graphics.PLAYER_SPRITE_Y + 4 * 8 * Math.sin(Math.PI * (t / 30));
-					return t >= 30;
-				}
-			}
+			sinkPly(view)
 		]),
 		opp: view => Events.flatten([
-			{
-				init: state => {
-					state.object = view.getOpponentSprite().texture;
-				},
-				done: (t, state) => {
-					const tex = state.object as PIXI.Texture;
-					const offset = 4 * 8 * Math.sin(Math.PI * (t / 30));
-					view.getOpponentSprite().texture = new PIXI.Texture(tex.baseTexture, 
-						new PIXI.Rectangle(0, 0, Graphics.OPPONENT_SPRITE_WIDTH, Graphics.OPPONENT_SPRITE_HEIGHT - offset));
-					view.getOpponentSprite().y = Graphics.OPPONENT_SPRITE_Y + offset;
-					return t >= 30;
-				}
-			}
-
+			sinkOpp(view)
 		])
 	},
 
@@ -578,41 +640,8 @@ const effects: { [attack: string]: Effect } = {
 	SCRATCH: { ply: scratch(120, 24), opp: scratch(12 + 32, 40 + 24) },
 
 	TACKLE: {
-		ply: view => Events.flatten([
-			{
-				done: t => {
-					view.getPlayerSprite().x = (1 - t / TACKLE_DUR) * Graphics.PLAYER_SPRITE_X + 
-						(t / TACKLE_DUR) * ( Graphics.PLAYER_SPRITE_X + 12);
-					return t >= TACKLE_DUR;
-				}
-			},
-			view.particle("Static", ATTACK_OPP_X, ATTACK_OPP_Y, "BOOM_BIG", 12),
-			{ 
-				done: t => {
-					view.getPlayerSprite().x = (t / TACKLE_DUR) *  Graphics.PLAYER_SPRITE_X + 
-						(1 - t / TACKLE_DUR) * ( Graphics.PLAYER_SPRITE_X + 12);
-					return t >= TACKLE_DUR;
-				}
-			}
-		]),
-
-		opp: view => Events.flatten([
-			{ 
-				done: t => {
-					view.getOpponentSprite().x = (1 - t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X
-																+ (t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12);
-					return t >= TACKLE_DUR;
-				}
-			},
-			view.particle("Static", ATTACK_PLY_X, ATTACK_PLY_Y, "BOOM_BIG", 12),
-			{ 
-				done: t => {
-					view.getOpponentSprite().x = (t / TACKLE_DUR) * Graphics.OPPONENT_SPRITE_X
-															+ (1 - t / TACKLE_DUR) * (Graphics.OPPONENT_SPRITE_X - 12);
-					return t >= TACKLE_DUR;
-				}
-			}
-		])
+		ply: view => tacklePly(view),
+		opp: view => tackleOpp(view)
 	},
 
 	"BURNED": {

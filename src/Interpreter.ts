@@ -126,7 +126,7 @@ class Interpreter {
             case "HEALTH":
                 return Events.changeHealth(command.isPlayer
                     ? this.view.getPlayerStatus()
-                    : this.view.getOpponentStatus(), command.hp);
+                    : this.view.getOpponentStatus(), command.hp, command.skipAnimation);
             case "SHADER":
                 return this.view.shader(command.isPlayer, command.name, command.steps, command.delay, false);
             case "PARTICLE":

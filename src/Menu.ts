@@ -777,10 +777,14 @@ abstract class TeamView extends Menu {
 		this.messageTxt.clear();
 		
 		const driver = this.game.getEventDriver();
-		driver.force(this.game.view.showPlayer());
-		driver.force(this.game.view.showOpponent());
-		driver.force(this.game.view.showPlayerStats());
-		driver.force(this.game.view.showOpponentStats());
+		if (this.game.getSimulatedPlayer().hp > 0) { 
+			driver.force(this.game.view.showPlayer());
+			driver.force(this.game.view.showPlayerStats());
+		}
+		if (this.game.getSimulatedOpponent().hp > 0) { 
+			driver.force(this.game.view.showOpponent());
+			driver.force(this.game.view.showOpponentStats());
+		}
 	}
 }
 

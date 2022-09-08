@@ -50,7 +50,7 @@ function getStatus(status: string): Partial<Status> {
 
 function getFrom(from: string) {
     if (from.startsWith("[from] ")) {
-        return from.split(" ")[1];
+        return from.replace("[from] ", "");
     }
     return "";
 }
@@ -127,10 +127,14 @@ function poisonAnim(isPlayer: boolean): Script {
 }
 
 interface State {
+    // name given to the fighter
+    name?: string;
+    // name of the trainer
     trainerName?: string;
     index?: number;
     substituted?: boolean;
-    flying?: boolean;
+    // if true, skip turn
+    passing?: boolean;
     fainted?: boolean;
 }
 
@@ -145,6 +149,8 @@ class BattleScript {
 
     private playerState: State = {};
     private opponentState: State = {};
+    private weather: string | null = null;
+    private waitPlayerSwitchUntilOpponentFaints: boolean = false;
 
     private introduction: 
         ((playerSwitch: Script) => (opponentSwitch: Script) => Script) |
@@ -246,26 +252,42 @@ class BattleScript {
                     this.moveResults.crit = true;
                     break;
                 case "-prepare":
-                    if (action[3] === "Fly") {
+                    if (["Fly", "Skull Bash", "Solar Beam"].includes(action[3])) {
+                        if (action[3] === "Solar Beam" && this.weather === "SunnyDay") {
+                            break;
+                        }
                         if (getIsPlayer(action[2]!)) {
-                            this.playerState.flying = true;
+                            this.playerState.passing = true;
                         } else {
-                            this.opponentState.flying = true;
+                            this.opponentState.passing = true;
                         }
                     }
                     break;
                 case "-activate": return this.handleActivate(action);
                 case "-damage": return this.handleDamage(action);
                 case "-start": return this.handleStart(action);
+                case "-sidestart": return this.handleSidestart(action);
+                case "-sideend": return this.handleSideend(action);
                 case "-end": return this.handleEnd(action);
                 case "-status": return this.handleStatus(action);
                 case "-curestatus": return this.handleCureStatus(action);
                 case "-heal": return this.handleHeal(action);
                 case '-boost': return this.handleBoost(action, true);
                 case "-unboost": return this.handleBoost(action, false);
+                case "-setboost": return this.handleSetBoost(action);
+                case "-singleturn": return this.handleSingleTurn(action);
+                case "-singlemove": return this.handleSingleMove(action);
+                case "-weather": return this.handleWeather(action);
+                case "-mustrecharge": 
+                    if (getIsPlayer(action[2]!)) {
+                        this.playerState.passing = true;
+                    } else {
+                        this.opponentState.passing = true;
+                    }
+                    break;
                 case "turn": // TODO: use this to go to options?
-                    if (this.playerState.flying) {
-                        this.playerState.flying = false;
+                    if (this.playerState.passing) {
+                        this.playerState.passing = false;
                         return "PASS";
                     }
                     return "OPTIONS";
@@ -278,6 +300,7 @@ class BattleScript {
                     break;
                 // ignore these messages
                 case "":
+                case "-miss":
                 case "-fail":
                 case "t:":
                 case "gametype":
@@ -310,13 +333,11 @@ class BattleScript {
         const miss = action[5] === "[miss]";
         const still = action[5] === "[still]";
         const actualMove = move + (still ? "_STILL" : "");
-        if (this.stream[0] == null) {
-            throw new Error(`BattleScript.handleMove: stream is empty, ${JSON.stringify(action)}`);
-        }
-        const fail = (this.stream[0][1] === "-fail") ||
+        const fail = (this.stream[0] == null) ? false 
+            : ((this.stream[0][1] === "-fail") ||
             // for SLEEP TALK, if nothing happens and the opponent starts their
             // move, consider that a failure. 
-            (this.stream[0][1] === "move" && this.stream[0][2] !== action[2]);
+            (this.stream[0][1] === "move" && this.stream[0][2] !== action[2]));
 
         const text = (moveInfo as any)[actualMove]?.text || `used ${move}`;
         return [
@@ -351,6 +372,8 @@ class BattleScript {
                 : "SHOW_OPPONENT_STATS",
             // post anim
             { do: "EFFECT", name:move+"_POST", isPlayer },
+            isPlayer && move === "BATON PASS" ? 
+                "FORCE_PLAYER_SWITCH" : null
         ];
     }
 
@@ -391,34 +414,57 @@ class BattleScript {
         return { do: "TEXT", text: message };
     }
 
+    private handleSetBoost(action: string[]): Script {
+        if (action[2] == null || action[5] == null) {
+            throw new Error(`BattleScript.handleSetBoost: unexpected, ${JSON.stringify(action)}`);
+        }
+        const name = getTextName(action[2]);
+        switch (getFrom(action[5])) {
+            case "move: Belly Drum":
+                return { do: "TEXT", text: [name, "cut its HP and", "maximized ATTACK!"] };
+            default:
+                console.error("Unhandled:", action);
+        }
+        return [];
+    }
+
     private handleFaint(action: string[]): Script {
         if (action[2] == null) {
             throw new Error(`BattleScript.handleFaint: unexpected, ${JSON.stringify(action)}`);
         }
         const name = getName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
+        
         if (isPlayer) {
+            // Both die due to destiny bond, but we died first.
+            const next = this.stream[0];
+            this.waitPlayerSwitchUntilOpponentFaints = isPlayer && next != null && next[1] === "-activate" && 
+                next[3] === "move: Destiny Bond" && !this.opponentState.fainted;
+
             this.playerState.fainted = true;
             if (this.playerState.index == null) {
                 throw new Error("BattleScript.handleFaint: playerState.index is undefined");
             }
             return [
+                { do: "HEALTH", isPlayer: true, hp: 0, skipAnimation: true },
                 { do: "WAIT", frames: 20 },
                 { do: "CRY", isPlayer: true, index: this.playerState.index },
                 { do: "SHADER", isPlayer: true, name: "faint", steps: 15, delay: 1 },
                 "HIDE_PLAYER_STATS",
                 "HIDE_PLAYER",
                 { do: "TEXT", text: [name, "fainted!"] },
-                "FORCE_PLAYER_SWITCH"
+                this.waitPlayerSwitchUntilOpponentFaints ? null : "FORCE_PLAYER_SWITCH"
             ];
         }
         return [
+            { do: "HEALTH", isPlayer: false, hp: 0, skipAnimation: true },
             { do: "WAIT", frames: 20 },
             { do: "SFX", name: "faint" },
             { do: "SHADER", isPlayer: false, name: "faint", steps: 15, delay: 1 },
             "HIDE_OPPONENT_STATS",
             "HIDE_OPPONENT",
-            { do: "TEXT", text: [name, "fainted!"] }
+            { do: "TEXT", text: [name, "fainted!"] },
+            this.waitPlayerSwitchUntilOpponentFaints ? "FORCE_PLAYER_SWITCH" : null
         ];
     }
 
@@ -479,6 +525,7 @@ class BattleScript {
     {
         this.playerState.fainted = false;
         this.playerState.index = index;
+        this.playerState.name = name;
         return [
             {do:"SET_STATUS", isPlayer: true, status},
             {do:"SET_PLAYER", index},
@@ -498,6 +545,7 @@ class BattleScript {
 
     sendOutOpponent(name: string, index: number, status: Partial<Status>): Script 
     {
+        this.opponentState.name = name;
         this.opponentState.index = index;
         return [
             {do:"SET_STATUS", isPlayer: false, status},
@@ -568,6 +616,10 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch (action[3]) {
+            case "recharge":
+                return [
+                    {do:"TEXT",text:[`${name}`, "must recharge!"]}
+                ]
             case "par":
                 return [
                     {do:"TEXT",text:[`${name}'s`, "fully paralyzed!"]}
@@ -593,7 +645,16 @@ class BattleScript {
         }
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
+        const otherName = isPlayer ? "Enemy " + this.opponentState.name : this.playerState.name;
         switch(action[3]) {
+            case "move: Destiny Bond":
+                return {
+                    do: "TEXT", text: [name, "took down with it,", `${otherName}!`]
+                }
+            case "Protect":
+                return {
+                    do: "TEXT", text: [`${name}'s`, "PROTECTING itself!"]
+                }
             case "move: Beat Up":
                 if (action[4] == null) {
                     throw new Error(`BattleScript.handleActivate: Beat Up has no attacker, ${JSON.stringify(action)}`);
@@ -637,7 +698,7 @@ class BattleScript {
                 this.effectiveness()
             ];
         }
-        const from = action[4].split(" ")[1];
+        const from = getFrom(action[4]);
         let event: Script = null;
         switch (from) {
             case "confusion":
@@ -659,9 +720,27 @@ class BattleScript {
                 break;
             case "psn":
                 event = [
-                    {do:"TEXT",text:[name, "is hurt by poison!"], auto: true},
-                    {do:"WAIT",frames:48},
-                    poisonAnim(isPlayer)
+                    {do:"TEXT",text:[name, "is hurt by poison!"] },
+                    {do: "SFX", name: "psn"},
+                    poisonAnim(isPlayer),
+                    {do:"WAIT",frames:36}
+                ];
+                break;
+            case "Curse":
+                // TODO: curse ghost effect
+                event = [
+                    { do: "TEXT", text: [`${name}'s`, "hurt by the CURSE!"] }
+                ];
+                break;
+            case "Leech Seed":
+                // TODO: leech seed effect
+                event = [
+                    { do: "TEXT", text: ["LEECH SEED saps", `${name}!`] }
+                ];
+                break;
+            case "Spikes":
+                event = [
+                    { do: "TEXT", text: [`${name}'s`, `hurt by SPIKES!`] }
                 ];
                 break;
             default:
@@ -681,7 +760,16 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch (condition) {
-            case "Encore":
+            case "Future Sight":
+                return { do: "TEXT", text: [name, "foresaw an attack!"] };
+            case "Curse": {
+                if (action[4] == null) {
+                    throw new Error(`BattleScript.handleStart: curse is missing [of], ${JSON.stringify(action)}`);
+                }
+                return [
+                    { do: "TEXT", text: [name, "cut its own HP and", "put a CURSE on", `${getOf(action[4])}!`] }
+                ];
+            } case "Encore":
                 return { do: "TEXT", text: [ name, "got an ENCORE!" ] };
             case "Disable":
                 const move = action[4];
@@ -697,6 +785,64 @@ class BattleScript {
                 ];
             case "move: Focus Energy":
                 return {do:"TEXT", text: [`${name}'s`,"getting pumped!"]};
+            case "move: Leech Seed":
+                return {do:"TEXT", text: [name, "was seeded!"]};
+            default:
+                console.error("Unhandled:", action);
+        }
+        return [];
+    }
+
+    private handleSidestart(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleSidestart: unexpected, ${JSON.stringify(action)}`);
+        }
+        const isPlayer = getIsPlayer(action[2]);
+        const reason = action[3];
+        switch (reason) {
+            case "Reflect":
+                if (isPlayer) {
+                    return { do: "TEXT", text: ["Your team is", "stronger against", "physical moves!"] };
+                }
+                return { do: "TEXT", text: [`${this.opponentState.trainerName}'s`, "team is stronger", "against physical", "moves!"] };
+            case "move: Light Screen":
+                if (isPlayer) {
+                    return { do: "TEXT", text: ["Your team is", "stronger against", "special moves!"] };
+                }
+                return { do: "TEXT", text: [`${this.opponentState.trainerName}'s`, "team is stronger", "against special", "moves!"] };
+            case "Spikes":
+                return { do: "TEXT", text: ["SPIKES scattered", "all around", `${
+                    isPlayer ? this.playerState.name : ("Enemy " + this.opponentState.name)
+                }!`]}
+            default:
+                console.error("Unhandled:", action);
+        }
+        return [];
+    }
+
+    private handleSideend(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleSideend: unexpected, ${JSON.stringify(action)}`);
+        }
+        const isPlayer = getIsPlayer(action[2]);
+        const reason = action[3];
+        switch (reason) {
+            case "Reflect":
+                if (isPlayer) {
+                    return { do: "TEXT", text: [`${this.playerState.name}'s`, "REFLECT faded!"] };
+                }
+                return { do: "TEXT", text: [`Enemy ${this.opponentState.name}'s`, "REFLECT faded!"] };
+            case "move: Light Screen":
+                if (isPlayer) {
+                    return { do: "TEXT", text: [`${this.playerState.name}'s`, "LIGHT SCREEN faded!"] };
+                }
+                return { do: "TEXT", text: [`Enemy ${this.opponentState.name}'s`, "LIGHT SCREEN faded!"] };
+            case "Spikes":
+                if (isPlayer) {
+                    // other player removed OUR spikes
+                    return { do: "TEXT", text: [ `${this.playerState.name}`, "blew away SPIKES!"] };
+                }
+                return { do: "TEXT", text: [ `Enemy ${this.opponentState.name}`, "blew away SPIKES!"] };
             default:
                 console.error("Unhandled:", action);
         }
@@ -710,6 +856,11 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch(action[3]) {
+            case "move: Future Sight":
+                return [
+                    { do: "TEXT", text: [name, "was hit by FUTURE", "SIGHT!"], }
+                    // TODO: visual effect here
+                ];
             case "Encore":
                 return { do: "TEXT", text: [`${name}'s`, "ENCORE ended!"] };
             case "move: Disable":
@@ -736,6 +887,62 @@ class BattleScript {
         return [];
     }
 
+    private handleSingleTurn(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleSingleTurn: unexpected, ${JSON.stringify(action)}`);
+        }
+        const name = getTextName(action[2]);
+        switch(action[3]) {
+            case "Protect":
+                return {do:"TEXT",text:[name,"PROTECTED itself!"]};
+            default:
+                console.error("Unhandled:", action);
+        }
+        return [];
+    }
+
+    private handleSingleMove(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleSingleMove: unexpected, ${JSON.stringify(action)}`);
+        }
+        const name = getTextName(action[2]);
+        switch(action[3]) {
+            case "Destiny Bond":
+                return {do:"TEXT",text:[`${name}'s`,"trying to take its", "opponent with it!"]};
+            default:
+                console.error("Unhandled:", action);
+        }
+        return [];
+    }
+
+    private handleWeather(action: string[]): Script {
+        if (action[2] == null) {
+            throw new Error(`BattleScript.handleWeather: unexpected, ${JSON.stringify(action)}`);
+        }
+        if (action[3] === "[upkeep]") {
+            switch(action[2]) {
+                case "SunnyDay":
+                    return {do:"TEXT",text:["The sunlight is", "strong."]};
+                default:
+                    console.error("Unhandled:", action);
+            }
+        } else {
+            switch(action[2]) {
+                case "SunnyDay":
+                    this.weather = action[2];
+                    return {do:"TEXT",text:["The sunlight got", "bright!"]};
+                case "none":
+                    switch (this.weather) {
+                        case "SunnyDay":
+                            return {do: "TEXT", text: ["The sunlight", "faded."]};
+                    }
+                default:
+                    console.error("Unhandled:", action);
+            }
+        }
+        return [];
+    }
+
     private handleStatus(action: string[]): Script {
         if (action[2] == null) {
             throw new Error(`BattleScript.handleStatus: unexpected, ${JSON.stringify(action)}`);
@@ -743,7 +950,7 @@ class BattleScript {
         const condition = action[3];
         const isPlayer = getIsPlayer(action[2]);
         const name = getTextName(action[2]);
-        const reason = action[4] && action[4].split("[from] ")[1];
+        const reason = action[4] && getFrom(action[4]);
         const script: Script[] = [];
         // TODO: examine why we set partial status this way
         const setStatus: Script = { do: "SET_STATUS", isPlayer, status: { condition }};
@@ -781,6 +988,11 @@ class BattleScript {
                 }
                 script.push({ do: "EFFECT", name: "SLEEP", isPlayer })
                 break;
+            case "tox":
+                setStatus.status.condition = "psn";
+                script.push(setStatus);
+                script.push({ do: "TEXT", text: [`${name}'s`, "badly poisoned!"] });
+                break;
             default:
                 console.error("Unhandled condition:", condition);
         }
@@ -814,6 +1026,11 @@ class BattleScript {
         const status = getStatus(action[3]);
         if (status.hp == null) {
             throw new Error("BattleScript.handleHeal: status.hp is undefined");
+        }
+        if (action[4] === "[silent]") {
+            return [
+                {do:"HEALTH",hp:status.hp,isPlayer}
+            ];
         }
         const from = getFrom(action[4]);
         switch (from) {

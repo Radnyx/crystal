@@ -55,7 +55,14 @@ namespace Events {
         return { done: t => t >= frames };
     }
 
-    export function changeHealth(status: Status, hpEnd: number): Event {
+    export function changeHealth(status: Status, hpEnd: number, skipAnimation?: boolean): Event {
+        if (skipAnimation) {
+            return {
+                init: () => {
+                    status.hp = hpEnd;
+                }
+            };
+        }
         return {
             init: state => {
                 state.hpStart = status.hp;

@@ -244,17 +244,20 @@ class GameV2 implements IGame {
 
     switch(index: number) {
         this.movesState = 0;
+        const currentMember = this.getSimulatedPlayer();
         const member = this.getSimulatedPlayerMember(index);
         this.popAllMenus();
         this.eventDriver.append(Events.flatten([
-            this.view.text([
-                `${GameV2.getTrueName(this.getSimulatedPlayer().name)}, that's`, 
-                "enough! Come back!"
-            ], true),
-            Events.wait(24),
-            this.view.sfx("ballpoof"),
-            this.view.shader(true, 'plyAppear', 4, 5, true),
-            this.view.hidePlayer(),
+            currentMember.hp > 0 ? [
+                this.view.text([
+                    `${GameV2.getTrueName(currentMember.name)}, that's`, 
+                    "enough! Come back!"
+                ], true),
+                Events.wait(24),
+                this.view.sfx("ballpoof"),
+                this.view.shader(true, 'plyAppear', 4, 5, true),
+                this.view.hidePlayer()
+            ] : undefined,
             Events.wait(24),
             () => this.streams.p1.write(`switch ${this.battle.p1.pokemon.indexOf(member) + 1}`)
         ]));
@@ -264,6 +267,14 @@ class GameV2 implements IGame {
         const poke = this.battle.p1.active[0];
         if (poke == null) {
             throw new Error("GameV2.getSimulatedPlayer: simulator player member is null");
+        }
+        return poke;
+    }
+
+    getSimulatedOpponent(): Pokemon {
+        const poke = this.battle.p2.active[0];
+        if (poke == null) {
+            throw new Error("GameV2.getSimulatedOpponent: simulator opponent member is null");
         }
         return poke;
     }

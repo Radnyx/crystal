@@ -12,7 +12,7 @@ type Script =
     { do: "SET_OPPONENT", index: number } |
     { do: "PARTICLE", type: string, args: (number | string | string[])[] } |
     { do: "SHADER", isPlayer:boolean, name: string, steps: number, delay: number} |
-    { do: "HEALTH", isPlayer:boolean, hp:number } |
+    { do: "HEALTH", isPlayer:boolean, hp:number, skipAnimation?: boolean } |
     /*
         TODO: in future, have SpriteID like "OPPONENT_SPRITE", "PLAYER_LEADER_SPRITE"
         and it can somehow refer to an image defined in the metadata...

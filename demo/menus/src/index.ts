@@ -43,18 +43,18 @@ initWindow();
 
 const exampleMember1: MemberObject = {
 	id: "demo1",
-	level: 20,
+	level: 35,
 	gender: "none",
-	moves: ["CURSE","LEECH SEED","SUBMISSION", "TOXIC"],
-	name: "BLASTOISE"
+	moves: ["DESTINY BOND", "TACKLE", "FLY", "SOLAR BEAM"],
+	name: "COOL GUY"
 };
 
 const exampleMember2: MemberObject = {
-	id: "demo2",
-	level: 14,
+	id: "demo1",
+	level: 10,
 	gender: "none",
-	moves: ["CURSE","LEECH SEED","SUBMISSION", "TOXIC"],
-	name: "BLASTOISE"
+	moves: ["DESTINY BOND"],
+	name: "BAD GUY"
 };
 
 const battleInfo: BattleInfo = {
@@ -67,7 +67,7 @@ const battleInfo: BattleInfo = {
 		opponent: {
 			name: "OPPONENT",
 			trainer: "demofront.png",
-			team: [ exampleMember2, exampleMember2 ]
+			team: [ exampleMember2, exampleMember2, exampleMember2, exampleMember2 ]
 		}
 	},
 	data: {
@@ -103,18 +103,20 @@ const battleInfo: BattleInfo = {
 };
 
 const resources = new Resources(battleInfo.info);
-const view = new View(app!, resources, true);
-const game = new GameV2(view, battleInfo, true);
+resources.load(() => {
+	const view = new View(app!, resources, true);
+	const game = new GameV2(view, battleInfo, true);
 
-view.setPlayerTexture("demo");
-view.setOpponentTexture("demo");
+	view.setPlayerTexture("demo");
+	view.setOpponentTexture("demo");
 
-function tick() {
-	game.update();
-    app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
-}
+	function tick() {
+		game.update();
+		app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
+	}
 
 
-app!.ticker.add(tick);
+	app!.ticker.add(tick);
+});
 
 
