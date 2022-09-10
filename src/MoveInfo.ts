@@ -285,13 +285,15 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "THUNDERBOLT":{
-      "sfx":"Thunderbolt",
+      sfx:"Thunderbolt",
+      pan: 1
     },
     "THUNDER WAVE":{
       "sfx":"ThunderWave",
     },
     "THUNDER":{
-      
+      sfx: "Thunder",
+      pan: 1
     },
     "ROCK THROW":{
       
@@ -325,6 +327,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       "sfx":"AGILITY",
     },
     "QUICK ATTACK":{
+      sfx: "QuickAttack",
+      pan: 0
     },
     "RAGE":{
       sfx: "Rage",
@@ -652,7 +656,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "CHARM":{
-      
+      sfx: "Charm",
+      pan: -1
     },
     "ROLLOUT":{
       

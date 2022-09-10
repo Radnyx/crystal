@@ -536,7 +536,129 @@ function tackleOpp(view: View, tex: Particle.AttackTexture = "BOOM_BIG"): Event 
 	])
 }
 
+function thunderbolt(x: number, y: number): (view: View) => Event {
+	const THUNDER_FLICKER_1 = 2;
+	const THUNDER_FLICKER_2 = 8;
+	return view => Events.flatten([
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y, "BLACK_CIRCLE", 150).setFlicker(3)),
+
+		// DIAGONALS
+		
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 16, y - 16, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_1).delayStart(25)),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 24, y - 24, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_2).delayStart(25)),
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 16, y - 16, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_1).delayStart(25).flipHorizontally()),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 24, y - 24, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_2).delayStart(25).flipHorizontally()),
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 16, y + 16, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_1).delayStart(25).flipVertically()),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 24, y + 24, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_2).delayStart(25).flipVertically()),
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 16, y + 16, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_1).delayStart(25).flipHorizontally().flipVertically()),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 24, y + 24, "SMALL_THUNDER_3", 125).setFlicker(THUNDER_FLICKER_2).delayStart(25).flipHorizontally().flipVertically()),
+
+		// VERTICALS
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y - 20, "SMALL_THUNDER_1", 125 - THUNDER_FLICKER_1).setFlicker(THUNDER_FLICKER_1).delayStart(25 + THUNDER_FLICKER_1)),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y - 28, "SMALL_THUNDER_1", 125 - THUNDER_FLICKER_2).setFlicker(THUNDER_FLICKER_2).delayStart(25 + THUNDER_FLICKER_2)),
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y + 20, "SMALL_THUNDER_1", 125 - THUNDER_FLICKER_1).setFlicker(THUNDER_FLICKER_1).delayStart(25 + THUNDER_FLICKER_1).flipVertically()),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x, y + 28, "SMALL_THUNDER_1", 125 - THUNDER_FLICKER_2).setFlicker(THUNDER_FLICKER_2).delayStart(25 + THUNDER_FLICKER_2).flipVertically()),
+
+		// HORIZONTALS
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 20, y, "SMALL_THUNDER_2", 125 - THUNDER_FLICKER_1).setFlicker(THUNDER_FLICKER_1).delayStart(25 + THUNDER_FLICKER_1)),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x + 28, y, "SMALL_THUNDER_2", 125 - THUNDER_FLICKER_2).setFlicker(THUNDER_FLICKER_2).delayStart(25 + THUNDER_FLICKER_2)),
+
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 20, y, "SMALL_THUNDER_2", 125 - THUNDER_FLICKER_1).setFlicker(THUNDER_FLICKER_1).delayStart(25 + THUNDER_FLICKER_1).flipHorizontally().flipVertically()),
+		view.particleV1(stage =>
+			new Particle.Static(stage, x - 28, y, "SMALL_THUNDER_2", 125 - THUNDER_FLICKER_2).setFlicker(THUNDER_FLICKER_2).delayStart(25 + THUNDER_FLICKER_2).flipHorizontally().flipVertically()),
+
+		Events.wait(150 + 24)
+	]);
+}
+
+function thunder(x: number, y: number): (view: View) => Event {
+	const STRIKE = 12;
+	const LIFE = 42;
+	const area = (w: number) => (t: number) =>
+		new PIXI.Rectangle(0, 0, w, t < STRIKE / LIFE ? (Math.floor((t * LIFE /  STRIKE) * 56 / 8) * 8) : 56);
+	return view => Events.flatten([
+		view.particleV1(stage => new Particle.Static(stage, x + 14, y, "THUNDER_SIDE", LIFE).subArea(area(24)).unanchorY().delayStart(15)),
+		view.particleV1(stage => new Particle.Static(stage, x - 14, y, "THUNDER_SIDE", LIFE).subArea(area(24)).unanchorY().flipHorizontally()),
+		view.particleV1(stage => new Particle.Static(stage, x, y, "THUNDER_MID", LIFE).subArea(area(16)).unanchorY().delayStart(30)),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		view.invertColors(),
+		Events.wait(8),
+		Events.wait(120-96)
+	]);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"THUNDER": {
+		ply: thunder(122, 0),
+		opp: thunder(36, 40)
+	},
+
+	"CHARM": {
+		ply: view => Events.flatten([
+			view.particleV1(stage => new Particle.Static(stage, 56, 64, "HEART", 36).offsetY(t => -t * 24).offsetX(t => Math.sin(2 * Math.PI * t) * 8)),
+			{
+				done: t => {
+					view.getPlayerSprite().x = Graphics.PLAYER_SPRITE_X + Math.sin(4 * Math.PI * t / 36) * 8;
+					return t >= 36;
+				}
+			}
+		]),
+		opp: view => Events.flatten([
+			view.particleV1(stage => new Particle.Static(stage, 96, 32, "HEART", 36).offsetY(t => -t * 24).offsetX(t => Math.sin(2 * Math.PI * t) * 8)),
+			{
+				done: t => {
+					view.getOpponentSprite().x = Graphics.OPPONENT_SPRITE_X + Math.sin(4 * Math.PI * t / 36) * 8;
+					return t >= 36;
+				}
+			}
+		])
+	},
+
+	"CHARM_POST": WIGGLE,
 
 	"RETURN": {
 		ply: view => Events.flatten([
@@ -714,16 +836,8 @@ const effects: { [attack: string]: Effect } = {
 
 	// 2.5s = 150 frames
 	"THUNDERBOLT": {
-		opp: view => Events.flatten([
-			view.particleV1(stage =>
-				new Particle.Static(stage, ATTACK_PLY_X, ATTACK_PLY_Y, "BLACK_CIRCLE", 150).setFlicker(3)),
-			Events.wait(150 + 24)
-		]),
-		ply: view => Events.flatten([
-			view.particleV1(stage =>
-				new Particle.Static(stage, ATTACK_OPP_X - 8, ATTACK_OPP_Y + 4, "BLACK_CIRCLE", 150).setFlicker(3)),
-			Events.wait(150 + 24)
-		]),
+		opp: thunderbolt(ATTACK_PLY_X, ATTACK_PLY_Y),
+		ply: thunderbolt(ATTACK_OPP_X,  ATTACK_OPP_Y + 4),
 	},
 
 	"SLUDGE BOMB": {
@@ -762,6 +876,25 @@ const effects: { [attack: string]: Effect } = {
 			Events.wait(10),
 			view.particle("Slash", ATTACK_OPP_X + 4, ATTACK_OPP_Y - 8, 5),
 			Events.wait(24),
+			view.showPlayer()
+		])
+	},
+
+	"QUICK ATTACK": {
+		opp: view => Events.flatten([
+			view.hideOpponent(),
+			view.particle("Speed", ATTACK_OPP_X - 4, ATTACK_OPP_Y),
+			Events.wait(10),
+			view.particle("Static", ATTACK_PLY_X, ATTACK_PLY_Y, "BOOM_MED", 6),
+			Events.wait(32),
+			view.showOpponent()
+		]),
+		ply: view => Events.flatten([
+			view.hidePlayer(),
+			view.particle("Speed", ATTACK_PLY_X - 4, ATTACK_PLY_Y),
+			Events.wait(10),
+			view.particle("Static", ATTACK_OPP_X, ATTACK_OPP_Y, "BOOM_MED", 6),
+			Events.wait(32),
 			view.showPlayer()
 		])
 	},

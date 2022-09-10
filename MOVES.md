@@ -37,14 +37,14 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] mechanics
   - [ ] vfx
 - [ ] 82 - Dragon Rage
-- [ ] 85 - Thunderbolt
-  - [x] black ball
-  - [ ] thunder particles
+- [x] 85 - Thunderbolt
+- [x] 87 - Thunder
 - [x] 89 - Earthquake
 - [ ] 92 - Toxic
   - [x] mechanics
   - [ ] particles
   - [ ] background shader 
+- [x] 98 - Quick Attack
 - [x] 99 - Rage
   - actually has modern mechanics, report gen 2 bug
 - [x] 111 - Defense Curl
@@ -84,6 +84,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] mechanics
   - [ ] vfx
 - [x] 202 - Giga Drain
+- [x] 204 - Charm
 - [x] 216 - Return
 - [x] 223 - Dynamic Punch
 - [ ] 226 - Baton Pass

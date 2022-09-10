@@ -98,6 +98,12 @@ const attackTex = {
 	BUBBLE_1: Graphics.attack(10, 10, 1, 1),
 	BUBBLE_2: Graphics.attack(10, 11, 2, 2),
 	BUBBLE_3: Graphics.attack(10, 13, 2, 2),
+	HEART: Graphics.attack(80/8, 152/8, 2, 2),
+	SMALL_THUNDER_1: Graphics.attack(11,2,1,1),
+	SMALL_THUNDER_2: Graphics.attack(11,3,1,1),
+	SMALL_THUNDER_3: Graphics.attack(11,4,1,1),
+	THUNDER_SIDE: Graphics.attack(192/8,120/8,3,7),
+	THUNDER_MID: Graphics.attack(176/8,120/8,2,7)
 };
 
 type AttackTexture = keyof typeof attackTex;
@@ -182,7 +188,7 @@ class Particle {
 		if (!this.dead) {
 			this._update();
 		}
-		if (this.flickerFrames && this.timer % this.flickerFrames === 0) {
+		if (this.flickerFrames && this.timer >= this.delayFrames && Math.floor((this.timer - this.delayFrames) / this.flickerFrames) % 2 === 0) {
 			this.flicker();
 		}
 		this.timer++;
@@ -206,6 +212,11 @@ class Particle {
 
 	flipHorizontally() {
 		this.sprites[0].scale.x = -this.sprites[0].scale.x;
+		return this;
+	}
+
+	flipVertically() {
+		this.sprites[0].scale.y = -this.sprites[0].scale.y;
 		return this;
 	}
 
@@ -240,14 +251,27 @@ class Particle {
 
 
 class Static extends Particle {
+	private readonly originalSubArea: PIXI.Rectangle;
+	private subAreaFn: ((t: number) => PIXI.Rectangle) | null = null;
+
 	constructor(stage: PIXI.Container, x: number, y: number, tex: AttackTexture, life: number) {
 		super(stage, x, y);
-		this.addSprite(x, y).texture = attackTex[tex];
+		const t = attackTex[tex];
+		this.originalSubArea = t.frame;
+		this.addSprite(x, y).texture = new PIXI.Texture(t.baseTexture, new PIXI.Rectangle(t.frame.x, t.frame.y, t.frame.width, t.frame.height));
 		this.life = life;
 		this.delayFrames = 0;
 	}
 
 	_update() {
+		if (this.subAreaFn != null) {
+			const newArea = this.subAreaFn((this.timer - this.delayFrames) / this.life);
+			this.sprites[0].texture.frame.x = this.originalSubArea.x + newArea.x;
+			this.sprites[0].texture.frame.y = this.originalSubArea.y + newArea.y;
+			this.sprites[0].texture.frame.width = newArea.width;
+			this.sprites[0].texture.frame.height = newArea.height;
+			this.sprites[0].texture.updateUvs();
+		}
 		if (this.timer >= this.delayFrames) this.sprites[0].visible = true;
 		if (this.timer >= this.life + this.delayFrames) this.die();
 	}
@@ -255,6 +279,16 @@ class Static extends Particle {
 	delayStart(frames: number) {
 		this.delayFrames = frames;
 		this.sprites[0].visible = false;
+		return this;
+	}
+
+	subArea(fn: (t: number) => PIXI.Rectangle) {
+		this.subAreaFn = fn;
+		return this;
+	}
+
+	unanchorY() {
+		this.sprites[0].anchor.set(0.5, 0);
 		return this;
 	}
 }

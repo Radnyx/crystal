@@ -45,7 +45,7 @@ const exampleMember1: MemberObject = {
 	id: "demo1",
 	level: 35,
 	gender: "none",
-	moves: ["SUNNY DAY", "TACKLE", "FLY", "SOLAR BEAM"],
+	moves: ["THUNDER", "TACKLE", "FLY", "SOLAR BEAM"],
 	name: "COOL GUY"
 };
 
@@ -53,7 +53,7 @@ const exampleMember2: MemberObject = {
 	id: "demo1",
 	level: 25,
 	gender: "none",
-	moves: ["MOONLIGHT", "TACKLE"],
+	moves: ["THUNDER"],
 	name: "BAD GUY"
 };
 
