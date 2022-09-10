@@ -45,15 +45,15 @@ const exampleMember1: MemberObject = {
 	id: "demo1",
 	level: 35,
 	gender: "none",
-	moves: ["DESTINY BOND", "TACKLE", "FLY", "SOLAR BEAM"],
+	moves: ["SUNNY DAY", "TACKLE", "FLY", "SOLAR BEAM"],
 	name: "COOL GUY"
 };
 
 const exampleMember2: MemberObject = {
 	id: "demo1",
-	level: 10,
+	level: 25,
 	gender: "none",
-	moves: ["DESTINY BOND"],
+	moves: ["MOONLIGHT", "TACKLE"],
 	name: "BAD GUY"
 };
 

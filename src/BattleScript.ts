@@ -48,8 +48,8 @@ function getStatus(status: string): Partial<Status> {
     return result;
 }
 
-function getFrom(from: string) {
-    if (from.startsWith("[from] ")) {
+function getFrom(from: string | null) {
+    if (from?.startsWith("[from] ")) {
         return from.replace("[from] ", "");
     }
     return "";
@@ -214,6 +214,8 @@ class BattleScript {
             const action = this.stream.shift()!;
             switch (action[1]) {
                 case "move":
+                    return this.handleMove(action);
+                case "-anim":
                     return this.handleMove(action);
                 case "faint":
                     return this.handleFaint(action);
@@ -1022,7 +1024,7 @@ class BattleScript {
     }
 
     private handleHeal(action: string[]): Script {
-        if (action[2] == null || action[3] == null || action[4] == null ) {
+        if (action[2] == null || action[3] == null) {
             throw new Error(`BattleScript.handleHeal: unexpected, ${JSON.stringify(action)}`);
         }
         const name = getTextName(action[2]);
