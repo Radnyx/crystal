@@ -19,6 +19,10 @@ function getIsPlayer(name: string): boolean {
     return name[1] === "1";
 }
 
+function getSimulatorName(name: string): string {
+    return name.substring(name.indexOf(" ") + 1);
+}
+
 function getName(name: string): string {
     return name.substring(name.indexOf(" ") + 2);
 }
@@ -60,18 +64,6 @@ function getOf(ofText: string) {
         return getTextName(ofText.replace("[of] ", ""));
     }
     return "";
-}
-
-function parseDetails(details: string) {
-    const split = details.split(", ");
-    if (split[1] == null) {
-        throw new Error(`BattleScript.parseDetails: unexpected, ${details}`);
-    }
-    // PS will not include L100, so we add it
-    if (split[1][0] !== 'L') {
-        split.splice(1, 0, "L100");
-    }
-    return split;
 }
 
 function paralysisAnim(isPlayer: boolean): Script {
@@ -462,6 +454,8 @@ class BattleScript {
                 this.waitPlayerSwitchUntilOpponentFaints ? null : "FORCE_PLAYER_SWITCH"
             ];
         }
+        const playerSwitch = this.waitPlayerSwitchUntilOpponentFaints ? "FORCE_PLAYER_SWITCH" : null;
+        this.waitPlayerSwitchUntilOpponentFaints = false;
         return [
             { do: "HEALTH", isPlayer: false, hp: 0, skipAnimation: true },
             { do: "WAIT", frames: 20 },
@@ -470,7 +464,7 @@ class BattleScript {
             "HIDE_OPPONENT_STATS",
             "HIDE_OPPONENT",
             { do: "TEXT", text: [name, "fainted!"] },
-            this.waitPlayerSwitchUntilOpponentFaints ? "FORCE_PLAYER_SWITCH" : null
+            playerSwitch
         ];
     }
 
@@ -495,35 +489,12 @@ class BattleScript {
     }
 
     /* 
-        Find the first member of the team that matches the conditions. 
-        It shouldn't really matter if there are multiple team members with the
-        exact same traits, since visually they will be indistinguishable.
-
-        TODO: prefix each name with a different letter so they're easier to find??
+        Find the member associated with the given simulator name.
     */
-    private findMember(team: MemberObject[], name: string, details: string): number {
-        const [ species, level, gender, /* shiny */ ] = parseDetails(details);
-        if (level == null || species == null) {
-            throw new Error(`BattleScript.findMember: unexpected null in details, name="${name}" details="${details}"`);
-        }
-        const data = this.battleInfo.data;
-        return team.findIndex(member => {
-            const dataMemberId = data[member.id];
-            if (dataMemberId == null) {
-                throw new Error(`BattleScript.findMember: unexpected null data[member.id], member.id="${member.id}" name="${name}" details="${details}"`);
-            }
-
-            if (member.gender[0] == null) {
-                throw new Error(`BattleScript.findMember: unexpected null member.gender[0], member.gender="${member.gender}" name="${name}" details="${details}"`);
-            }
-            
-            // don't want to compare by uppercase here, but if the nickname is the same as
-            // the species name it reformats the name... 
-            return member.name.toUpperCase() === name.toUpperCase() && 
-                dataMemberId.name.toUpperCase() === species.toUpperCase() &&
-                member.level === Number.parseInt(level.substring(1)) &&
-                (member.gender === "none" || member.gender[0].toUpperCase() === gender);
-        });
+    private findMember(team: MemberObject[], simulatorName: string): number {
+        return team.findIndex((member, index) => 
+            simulatorName === index.toString() + member.name
+        );
     }
 
     sendOutPlayer(name: string, index: number, status: Partial<Status>, 
@@ -581,13 +552,14 @@ class BattleScript {
         if (action[2] == null || action[3] == null || action[4] == null) {
             throw new Error(`BattleScript.handleSwitch: unexpected, ${JSON.stringify(action)}`);
         }
+        const simulatorName = getSimulatorName(action[2]);
         const name = getName(action[2]);
         const status = getStatus(action[4]);
         if (action[2][1] === "1") {
-            const index = this.findMember(this.battleInfo.info.player.team, name, action[3]);
+            const index = this.findMember(this.battleInfo.info.player.team, simulatorName);
             return this.sendOutPlayer(name, index, status, this.playerState.fainted || altText);
         } 
-        const index = this.findMember(this.battleInfo.info.opponent.team, name, action[3]);
+        const index = this.findMember(this.battleInfo.info.opponent.team, simulatorName);
         return this.sendOutOpponent(name, index, status);
 /*
             const resume = Do()

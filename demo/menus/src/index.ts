@@ -43,15 +43,15 @@ initWindow();
 
 const exampleMember1: MemberObject = {
 	id: "demo1",
-	level: 35,
+	level: 80,
 	gender: "none",
-	moves: ["THUNDER", "TACKLE", "FLY", "SOLAR BEAM"],
+	moves: ["EXPLOSION", "TACKLE", "FLY", "SOLAR BEAM"],
 	name: "COOL GUY"
 };
 
 const exampleMember2: MemberObject = {
-	id: "demo1",
-	level: 25,
+	id: "demo2",
+	level: 5,
 	gender: "none",
 	moves: ["THUNDER"],
 	name: "BAD GUY"
@@ -95,7 +95,7 @@ const battleInfo: BattleInfo = {
 			cry: "",
 			front: "demofront.png",
 			back: "demoback.png",
-			name: "GENGAR",
+			name: "MEW",
 			types: ["NORMAL"],
 			anim: { delay: [ 0 ], ref: [ 0 ] }
 		}
