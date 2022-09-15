@@ -145,6 +145,52 @@ const focusEnergy = (x: number, y: number) => (view: View) => {
 	return Events.flatten(evt);
 }
 
+const YELLOW_TO_ORANGE_BEAM: { [tex: string]: Particle.AttackTexture } = {
+	"BEAM_2_SMALL": "BEAM_1_SMALL",
+	"BEAM_2": "BEAM_1",
+	"BEAM_2_END": "BEAM_1_END",
+	"BEAM_2_CORNER": "BEAM_1_CORNER"
+};
+
+const reflect = (x: number, y: number) => (view: View) => {
+	// 8
+	const pieces: [ Particle.AttackTexture, number, number, boolean?, boolean? ][][] = [
+		[[ "BEAM_2_SMALL", 4, 0 ]],
+		[[ "BEAM_2_END", 3, 0, true, true ]],
+		[[ "BEAM_2_END", 2, 0, true, true ], [ "BEAM_2", 4, 0.125] ],
+		[[ "BEAM_2_END", 1, 0, true, true ], [ "BEAM_2", 3, 0.125], [ "BEAM_2", 4, 1.125] ],
+		[[ "BEAM_2_END", 0, 0, true, true ], [ "BEAM_2", 2, 0.125], [ "BEAM_2", 3, 1.125], [ "BEAM_2", 4, 2.125] ],
+		[[ "BEAM_2_CORNER", 0, 0, true, true ], [ "BEAM_2", 1, 0], [ "BEAM_2", 2, 1], [ "BEAM_2", 3, 2], [ "BEAM_2", 4, 3]  ],
+		[[ "BEAM_2", 0, 0 ], [ "BEAM_2", 1, 1], [ "BEAM_2", 2, 2], [ "BEAM_2", 3, 3], [ "BEAM_2", 4, 4]  ],
+		[[ "BEAM_2", 0, 1 ], [ "BEAM_2", 1, 2], [ "BEAM_2", 2, 3], [ "BEAM_2", 3, 4], [ "BEAM_2_CORNER", 4, 5] ],
+		[[ "BEAM_2", 0, 2 ], [ "BEAM_2", 1, 3], [ "BEAM_2", 2, 4],  [ "BEAM_2_END", 3, 5.125] ],
+		[[ "BEAM_2", 0, 3 ], [ "BEAM_2", 1, 4], [ "BEAM_2_END", 2, 5.125] ],
+		[[ "BEAM_2", 0, 4 ], [ "BEAM_2_END", 1, 5.125] ],
+		[[ "BEAM_2_END", 0, 5.125] ],
+		[[ "BEAM_2_SMALL", 0, 6.125, true, true]],
+	];
+	const evt: DeepEvent = [];
+	const lifespan = 2;
+	for (let i = 0; i < pieces.length; i++) {
+		const ps = pieces[i];
+		ps.forEach(([ tex, ox, oy, flipX, flipY ]) => {
+			const createParticle = (stage: PIXI.Container) => {
+				let particle = new Particle.Static(stage, x + ox * 8, y + oy * 8, i % 2 === 0 ? tex : YELLOW_TO_ORANGE_BEAM[tex], lifespan)
+					.delayStart(i * lifespan).setXAnchor(0).setYAnchor(0);
+				if (flipX) {
+					particle = particle.flipHorizontally().setXAnchor(1);
+				}
+				if (flipY) {
+					particle = particle.flipVertically().setYAnchor(1);
+				}
+				return particle;
+			}
+			evt.push(view.particleV1(createParticle));
+		})
+	}
+	return Events.flatten(evt);
+};
+
 const moonlight = (x: number, y: number, length: number) => (view: View) => {
 	let evt: DeepEvent = [];
 	for (let i = 0; i < length; i++) {
@@ -832,6 +878,33 @@ const effects: { [attack: string]: Effect } = {
 	"SUPERSONIC": {
 		opp: rings(112, 32, -2, 1),
 		ply: rings(ATTACK_PLY_X + 16, ATTACK_PLY_Y, 2, -1)
+	},
+
+	"REFLECT": {
+		opp: view => Events.flatten([
+			reflect(88, 0)(view),
+			view.invertColors(),
+			Events.wait(6),
+			view.invertColors(),
+			Events.wait(2 * 13 - 6),
+			reflect(88, 0)(view),
+			view.invertColors(),
+			Events.wait(6),
+			view.invertColors(),
+			Events.wait(2 * 13 - 6),
+		]),
+		ply: view => Events.flatten([
+			reflect(44, 36)(view),
+			view.invertColors(),
+			Events.wait(6),
+			view.invertColors(),
+			Events.wait(2 * 13 - 6),
+			reflect(44, 36)(view),
+			view.invertColors(),
+			Events.wait(6),
+			view.invertColors(),
+			Events.wait(2 * 13 - 6),
+		]),
 	},
 
 	"PSYCHIC": {

@@ -381,7 +381,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "REFLECT":{
-      
+      pan: -1,
+      sfx: "Reflect"      
     },
     "FOCUS ENERGY":{
       "sfx":"FocusEnergy",

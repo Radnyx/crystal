@@ -59,8 +59,12 @@ const attackTex = {
 	SPHERE_4: Graphics.attack(232/8,15, 3, 3),
 	SPHERE_5: Graphics.attack(232/8,18, 3, 3),
 	SPHERE_6: Graphics.attack(232/8,21, 3, 3),
+	BEAM_1_SMALL: Graphics.attack(5, 192/8 + 2, 1, 1),
+	BEAM_1_CORNER: Graphics.attack(5, 192/8, 1, 2),
 	BEAM_1: Graphics.attack(5, 192/8, 1, 3),
 	BEAM_1_END: Graphics.attack(6, 25, 2, 2),
+	BEAM_2_SMALL: Graphics.attack(5, 168/8 + 2, 1, 1),
+	BEAM_2_CORNER: Graphics.attack(5, 168/8, 1, 2),
 	BEAM_2: Graphics.attack(5,168/8, 1, 3),
 	BEAM_2_END: Graphics.attack(6,23, 2, 2),
 	TWINKLE_1_LIGHT: Graphics.attack(8,184/8,2,2),
@@ -287,10 +291,27 @@ class Static extends Particle {
 		return this;
 	}
 
-	unanchorY() {
-		this.sprites[0].anchor.set(0.5, 0);
+	unanchorX() {
+		this.sprites[0].anchor.x = 0.0;
 		return this;
 	}
+
+	unanchorY() {
+		this.sprites[0].anchor.y = 0.0;
+		return this;
+	}
+
+	setXAnchor(anchor: number) {
+		this.sprites[0].anchor.x = anchor;
+		return this;
+	}
+
+	setYAnchor(anchor: number) {
+		this.sprites[0].anchor.y = anchor;
+		return this;
+	}
+
+	
 }
 
 class Sequence extends Particle {
@@ -329,6 +350,16 @@ class Sequence extends Particle {
 			return;
 		}
 		this.sprites[0].texture = this.texs[Math.floor((this.timer - this.delayFrames) / this.delay) % this.texs.length];
+	}
+
+	setXAnchor(anchor: number) {
+		this.sprites[0].anchor.x = anchor;
+		return this;
+	}
+
+	setYAnchor(anchor: number) {
+		this.sprites[0].anchor.y = anchor;
+		return this;
 	}
 }
 
