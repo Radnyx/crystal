@@ -426,7 +426,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SWIFT":{
-      
+      sfx: "Swift",
+      pan: 1
     },
     "SKULL BASH":{
       

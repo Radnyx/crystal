@@ -676,7 +676,40 @@ function thunder(x: number, y: number): (view: View) => Event {
 	]);
 }
 
+const swift = (x: number, y: number, delay: number, dir: number = 1) => (view: View) => {
+	const xDist = 40;
+	const speed = 2;
+	const initialLife = xDist / speed;
+	const loopLife = 30;
+	const loopXRad = 24;
+	const loopYRad = 8;
+	return Events.flatten([
+		view.particleV1(stage => new Particle.Static(stage, x, y, "STAR", initialLife).delayStart(delay)
+			.offsetX(t => t * xDist * speed * dir).offsetY(t => t * xDist * speed / 2 * -dir)),
+		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + xDist * speed / 2 * -dir, "STAR", loopLife).delayStart(delay + initialLife)
+			.offsetX(t => -loopXRad + Math.cos(2 * Math.PI * t) * loopXRad).offsetY(t => dir * -Math.sin(2 * Math.PI * t) * loopYRad)),
+		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + xDist * speed / 2 * -dir, "STAR", loopLife).delayStart(delay + initialLife + loopLife)
+			.offsetX(t => t * xDist * speed * dir).offsetY(t => t * xDist * speed / 2 * -dir)),
+	]);
+
+};
+
 const effects: { [attack: string]: Effect } = {
+
+	"SWIFT": {
+		ply: view => Events.flatten([
+			swift(56, 72, 0)(view),
+			swift(62, 56, 8)(view),
+			swift(59, 63, 12)(view),
+			Events.wait(30 + 20 + 20)
+		]),
+		opp: view => Events.flatten([
+			swift(92 + 48, 28, 0, -1)(view),
+			swift(104 + 32, 16, 8, -1)(view),
+			swift(113 + 32, 35, 12, -1)(view),
+			Events.wait(30 + 20 + 20)
+		])
+	},
 
 	"THUNDER": {
 		ply: thunder(122, 0),

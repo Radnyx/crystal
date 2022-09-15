@@ -56,7 +56,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 116 - Focus Energy
 - [x] 118 - Metronome
 - [x] 126 - Fire Blast
-- [ ] 129 - Swift
+- [x] 129 - Swift
 - [ ] 130 - Skull Bash
   - [x] mechanics
   - [ ] vfx
