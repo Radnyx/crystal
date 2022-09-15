@@ -83,12 +83,12 @@ const notes = (x: number, y: number, dx: number, dy: number) => (view: View) => 
 	return Events.flatten(evt);
 };
 
-const rings = (x: number, y: number, dx: number, dy: number) => (view: View) => {
+const rings = (x: number, y: number, dx: number, dy: number, skip:number=6) => (view: View) => {
 	let evt: DeepEvent = [];
 	for (let i = 0; i < 10; i++) {
 		evt.push([
 			view.particle("Ring", x, y, dx, dy),
-			Events.wait(6)
+			Events.wait(skip)
 		])
 	}
 	evt.push(Events.wait(18));
@@ -833,6 +833,24 @@ const effects: { [attack: string]: Effect } = {
 		opp: rings(112, 32, -2, 1),
 		ply: rings(ATTACK_PLY_X + 16, ATTACK_PLY_Y, 2, -1)
 	},
+
+	"PSYCHIC": {
+		opp: view => Events.flatten([
+			() => view.addStageFilter("psychic"),
+			rings(112, 32, -2, 1, 9)(view),
+			Events.wait(95),
+			() => view.removeStageFilter("psychic"),
+			Events.wait(10),
+		]),
+		ply: view => Events.flatten([
+			() => view.addStageFilter("psychic"),
+			rings(ATTACK_PLY_X + 16, ATTACK_PLY_Y, 2, -1, 9)(view),
+			Events.wait(95),
+			() => view.removeStageFilter("psychic"),
+			Events.wait(10),
+		])
+	},
+
 
 	// 2.5s = 150 frames
 	"THUNDERBOLT": {

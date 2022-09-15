@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
-import { Input, GameV2, Graphics, MemberObject, View, BattleInfo } from "../../../src/index";
-import Resources from "./Resources";
+import { Input, GameV2, Graphics, MemberObject, View, BattleInfo, TeamObject } from "../../../src/index";
+import Resources from "../../Resources";
 
 const SCALE = 3;
 const APP_WIDTH = Graphics.GAMEBOY_WIDTH * SCALE;
@@ -43,17 +43,17 @@ initWindow();
 
 const exampleMember1: MemberObject = {
 	id: "demo1",
-	level: 80,
+	level: 20,
 	gender: "none",
-	moves: ["EXPLOSION", "TACKLE", "FLY", "SOLAR BEAM"],
+	moves: ["PSYCHIC", "TACKLE", "FLY", "SOLAR BEAM"],
 	name: "COOL GUY"
 };
 
 const exampleMember2: MemberObject = {
 	id: "demo2",
-	level: 5,
+	level: 20,
 	gender: "none",
-	moves: ["THUNDER"],
+	moves: ["PSYCHIC"],
 	name: "BAD GUY"
 };
 
@@ -102,7 +102,13 @@ const battleInfo: BattleInfo = {
 	}
 };
 
-const resources = new Resources(battleInfo.info);
+function getMovesFromTeam(team: TeamObject): string[] {
+    return team.team.map(member => member.moves).flat().filter(m => m !== "");
+}
+
+const moves = new Set([getMovesFromTeam(battleInfo.info.player), getMovesFromTeam(battleInfo.info.opponent)].flat());
+
+const resources = new Resources([...moves]);
 resources.load(() => {
 	const view = new View(app!, resources, true);
 	const game = new GameV2(view, battleInfo, true);

@@ -315,7 +315,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       "sfx":"Confusion"
     },
     "PSYCHIC":{
-      "sfx":"Psychic",
+      sfx: "Psychic",
+      shaders: [ "psychic" ]
     },
     "HYPNOSIS":{
       

@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import effects from "../../../src/Effect";
 import { EventDriver, Events, Graphics, moveInfo, View } from "../../../src/index";
-import Resources from "./Resources";
+import Resources from "../../Resources";
 import Cookies from "js-cookie";
 
 const SCALE = 3;
@@ -42,67 +42,71 @@ function initWindow() {
 initWindow();
 
 const defaultMove = Cookies.get("move");
+console.log(`Default move was: ${defaultMove}`);
 const state = {
 	setOnClick: false,
 	setDefaultValue: defaultMove != null,
 	move: defaultMove
 }
-
-const resources = new Resources(defaultMove);
+const resources = new Resources(defaultMove == null ? [] : [ defaultMove ]);
 const view = new View(app!, resources, true);
 const eventDriver = new EventDriver();
 
-view.setPlayerTexture("demo");
-view.setOpponentTexture("demo");
+resources.load(() => {
+	view.setPlayerTexture("demo");
+	view.setOpponentTexture("demo");
 
-eventDriver.append(Events.flatten([
-	view.showPlayer(),
-	view.showOpponent()
-]));
+	eventDriver.append(Events.flatten([
+		view.showPlayer(),
+		view.showOpponent()
+	]));
 
-app!.stage.addListener("click", () => {
-	if (state.move) {
-		const pan = moveInfo[state.move]!.pan || 1;
-		const sfx = moveInfo[state.move]!.sfx;
+	app!.stage.addListener("click", () => {
+		if (state.move) {
+			const pan = moveInfo[state.move]!.pan || 1;
+			const sfx = moveInfo[state.move]!.sfx;
 
-		const preEffect = effects[state.move+"_PRE"];
-		const mainEffect = effects[state.move];
-		const postEffect = effects[state.move+"_POST"];
-		eventDriver.append(Events.flatten([
-			preEffect && preEffect.ply!(view),
-			view.sfx(sfx, false, pan),
-			mainEffect && mainEffect.ply!(view),
-			postEffect && postEffect.ply!(view),
+			const preEffect = effects[state.move+"_PRE"];
+			const mainEffect = effects[state.move];
+			const postEffect = effects[state.move+"_POST"];
+			eventDriver.append(Events.flatten([
+				preEffect && preEffect.ply!(view),
+				view.sfx(sfx, false, pan),
+				mainEffect && mainEffect.ply!(view),
+				postEffect && postEffect.ply!(view),
 
-			
-			preEffect && preEffect.opp!(view),
-			view.sfx(sfx, false, -pan),
-			mainEffect && mainEffect.opp!(view),
-			postEffect && postEffect.opp!(view),
-		]));
-	}
-});
-
-function tick() {
-	if (!state.setOnClick) {
-		const useMoveButton = document.getElementById("useMove") as HTMLButtonElement;
-		if (useMoveButton != null) {
-			useMoveButton.onclick = useMove;
-			state.setOnClick = true;
+				
+				preEffect && preEffect.opp!(view),
+				view.sfx(sfx, false, -pan),
+				mainEffect && mainEffect.opp!(view),
+				postEffect && postEffect.opp!(view),
+			]));
 		}
+	});
+
+	async function useMove() {
+		const val = (document.getElementById("move") as HTMLInputElement).value.toUpperCase().trim();
+		state.move = val;
+		Cookies.set("move", val);
+		resources.loadMoves([val]);
+		console.log(val);
+		await resources.forceLoad();
 	}
-    eventDriver.update();
-	view.update();
-    app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
-}
 
-app!.ticker.add(tick);
+	function tick() {
+		if (!state.setOnClick) {
+			const useMoveButton = document.getElementById("useMove") as HTMLButtonElement;
+			if (useMoveButton != null) {
+				useMoveButton.onclick = useMove;
+				state.setOnClick = true;
+			}
+		}
+		eventDriver.update();
+		view.update();
+		app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
+	}
 
-function useMove() {
-	const val = (document.getElementById("move") as HTMLInputElement).value.toUpperCase();
-	state.move = val;
-	Cookies.set("move", val);
-	resources.loadMove(val);
-}
+	app!.ticker.add(tick);
+});
 
 

@@ -9,8 +9,11 @@
 </head>
 <body>
   <div id="app"></div>
-  <input type="text" id="move"/>
   <script src="moves.js"></script>
-  <button id="useMove">Use Move</button>
+  <form name="moveForm" id="moveForm"  action="#" method="get" role="form">
+    <label for="move">Move:</label>
+    <input type="text" id="move"/>
+    <button  type="submit" value="submit" form="moveForm" role="button" id="useMove">Use</button>
+  </form>
 </body>
 </html>

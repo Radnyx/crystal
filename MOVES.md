@@ -44,6 +44,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] mechanics
   - [ ] particles
   - [ ] background shader 
+- [X] 94 - Psychic
 - [x] 98 - Quick Attack
 - [x] 99 - Rage
   - actually has modern mechanics, report gen 2 bug

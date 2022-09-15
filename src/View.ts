@@ -24,12 +24,15 @@ function animate(
     delay[delay.length - 1] = 0;
     const script: DeepEvent = [];
     for (let i = 0; i < ref.length; i++) {
-        const index = ref[i]!;
-        const tex = textures[index];
-        const d = delay[i];
-        if (tex == null) {
-            throw new Error(`View.animate: bad animation data, index=${index} textures.length=${textures.length}`);
+        const index = Math.min(textures.length - 1, ref[i]!);
+        if (index < 0) {
+            throw new Error(`View.animate: negative index, ref[${i}] is ${index}`);
         }
+        const tex = textures[index];
+        if (tex == null) {
+            throw new Error(`View.animate: texture[${index}] is null`);
+        }
+        const d = delay[i];
         if (d == null) {
             throw new Error(`View.animate: delay is null, frame=${i} delay.length=${delay.length}`);
         }
@@ -79,7 +82,6 @@ class View implements IView {
     constructor(app: PIXI.Application, resources: IResources, private debug: boolean = false) {
         this.app = app;
         this.resources = resources;
-        this.matrixFilter = new PIXI.filters.ColorMatrixFilter();
 
         this.playerStats = new HPStatsView(this.stage, 72, 56, {
             nameX: 1, lvlX: 6, lvlY: 1, hpbarX: 1, hpbarY: 2,
@@ -118,6 +120,9 @@ class View implements IView {
         this.fullStage.addChild(this.textboxStage);
 	    this.fullStage.addChild(this.stage);
 	    this.fullStage.addChild(this.particleStage);
+        this.matrixFilter = new PIXI.filters.ColorMatrixFilter();
+        this.stage.filters = [ this.matrixFilter ];
+        this.stage.filterArea = new PIXI.Rectangle(0, 0, Graphics.GAMEBOY_WIDTH, Graphics.GAMEBOY_HEIGHT);
         this.stage.sortableChildren = true;
         this.fullStage.sortableChildren = true;
         this.particleStage.zIndex = 2;
@@ -224,7 +229,7 @@ class View implements IView {
         this.textbox.update();
         this.playerStats.update();
         this.opponentStats.update();
-        this.stage.filters = [ this.matrixFilter ];
+        this.stage.filters?.forEach(filter => filter.uniforms.step += 1);
         try {
             this.particles.forEach(p => p.update());
         } catch (err: any) {
@@ -542,12 +547,32 @@ class View implements IView {
         return this.sfx(cry, wait, isPlayer ? -0.5 : 0.5);
     }
 
+    addStageFilter(name: string) {
+        const filter = this.resources.getShader(name);
+        if (filter == null) {
+            throw new Error(`View.addStageFilter: filter ${name} doesn't exist`);
+        }
+        this.stage.filters?.push(filter);
+    }
+
+    removeStageFilter(name: string) {
+        const filter = this.resources.getShader(name);
+        if (filter == null) {
+            throw new Error(`View.removeStageFilter: filter ${name} doesn't exist`);
+        }
+        this.stage.filters = this.stage.filters?.filter(f => f !== filter) ?? null;
+    }
+
     shader(isPlayer: boolean, name: string, steps: number, delay: number, reverse: boolean = false): Event {
         const sprite = this.getMemberSprite(isPlayer);
         const script: DeepEvent = [ 
             { 
                 init: () => {
-                    sprite.filters = [ this.resources.getShader(name) ];
+                    const shader = this.resources.getShader(name);
+                    if (shader == null) {
+                        throw new Error(`View.shader: shader ${name} does not exist`);
+                    }
+                    sprite.filters = [ shader ];
                     sprite.visible = true;
                 }
             } 

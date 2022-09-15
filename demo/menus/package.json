@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "",
     "scripts": {
-      "dev": "cd ../../ && npm run build && cd demo/menus && esbuild ./src/index.ts --bundle --outfile=../public/menus.js --servedir=../public"
+      "dev": "cd ../../ && npm run build && cd demo/menus && esbuild ./src/index.ts --bundle --outfile=../public/menus.js --servedir=../public --serve=8001"
     },
     "author": "",
     "license": "ISC",
