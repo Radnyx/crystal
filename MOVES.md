@@ -33,9 +33,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 73 - Leech Seed
   - [x] mechanics
   - [ ] vfx
-- [ ] 76 - Solar Beam
-  - [x] mechanics
-  - [ ] vfx
+- [x] 76 - Solar Beam
 - [ ] 82 - Dragon Rage
 - [x] 85 - Thunderbolt
 - [x] 87 - Thunder
@@ -98,9 +96,8 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [ ] mechanics (removes hazards, like leech seed)
   - [ ] vfx
 - [x] 236 - Moonlight
-- [ ] 241 - Sunny Day
-  - [x] mechanics
-  - [ ] vfx
+- [x] 241 - Sunny Day
+  - does the "sun is still strong" message use this vfx?
 - [x] 242 - Crunch
 - [x] 245 - Extreme Speed
 - [X] 247 - Shadow Ball

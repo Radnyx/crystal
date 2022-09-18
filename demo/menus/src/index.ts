@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { Input, GameV2, Graphics, MemberObject, View, BattleInfo, TeamObject } from "../../../src/index";
 import Resources from "../../Resources";
+import config from "./config.json";
 
 const SCALE = 3;
 const APP_WIDTH = Graphics.GAMEBOY_WIDTH * SCALE;
@@ -43,17 +44,17 @@ initWindow();
 
 const exampleMember1: MemberObject = {
 	id: "demo1",
-	level: 20,
+	level: config.player.level,
 	gender: "none",
-	moves: ["SNORE", "REST", "SWIFT", "SOLAR BEAM"],
+	moves: config.player.moves,
 	name: "COOL GUY"
 };
 
 const exampleMember2: MemberObject = {
 	id: "demo2",
-	level: 20,
+	level: config.opponent.level,
 	gender: "none",
-	moves: ["SNORE", "REST", "PSYCHIC"],
+	moves: config.opponent.moves,
 	name: "BAD GUY"
 };
 

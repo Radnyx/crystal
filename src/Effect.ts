@@ -723,7 +723,89 @@ const amnesia = (x: number, y: number, dir: number = 1) => (view: View) => {
 	]);
 };
 
+const sunnyDay = (view: View) => {
+	const evt: DeepEvent[] = [];
+	const lifespan = 16;
+	evt.push(view.brighten());
+	for (let i = 0; i < 100; i++) {
+		const x = Math.random() * (Graphics.GAMEBOY_WIDTH * 1.5) - Graphics.GAMEBOY_WIDTH * 0.5;
+		evt.push(view.particleV1(stage => new Particle.Static(stage, x, 0, "SHINE_LIGHT", lifespan)
+			.offsetX(t => t * 96).offsetY(t => t * 96)));
+		if (i % 4 === 0) {
+			evt.push(Events.wait(3));
+		}
+	}
+	evt.push(Events.wait(lifespan));
+	evt.push(view.resetMatrixFilter());
+	return Events.flatten(evt);
+};
+
+const solarBeamCharge = (x: number, y: number) => (view: View) => {
+	const r = 40;
+	const sq2_2 = r * 0.70710678;
+	const charge1 = (dx: number, dy: number) => {
+		return view.particleV1(stage => new Particle.Sequence(stage, x + dx, y + dy, [ "SOLAR_BEAM_1", "SOLAR_BEAM_2", "SOLAR_BEAM_3",  "SOLAR_BEAM_3"  ], 28, 80)
+			.offsetX(t => t * -dx).offsetY(t => t * -dy));
+	}
+	return Events.flatten([
+		charge1(-r, 0),
+		charge1(r, 0),
+		charge1(0, -r),
+		charge1(0, r),
+		charge1(0 - sq2_2, 0 - sq2_2),
+		charge1(0 - sq2_2, 0 + sq2_2),
+		charge1(0 + sq2_2, 0 - sq2_2),
+		charge1(0 + sq2_2, 0 + sq2_2),
+		Events.wait(28),
+		view.particleV1(stage => new Particle.Sequence(stage, x, y, [ "SOLAR_BEAM_4", "SOLAR_BEAM_5", "SOLAR_BEAM_6" ], 33, 99)),
+		Events.wait(70),
+		() => view.getStage().visible = false,
+		Events.wait(4),
+		() => view.getStage().visible = true,
+		Events.wait(25),
+		view.particleV1(stage => new Particle.Static(stage, x, y, "SOLAR_BEAM_6", 33).setFlicker(4)),
+		Events.wait(40)
+	]);
+};
+
+const solarBeam = (x: number, y: number, dir: number = 1) => (view: View) => {
+	// 54 80
+	const delay = 4;
+	const lifespan = 80;
+	const length = 8;
+	const evt: DeepEvent[] = [];
+	const laser12: Particle.AttackTexture[] = [ "LASER_1", "LASER_2" ];
+	const laser21: Particle.AttackTexture[] = [ "LASER_2", "LASER_1" ];
+	for (let i = 0; i < length; i++) {
+		evt.push(view.particleV1(stage => new Particle.Static(stage, x + dir * (4 + 8 * (i + 1)),  y + dir * (- 2 - 4 * (i + 1)), i % 2 === 0 ? "LASER_END_1" : "LASER_END_2", delay)
+			.delayStart(delay * i).flipHorizontally(dir < 0).flipVertically(dir < 0)));
+		evt.push(view.particleV1(stage => new Particle.Sequence(stage, x + dir * (8 * i), y + dir * (- 4 * i), i % 2 === 0 ? laser12 : laser21, delay, lifespan).delayStart(delay * i)));
+	}
+	evt.push([
+		Events.wait(delay * length),
+		view.particleV1(stage => new Particle.Sequence(stage, x + dir * (2 + 8 * length), y + dir * (- 4 * length), [ "LASER_SPLASH_1", "LASER_SPLASH_2" ], delay, lifespan)
+			.flipHorizontally(dir < 0).flipVertically(dir < 0)),
+		Events.wait(lifespan + 40)
+	]);
+	return Events.flatten(evt);
+};
+
 const effects: { [attack: string]: Effect } = {
+
+	"SOLAR BEAM": {
+		ply: solarBeam(54, 76),
+		opp: solarBeam(112, 40, -1)
+	},
+
+	"SOLAR BEAM_STILL": {
+		ply: solarBeamCharge(40, 68),
+		opp: solarBeamCharge(120, 20),
+	},
+
+	"SUNNY DAY": {
+		ply: sunnyDay,
+		opp: sunnyDay
+	},
 
 	"AMNESIA": {
 		ply: amnesia(52, 64),

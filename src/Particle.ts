@@ -112,6 +112,19 @@ const attackTex = {
 	AMNESIA_1: Graphics.attack(112/8,72/8,1,1),
 	AMNESIA_2: Graphics.attack(112/8 + 1,72/8,1,1),
 	AMNESIA_3: Graphics.attack(112/8,72/8 + 3,2,2),
+	SHINE_LIGHT: Graphics.attack(5, 20, 1, 1),
+	SOLAR_BEAM_1: Graphics.attack(112/8, 168/8, 1, 1),
+	SOLAR_BEAM_2: Graphics.attack(112/8, 168/8 - 1, 1, 1),
+	SOLAR_BEAM_3: Graphics.attack(112/8, 168/8 - 2, 1, 1),
+	SOLAR_BEAM_4: Graphics.attack(112/8 - 2, 168/8, 2, 2),
+	SOLAR_BEAM_5: Graphics.attack(112/8 - 2, 168/8 - 2, 2, 2),
+	SOLAR_BEAM_6: Graphics.attack(112/8 - 2, 128/8, 3, 3),
+	LASER_1: Graphics.attack(48/8,10,1,2),
+	LASER_2: Graphics.attack(48/8 + 1,10,1,2),
+	LASER_END_1: Graphics.attack(48/8,8,2,2),
+	LASER_END_2: Graphics.attack(48/8 + 2,8,2,2),
+	LASER_SPLASH_1: Graphics.attack(48/8,12,2,3),
+	LASER_SPLASH_2: Graphics.attack(48/8 + 2,12,2,3)
 };
 
 type AttackTexture = keyof typeof attackTex;
@@ -218,13 +231,15 @@ class Particle {
 		return this;
 	}
 
-	flipHorizontally() {
-		this.sprites[0].scale.x = -this.sprites[0].scale.x;
+	flipHorizontally(condition: boolean = true) {
+		if (condition)
+			this.sprites[0].scale.x = -this.sprites[0].scale.x;
 		return this;
 	}
 
-	flipVertically() {
-		this.sprites[0].scale.y = -this.sprites[0].scale.y;
+	flipVertically(condition: boolean = true) {
+		if (condition)
+			this.sprites[0].scale.y = -this.sprites[0].scale.y;
 		return this;
 	}
 

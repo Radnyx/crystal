@@ -111,6 +111,19 @@ class View implements IView {
             opponent: new PIXI.Sprite()
         }
 
+        this.memberSprites.opponent.filters = [ new PIXI.Filter(undefined, `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            void main(void) {
+                vec4 col = texture2D(uSampler, vTextureCoord.xy);
+                if (col.w >= 0.9 && (col.x <= 0.95 || col.y <= 0.95 || col.z <= 0.95)) {
+                    gl_FragColor = col;
+                } else {
+                    gl_FragColor = vec4(0.0);
+                }
+            }
+        `) ];
+
         this.memberSprites.player.x = Graphics.PLAYER_SPRITE_X;
         this.memberSprites.player.y = Graphics.PLAYER_SPRITE_Y;
 
@@ -211,6 +224,21 @@ class View implements IView {
                 this.grayScale = !this.grayScale;
             }
         };
+    }
+
+    brighten(): Event {
+        return {
+            init: () => {
+                this.matrixFilter.brightness(2, false);
+                this.matrixFilter.tint(0xfffff0, true);
+            }
+        }
+    }
+
+    resetMatrixFilter(): Event {
+        return {
+            init: () => this.matrixFilter.reset()
+        }
     }
 
     getMemberSprite(isPlayer: boolean): PIXI.Sprite {
@@ -572,7 +600,7 @@ class View implements IView {
                     if (shader == null) {
                         throw new Error(`View.shader: shader ${name} does not exist`);
                     }
-                    sprite.filters = [ shader ];
+                    sprite.filters?.push(shader);
                     sprite.visible = true;
                 }
             } 
@@ -591,7 +619,7 @@ class View implements IView {
                 { done: t => t >= delay }
             ])
         }
-        script.push({ init: () => sprite.filters = [] });
+        script.push({ init: () => sprite.filters?.pop() });
         return Events.flatten(script);
     }
 

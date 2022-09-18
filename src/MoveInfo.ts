@@ -255,13 +255,15 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SOLAR BEAM":{
-      
+      sfx: "SolarBeam",
+      pan: 0
     },
     "SOLAR BEAM_STILL":{
-      text: "took in sunlight"
+      sfx: "SolarBeamCharge",
+      text: "took in sunlight",
+      pan: -1
     },
     "POISON POWDER":{
-      
     },
     "STUN SPORE":{
       "sfx":"StunSpore",
@@ -777,7 +779,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SUNNY DAY":{
-      
+      sfx: "SunnyDay",
+      pan: 0
     },
     "CRUNCH":{
       "sfx":"Crunch",

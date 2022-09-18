@@ -1,0 +1,10 @@
+{
+    "player": {
+        "level": 20,
+        "moves": [ "SUNNY DAY", "SOLAR BEAM" ]
+    },
+    "opponent": {
+        "level": 20,
+        "moves": [ "SUNNY DAY", "SOLAR BEAM" ]
+    }
+}
