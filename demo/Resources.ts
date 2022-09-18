@@ -73,6 +73,7 @@ export default class Resources implements IResources {
 
     private createShaders(resources: any) {
         this.shaderNames.forEach(s => {
+            if (this.filters.get(s) != null) return;
             console.log(`Created filter for ${s}`);
             this.uniforms[s] = { step: 0 };
             this.filters.set(s, new PIXI.Filter(

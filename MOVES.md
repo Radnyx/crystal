@@ -60,6 +60,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 130 - Skull Bash
   - [x] mechanics
   - [ ] vfx
+- [x] 133 - Amnesia
 - [ ] 153 - Explosion
   - [x] mechanics
   - [ ] vfx
@@ -67,6 +68,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 163 - Slash
 - [x] 164 - Substitute
 - [ ] 172 - Flame Wheel
+- [x] 173 - Snore
 - [ ] 174 - Curse
   - [x] mechanics
   - [ ] vfx

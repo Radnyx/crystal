@@ -332,18 +332,18 @@ const jumpKick = (x: number, y: number) => (view: View) => {
 	]);
 }
 
-const growl = (isPlayer: boolean) => (view: View) => {
+const growl = (isPlayer: boolean, times = 3) => (view: View) => {
 	const [x,y,dir] = isPlayer 
 		? [ATTACK_PLY_X + 16, ATTACK_PLY_Y, 1]
-		: [108, 40, -1]; 
-	return Events.flatten([
-		view.particle("Growl", x, y, dir),
-		Events.wait(16),
-		view.particle("Growl", x, y, dir),
-		Events.wait(16),
-		view.particle("Growl", x, y, dir),
-		Events.wait(12),
-	]);
+		: [108, 40, -1];
+	const evt: DeepEvent[] = [];
+	for (let i = 0; i < times; i++) {
+		evt.push([
+			view.particle("Growl", x, y, dir),
+			Events.wait(16),
+		]);
+	}
+	return Events.flatten(evt);
 }
 
 const slideOut = (speed: number, isPlayer: boolean) => (view: View) => {
@@ -711,7 +711,50 @@ const mudslap = (x: number, y: number, dir: number = 1) => (view: View) => {
 	return Events.flatten(evt);
 }
 
+const amnesia = (x: number, y: number, dir: number = 1) => (view: View) => {
+	const lifespan = 100;
+	return Events.flatten([
+		view.particle("Static", x, y, "AMNESIA_1", lifespan),
+		Events.wait(20),
+		view.particle("Static", x + 4 * dir, y - 8, "AMNESIA_2", lifespan - 20),
+		Events.wait(20),
+		view.particle("Static", x + 8 * dir, y - 8 - 12, "AMNESIA_3", lifespan - 40),
+		Events.wait(lifespan - 40),
+	]);
+};
+
 const effects: { [attack: string]: Effect } = {
+
+	"AMNESIA": {
+		ply: amnesia(52, 64),
+		opp: amnesia(104, 28, -1)
+	},
+
+	"SNORE_PRE": {
+		ply: view => Events.flatten([
+			view.particle("Z", 54, 68, -1),
+			Events.wait(20),
+		]),
+		opp: view => Events.flatten([
+			view.particle("Z", 108, 32, 1),
+			Events.wait(20),
+		])
+	},
+
+	"SNORE": {
+		ply: view => Events.flatten([
+			() => view.getFullStage().x = 2,
+			growl(true, 2)(view),
+			Events.wait(20),
+			() => view.getFullStage().x = 0,
+		]),
+		opp: view => Events.flatten([
+			() => view.getFullStage().x = -2,
+			growl(false, 2)(view),
+			Events.wait(20),
+			() => view.getFullStage().x = 0,
+		])
+	},
 
 	"MUD-SLAP": {
 		ply: mudslap(54, 80),

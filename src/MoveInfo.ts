@@ -442,7 +442,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "AMNESIA":{
-      
+      sfx: "Amnesia",
+      pan: -1
     },
     "KINESIS":{
       
@@ -564,7 +565,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SNORE":{
-      
+      sfx: "Snore",
+      pan: -1
     },
     "CURSE":{
       
