@@ -107,7 +107,8 @@ const attackTex = {
 	SMALL_THUNDER_2: Graphics.attack(11,3,1,1),
 	SMALL_THUNDER_3: Graphics.attack(11,4,1,1),
 	THUNDER_SIDE: Graphics.attack(192/8,120/8,3,7),
-	THUNDER_MID: Graphics.attack(176/8,120/8,2,7)
+	THUNDER_MID: Graphics.attack(176/8,120/8,2,7),
+	DIRT_SHADOW: Graphics.attack(6,6,2,2)
 };
 
 type AttackTexture = keyof typeof attackTex;

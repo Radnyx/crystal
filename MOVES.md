@@ -77,7 +77,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [x] mechanics
   - [ ] vfx
 - [x] 188 - Sludge Bomb
-- [ ] 189 - Mud-Slap
+- [x] 189 - Mud-Slap
 - [ ] 191 - Spikes
   - [x] mechanics
   - [ ] vfx

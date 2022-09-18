@@ -613,7 +613,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       "pan":1
     },
     "MUD-SLAP":{
-      "sfx":"MudSlap",
+      sfx:"MudSlap",
+      pan: 1
     },
     "OCTAZOOKA":{
       

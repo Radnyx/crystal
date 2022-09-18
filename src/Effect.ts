@@ -694,7 +694,29 @@ const swift = (x: number, y: number, delay: number, dir: number = 1) => (view: V
 
 };
 
+const mudslap = (x: number, y: number, dir: number = 1) => (view: View) => {
+	const evt: DeepEvent[] = [];
+	const dist = 120-54;
+	const particle = (index: number, delay: number) => (stage: PIXI.Container) => {
+		const p = new Particle.Static(stage, x, y, "DIRT_SHADOW", 12).delayStart(delay)
+			.offsetX(t => dir * dist * t).offsetY(t =>- dir * t * (24 + index * 12));
+		return dir === -1 ? p.flipHorizontally() : p;
+	};
+	for (let i = 0; i < 8; i++) {
+		for (let j = 0; j < 4; j++) {
+			evt.push(view.particleV1(particle(j, 4 * i)));
+		}
+	}
+	evt.push(Events.wait(60));
+	return Events.flatten(evt);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"MUD-SLAP": {
+		ply: mudslap(54, 80),
+		opp: mudslap(102, 36, -1)
+	},
 
 	"SWIFT": {
 		ply: view => Events.flatten([
