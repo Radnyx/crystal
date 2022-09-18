@@ -95,6 +95,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 229 - Rapid Spin
   - [ ] mechanics (removes hazards, like leech seed)
   - [ ] vfx
+- [x] 235 - Synthesis
 - [x] 236 - Moonlight
 - [x] 241 - Sunny Day
   - does the "sun is still strong" message use this vfx?

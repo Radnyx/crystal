@@ -111,6 +111,7 @@ class View implements IView {
             opponent: new PIXI.Sprite()
         }
 
+        this.memberSprites.player.filters = [ ];
         this.memberSprites.opponent.filters = [ new PIXI.Filter(undefined, `
             varying vec2 vTextureCoord;
             uniform sampler2D uSampler;

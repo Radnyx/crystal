@@ -792,6 +792,27 @@ const solarBeam = (x: number, y: number, dir: number = 1) => (view: View) => {
 
 const effects: { [attack: string]: Effect } = {
 
+	"SYNTHESIS": {
+		ply: view => Events.flatten([
+			view.shader(true, "synthesis", 80, 1),
+			view.particle("Twinkle", 36, 48),
+			Events.wait(6),
+			view.particle("Twinkle", 16, 80),
+			Events.wait(6),
+			view.particle("Twinkle", 48, 88),
+			Events.wait(60),
+		]),
+		opp: view => Events.flatten([
+			view.shader(false, "synthesis", 80, 1),
+			view.particle("Twinkle", 36 + 88, 48 - 40),
+			Events.wait(6),
+			view.particle("Twinkle", 16 + 88, 80 - 40),
+			Events.wait(6),
+			view.particle("Twinkle", 48 + 88, 88 - 40),
+			Events.wait(60),
+		])
+	},
+
 	"SOLAR BEAM": {
 		ply: solarBeam(54, 76),
 		opp: solarBeam(112, 40, -1)

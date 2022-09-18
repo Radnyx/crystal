@@ -760,7 +760,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SYNTHESIS":{
-      
+      sfx: "Synthesis",
+      pan: -1,
+      shaders: [ "synthesis" ]
     },
     "MOONLIGHT":{
       "sfx":"Moonlight",
