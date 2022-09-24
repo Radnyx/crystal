@@ -427,7 +427,6 @@ const gigaDrain = (x1: number, y1: number, x2: number, y2: number) => (view: Vie
 			.offsetX(t => deltaX(t) + Math.cos(theta(t)) * r(t))
 			.offsetY(t => deltaY(t) + Math.sin(theta(t)) * r(t))));
 	}
-	e.push(Events.wait(60 * 3 + 30));
 	return Events.flatten(e);
 };
 
@@ -977,10 +976,12 @@ const effects: { [attack: string]: Effect } = {
 	"GIGA DRAIN": {
 		ply: view => Events.flatten([
 			gigaDrain(114, 26, 40, 68)(view),
+			view.shaderBothMembers("synthesis", 60 * 3 + 30),
 			longTwinkle(32, 68)(view)
 		]),
 		opp: view => Events.flatten([
 			gigaDrain(40, 68, 114, 26)(view),
+			view.shaderBothMembers("synthesis", 60 * 3 + 30),
 			longTwinkle(122, 30)(view)
 		])
 	},

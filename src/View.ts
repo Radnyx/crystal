@@ -592,6 +592,36 @@ class View implements IView {
         this.stage.filters = this.stage.filters?.filter(f => f !== filter) ?? null;
     }
 
+    shaderBothMembers(name: string, steps: number): Event {
+        const playerSprite = this.memberSprites.player;
+        const opponentSprite = this.memberSprites.opponent;
+        return Events.flatten([
+            { 
+                init: () => {
+                    const shader = this.resources.getShader(name);
+                    if (shader == null) {
+                        throw new Error(`View.shader: shader ${name} does not exist`);
+                    }
+                    playerSprite.filters?.push(shader);
+                    playerSprite.visible = true;
+                    opponentSprite.filters?.push(shader);
+                    opponentSprite.visible = true;
+                },
+                done: t => {
+                    const uniform = this.resources.uniforms[name];
+                    if (uniform != null) {
+                        uniform.step = t;
+                    }
+                    return t >= steps;
+                }
+            },
+            () => {
+                playerSprite.filters?.pop();
+                opponentSprite.filters?.pop();
+            }
+        ]);
+    }
+
     shader(isPlayer: boolean, name: string, steps: number, delay: number, reverse: boolean = false): Event {
         const sprite = this.getMemberSprite(isPlayer);
         const script: DeepEvent = [ 
