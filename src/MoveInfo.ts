@@ -198,7 +198,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "SURF":{
-      "sfx":"Surf"
+      sfx:"Surf",
+      pan: 0,
+      shaders: ["surf"]
     },
     "ICE BEAM":{
       "sfx":"IceBeam",

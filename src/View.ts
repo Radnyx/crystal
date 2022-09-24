@@ -592,6 +592,7 @@ class View implements IView {
         if (filter == null) {
             throw new Error(`View.addStageFilter: filter ${name} doesn't exist`);
         }
+        filter.uniforms.step = 0;
         this.stage.filters?.push(filter);
     }
 

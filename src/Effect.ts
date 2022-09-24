@@ -835,9 +835,38 @@ const rainDance = (view: View) => Events.flatten([
 	view.resetMatrixFilter()
 ]);
 
+const surf = (view: View) => {
+	const totalTime = 330;
+	const riseTime = totalTime - 105;
+	function xPos(t: number) {
+		const frame = t * totalTime;
+		return Math.floor(frame / 2) % 8;
+	}
+	function yPos(t: number) {
+		if (t >= riseTime / totalTime) {
+			const t2 = (t * totalTime - riseTime) / (totalTime - riseTime);
+			return (-96-32) * (1 - t2);
+		} else {
+			const t2 = t / (riseTime / totalTime);
+			return (-96 - 16) * t2 + Math.sin(2 * Math.PI * t2 * 2.9) * 16;
+		}
+	}
+	return Events.flatten([
+		() => view.addStageFilter("surf"),
+		view.particleV1(stage => new Particle.Static(stage, -8 * 9, 96, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
+		view.particleV1(stage => new Particle.Static(stage, -8 * 9 + 80, 96 - 8, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
+		view.particleV1(stage => new Particle.Static(stage, -8 * 9 + 160, 96 - 16, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
+		Events.wait(totalTime),
+		() => view.removeStageFilter("surf")
+	]);
+};
+
 const effects: { [attack: string]: Effect } = {
 
-	
+	"SURF": {
+		ply: surf,
+		opp: surf
+	},
 
 	"BLIZZARD": {
 		ply: view => Events.flatten([
