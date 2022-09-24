@@ -11,6 +11,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 10 - Scratch
 - [ ] 12 - Guillotine
 - [x] 14 - Swords Dance 
+- [x] 17 - Wing Attack
 - [x] 19 - Fly
 - [x] 22 - Vine Whip
 - [ ] 26 - Jump Kick
@@ -35,6 +36,8 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [ ] vfx
 - [x] 76 - Solar Beam
 - [ ] 82 - Dragon Rage
+- [x] 83 - Fire Spin
+  - should we display text when it ends?
 - [x] 85 - Thunderbolt
 - [x] 87 - Thunder
 - [x] 89 - Earthquake
@@ -84,8 +87,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 194 - Destiny Bond
   - [x] mechanics
   - [ ] vfx
-- [ ] 202 - Giga Drain
-  - [ ] vfx: use synthesis shader
+- [x] 202 - Giga Drain
 - [x] 204 - Charm
 - [x] 216 - Return
 - [x] 223 - Dynamic Punch

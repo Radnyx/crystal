@@ -625,6 +625,10 @@ class BattleScript {
         const isPlayer = getIsPlayer(action[2]);
         const otherName = isPlayer ? "Enemy " + this.opponentState.name : this.playerState.name;
         switch(action[3]) {
+            case "move: Fire Spin":
+                return {
+                    do: "TEXT", text: [name, "was trapped!"]
+                };
             case "move: Destiny Bond":
                 return {
                     do: "TEXT", text: [name, "took down with it,", `${otherName}!`]
@@ -679,6 +683,11 @@ class BattleScript {
         const from = getFrom(action[4]);
         let event: Script = null;
         switch (from) {
+            case "move: Fire Spin":
+                event = [
+                    {do:"TEXT",text:[`${name}'s`, "hurt by", "FIRE SPIN!"]}
+                ];
+                break;
             case "confusion":
                 const [x, y] = isPlayer ? [36, 72] : [160-32, 32];
                 event = [

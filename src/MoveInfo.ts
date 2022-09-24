@@ -64,7 +64,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "WING ATTACK":{
-      
+      sfx: "WingAttack",
+      pan: 1
     },
     "WHIRLWIND":{
       
@@ -281,7 +282,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "FIRE SPIN":{
-      
+      sfx: "FireSpin",
+      pan: 0
     },
     "THUNDER SHOCK":{
       

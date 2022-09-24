@@ -1,10 +1,10 @@
 {
     "player": {
         "level": 20,
-        "moves": [ "SUNNY DAY", "SOLAR BEAM", "ANCIENTPOWER" ]
+        "moves": [ "FIRE SPIN", "TACKLE" ]
     },
     "opponent": {
         "level": 20,
-        "moves": [ "SUNNY DAY", "SOLAR BEAM" ]
+        "moves": [ "FIRE SPIN", "TACKLE" ]
     }
 }

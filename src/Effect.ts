@@ -675,22 +675,23 @@ function thunder(x: number, y: number): (view: View) => Event {
 	]);
 }
 
-const swift = (x: number, y: number, delay: number, dir: number = 1) => (view: View) => {
-	const xDist = 40;
+const swift = (x: number, y: number, delay: number, dir: number = 1, texture: Particle.AttackTexture = "STAR", spread: number = 0, xDist: number = 40) => (view: View) => {
 	const speed = 2;
 	const initialLife = xDist / speed;
 	const loopLife = 30;
 	const loopXRad = 24;
 	const loopYRad = 8;
+	function yPos(t: number) {
+		return  t * (xDist * speed / 2 * -dir + spread);
+	}
 	return Events.flatten([
-		view.particleV1(stage => new Particle.Static(stage, x, y, "STAR", initialLife).delayStart(delay)
-			.offsetX(t => t * xDist * speed * dir).offsetY(t => t * xDist * speed / 2 * -dir)),
-		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + xDist * speed / 2 * -dir, "STAR", loopLife).delayStart(delay + initialLife)
+		view.particleV1(stage => new Particle.Static(stage, x, y, texture, initialLife).delayStart(delay)
+			.offsetX(t => t * xDist * speed * dir).offsetY(yPos)),
+		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + yPos(1), texture, loopLife).delayStart(delay + initialLife)
 			.offsetX(t => -loopXRad + Math.cos(2 * Math.PI * t) * loopXRad).offsetY(t => dir * -Math.sin(2 * Math.PI * t) * loopYRad)),
-		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + xDist * speed / 2 * -dir, "STAR", loopLife).delayStart(delay + initialLife + loopLife)
-			.offsetX(t => t * xDist * speed * dir).offsetY(t => t * xDist * speed / 2 * -dir)),
+		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + yPos(1), texture, loopLife).delayStart(delay + initialLife + loopLife)
+			.offsetX(t => t * xDist * speed * dir).offsetY(yPos))
 	]);
-
 };
 
 const mudslap = (x: number, y: number, dir: number = 1) => (view: View) => {
@@ -789,7 +790,40 @@ const solarBeam = (x: number, y: number, dir: number = 1) => (view: View) => {
 	return Events.flatten(evt);
 };
 
+const wingAttack = (x: number, y: number) => (view: View) => {
+	return Events.flatten([
+		view.particle("Static", x, y, "BOOM_MED", 8),
+		view.particle("Static", x + 32, y, "BOOM_MED", 8),
+		Events.wait(8),
+		view.particle("Static", x + 4, y, "BOOM_MED", 8),
+		view.particle("Static", x + 32 - 4, y, "BOOM_MED", 8),
+		Events.wait(8),
+		view.particle("Static", x + 8, y, "BOOM_MED", 8),
+		view.particle("Static", x + 32 - 8, y, "BOOM_MED", 8),
+		Events.wait(8 + 80),
+	]);
+};
+
+const firespin = (x: number, y: number, dir: number = 1, xDist: number = 40) => (view: View) => {
+	const evt: DeepEvent = [];
+	for (let i = 0; i < 8; i++) {
+		evt.push(swift(x, y, i * 4, dir, i % 2 === 0 ? "FIRE_SMALL_1" : "FIRE_SMALL_2", Math.random() * 32 - 16, xDist)(view));
+	}
+	evt.push(Events.wait(160));
+	return Events.flatten(evt);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"FIRE SPIN": {
+		ply: firespin(54 + 8, 80 - 8),
+		opp: firespin(112, 44, -1, 24)
+	},
+
+	"WING ATTACK": {
+		ply: wingAttack(108, 40),
+		opp: wingAttack(24, 80)
+	},
 
 	"SYNTHESIS": {
 		ply: view => Events.flatten([
