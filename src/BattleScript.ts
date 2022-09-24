@@ -905,12 +905,14 @@ class BattleScript {
                     console.error("Unhandled:", action);
             }
         } else {
+            const oldWeather = this.weather;
             switch(action[2]) {
                 case "SunnyDay":
                     this.weather = action[2];
                     return {do:"TEXT",text:["The sunlight got", "bright!"]};
                 case "none":
-                    switch (this.weather) {
+                    this.weather = null;
+                    switch (oldWeather) {
                         case "SunnyDay":
                             return {do: "TEXT", text: ["The sunlight", "faded."]};
                     }
