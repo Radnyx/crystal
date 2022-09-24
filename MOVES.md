@@ -28,6 +28,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [x] 50 - Disable
 - [x] 53 - Flamethrower
 - [x] 58 - Ice Beam
+- [x] 59 - Blizzard
 - [ ] 63 - Hyper Beam
   - [x] mechanics
   - [ ] vfx
@@ -100,6 +101,7 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
   - [ ] vfx
 - [x] 235 - Synthesis
 - [x] 236 - Moonlight
+- [x] 240 - Rain Dance
 - [x] 241 - Sunny Day
   - does the "sun is still strong" message use this vfx?
 - [x] 242 - Crunch

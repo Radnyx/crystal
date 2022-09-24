@@ -910,6 +910,8 @@ class BattleScript {
             switch(action[2]) {
                 case "SunnyDay":
                     return {do:"TEXT",text:["The sunlight is", "strong."]};
+                case "RainDance":
+                    return {do:"TEXT",text:["Rain continues to", "fall."]};
                 default:
                     console.error("Unhandled:", action);
             }
@@ -919,11 +921,16 @@ class BattleScript {
                 case "SunnyDay":
                     this.weather = action[2];
                     return {do:"TEXT",text:["The sunlight got", "bright!"]};
+                case "RainDance":
+                    this.weather = action[2];
+                    return {do:"TEXT",text:["A downpour", "started!"]};
                 case "none":
                     this.weather = null;
                     switch (oldWeather) {
                         case "SunnyDay":
                             return {do: "TEXT", text: ["The sunlight", "faded."]};
+                        case "RainDance":
+                            return {do: "TEXT", text: ["The rain stopped."]};
                     }
                 default:
                     console.error("Unhandled:", action);

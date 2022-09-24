@@ -111,8 +111,7 @@ class View implements IView {
             opponent: new PIXI.Sprite()
         }
 
-        this.memberSprites.player.filters = [ ];
-        this.memberSprites.opponent.filters = [ new PIXI.Filter(undefined, `
+        const removeAlpha = new PIXI.Filter(undefined, `
             varying vec2 vTextureCoord;
             uniform sampler2D uSampler;
             void main(void) {
@@ -123,7 +122,10 @@ class View implements IView {
                     gl_FragColor = vec4(0.0);
                 }
             }
-        `) ];
+        `);
+
+        this.memberSprites.player.filters = [ ];
+        this.memberSprites.opponent.filters = [ removeAlpha ];
 
         this.memberSprites.player.x = Graphics.PLAYER_SPRITE_X;
         this.memberSprites.player.y = Graphics.PLAYER_SPRITE_Y;
@@ -135,7 +137,7 @@ class View implements IView {
 	    this.fullStage.addChild(this.stage);
 	    this.fullStage.addChild(this.particleStage);
         this.matrixFilter = new PIXI.filters.ColorMatrixFilter();
-        this.stage.filters = [ this.matrixFilter ];
+        this.stage.filters = [ removeAlpha, this.matrixFilter ];
         this.stage.filterArea = new PIXI.Rectangle(0, 0, Graphics.GAMEBOY_WIDTH, Graphics.GAMEBOY_HEIGHT);
         this.stage.sortableChildren = true;
         this.fullStage.sortableChildren = true;
@@ -225,6 +227,15 @@ class View implements IView {
                 this.grayScale = !this.grayScale;
             }
         };
+    }
+
+    darken(): Event {
+        return {
+            init: () => {
+                this.matrixFilter.brightness(0.5, false);
+                this.matrixFilter.tint(0xf0f0ff, true);
+            }
+        }
     }
 
     brighten(): Event {

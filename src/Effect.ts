@@ -675,10 +675,10 @@ function thunder(x: number, y: number): (view: View) => Event {
 	]);
 }
 
-const swift = (x: number, y: number, delay: number, dir: number = 1, texture: Particle.AttackTexture = "STAR", spread: number = 0, xDist: number = 40) => (view: View) => {
+const swift = (x: number, y: number, delay: number, dir: number = 1, texture: Particle.AttackTexture = "STAR", spread: number = 0, xDist: number = 40, spins: number = 1, rotSpeed: number = 1) => (view: View) => {
 	const speed = 2;
 	const initialLife = xDist / speed;
-	const loopLife = 30;
+	const loopLife = 30 * spins;
 	const loopXRad = 24;
 	const loopYRad = 8;
 	function yPos(t: number) {
@@ -686,11 +686,11 @@ const swift = (x: number, y: number, delay: number, dir: number = 1, texture: Pa
 	}
 	return Events.flatten([
 		view.particleV1(stage => new Particle.Static(stage, x, y, texture, initialLife).delayStart(delay)
-			.offsetX(t => t * xDist * speed * dir).offsetY(yPos)),
+			.offsetX(t => t * xDist * speed * dir).offsetY(yPos).priority(1)),
 		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + yPos(1), texture, loopLife).delayStart(delay + initialLife)
-			.offsetX(t => -loopXRad + Math.cos(2 * Math.PI * t) * loopXRad).offsetY(t => dir * -Math.sin(2 * Math.PI * t) * loopYRad)),
-		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + yPos(1), texture, loopLife).delayStart(delay + initialLife + loopLife)
-			.offsetX(t => t * xDist * speed * dir).offsetY(yPos))
+			.offsetX(t => -loopXRad + Math.cos(2 * Math.PI * t * spins * rotSpeed) * loopXRad).offsetY(t => dir * -Math.sin(2 * Math.PI * t * spins * rotSpeed) * loopYRad).priority(1)),
+		view.particleV1(stage => new Particle.Static(stage, x + xDist * speed * dir, y + yPos(1), texture, initialLife).delayStart(delay + initialLife + loopLife)
+			.offsetX(t => t * xDist * speed * dir).offsetY(yPos).priority(1))
 	]);
 };
 
@@ -723,20 +723,19 @@ const amnesia = (x: number, y: number, dir: number = 1) => (view: View) => {
 	]);
 };
 
-const sunnyDay = (view: View) => {
+const weather = (texture: Particle.AttackTexture = "SHINE_LIGHT", spread: number = 0, count: number = 100) => (view: View) => {
 	const evt: DeepEvent[] = [];
 	const lifespan = 16;
-	evt.push(view.brighten());
-	for (let i = 0; i < 100; i++) {
+	for (let i = 0; i < count; i++) {
+		const dx = Math.random() * spread * 2 - spread;
 		const x = Math.random() * (Graphics.GAMEBOY_WIDTH * 1.5) - Graphics.GAMEBOY_WIDTH * 0.5;
-		evt.push(view.particleV1(stage => new Particle.Static(stage, x, 0, "SHINE_LIGHT", lifespan)
-			.offsetX(t => t * 96).offsetY(t => t * 96)));
+		evt.push(view.particleV1(stage => new Particle.Static(stage, x, 0, texture, lifespan)
+			.offsetX(t => t * (96 + dx)).offsetY(t => t * 96)));
 		if (i % 4 === 0) {
 			evt.push(Events.wait(3));
 		}
 	}
 	evt.push(Events.wait(lifespan));
-	evt.push(view.resetMatrixFilter());
 	return Events.flatten(evt);
 };
 
@@ -813,7 +812,52 @@ const firespin = (x: number, y: number, dir: number = 1, xDist: number = 40) => 
 	return Events.flatten(evt);
 }
 
+const blizzard = (x: number, y: number, dir: number = 1, xDist: number = 40) => (view: View) => {
+	const ices: Particle.AttackTexture[] = [
+		"ICE_1", "ICE_2", "ICE_3", "ICE_4"
+	];
+	const evt: DeepEvent = [];
+	for (let i = 0; i < 9; i++) {
+		evt.push(swift(x, y, i * 3, dir, ices[Math.floor(Math.random() * 4)], Math.floor(Math.random() * 40 - 20), xDist, 4, 1.5)(view));
+	}
+	return Events.flatten(evt);
+}
+
+const sunnyDay = (view: View) => Events.flatten([
+	view.brighten(),
+	weather()(view),
+	view.resetMatrixFilter()
+])
+
+const rainDance = (view: View) => Events.flatten([
+	view.darken(),
+	weather("RAIN", 24, 200)(view),
+	view.resetMatrixFilter()
+]);
+
 const effects: { [attack: string]: Effect } = {
+
+	
+
+	"BLIZZARD": {
+		ply: view => Events.flatten([
+			blizzard(54 + 8, 80 - 8)(view),
+			Events.wait(50),
+			view.particle("RisingIceWall", ATTACK_OPP_X - 24, ATTACK_OPP_Y + 36, 144, 12),
+			Events.wait(160)
+		]),
+		opp: view => Events.flatten([
+			blizzard(112, 44, -1, 24)(view),	
+			Events.wait(50),
+			view.particle("RisingIceWall", 12, 104, 144, 12),
+			Events.wait(160)
+		])
+	},
+
+	"RAIN DANCE": {
+		ply: rainDance,
+		opp: rainDance
+	},
 
 	"FIRE SPIN": {
 		ply: firespin(54 + 8, 80 - 8),

@@ -205,7 +205,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       "pan":1
     },
     "BLIZZARD":{
-      
+      sfx: "Blizzard",
+      pan: 1
     },
     "PSYBEAM":{
       
@@ -781,7 +782,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "RAIN DANCE":{
-      
+      sfx: "RainDance",
+      pan: 0
     },
     "SUNNY DAY":{
       sfx: "SunnyDay",
