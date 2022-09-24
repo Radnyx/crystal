@@ -432,6 +432,7 @@ class BattleScript {
         if (isPlayer) {
             // Both fainted, but we fainted first.
             const next = this.stream[0];
+            const hasWon = this.stream[2] != null && this.stream[2][1] === "win";
             this.waitPlayerSwitchUntilOpponentFaints = isPlayer && next != null && 
                 // opponent faints due to destiny bond
                 ((next[1] === "-activate" && next[3] === "move: Destiny Bond") ||
@@ -451,7 +452,7 @@ class BattleScript {
                 "HIDE_PLAYER_STATS",
                 "HIDE_PLAYER",
                 { do: "TEXT", text: [name, "fainted!"] },
-                this.waitPlayerSwitchUntilOpponentFaints ? null : "FORCE_PLAYER_SWITCH"
+                this.waitPlayerSwitchUntilOpponentFaints || hasWon ? null : "FORCE_PLAYER_SWITCH"
             ];
         }
         const playerSwitch = this.waitPlayerSwitchUntilOpponentFaints ? "FORCE_PLAYER_SWITCH" : null;
