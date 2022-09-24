@@ -856,12 +856,44 @@ const surf = (view: View) => {
 		view.particleV1(stage => new Particle.Static(stage, -8 * 9, 96, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
 		view.particleV1(stage => new Particle.Static(stage, -8 * 9 + 80, 96 - 8, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
 		view.particleV1(stage => new Particle.Static(stage, -8 * 9 + 160, 96 - 16, "SURF", totalTime).unanchorX().offsetX(xPos).offsetY(yPos)),
-		Events.wait(totalTime),
+		{
+			done: t => {
+				view.setFilterUniform("surf", "yPos", yPos(t / totalTime));
+				return t >= totalTime;
+			}
+		},
 		() => view.removeStageFilter("surf")
 	]);
 };
 
+const whirlpool = (x: number, y: number) => (view: View) => {
+	const lifetime = 4 * 60;
+	const betweenTornados = 10;
+	const tornado: DeepEvent = [];
+	for (let i = 0; i < 7; i++) {
+		tornado.push(view.particleV1(stage => new Particle.Sequence(stage, x, y - i * 8, ["TORNADO_1","TORNADO_2","TORNADO_3"], 4, lifetime - 36 - i * betweenTornados)
+			.delayStart(36 + betweenTornados * i).offsetX(t => Math.sin(2 * Math.PI * t * 15) * (8 * i / 7))));
+	}
+
+	return Events.flatten([
+		() => view.addStageFilter("surf"),
+		tornado,
+		{
+			init: () => {
+				view.setFilterUniform("surf", "yPos", -100);
+			}
+		},
+		Events.wait(lifetime),
+		() => view.removeStageFilter("surf")
+	]);
+}
+
 const effects: { [attack: string]: Effect } = {
+
+	"WHIRLPOOL": {
+		ply: whirlpool(120, 52),
+		opp: whirlpool(38, 92)
+	},
 
 	"SURF": {
 		ply: surf,

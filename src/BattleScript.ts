@@ -625,6 +625,7 @@ class BattleScript {
         const isPlayer = getIsPlayer(action[2]);
         const otherName = isPlayer ? "Enemy " + this.opponentState.name : this.playerState.name;
         switch(action[3]) {
+            case "move: Whirlpool":
             case "move: Fire Spin":
                 return {
                     do: "TEXT", text: [name, "was trapped!"]
@@ -683,6 +684,15 @@ class BattleScript {
         const from = getFrom(action[4]);
         let event: Script = null;
         switch (from) {
+            case "move: Whirlpool":
+                event = [
+                    event = [
+                        {do:"MOVE_SFX", move:"WHIRLPOOL", isPlayer:!isPlayer},
+                        {do:"EFFECT", name:"WHIRLPOOL", isPlayer: !isPlayer},
+                        {do:"TEXT",text:[`${name}'s`, "hurt by", "WHIRLPOOL!"]}
+                    ]
+                ];
+                break;
             case "move: Fire Spin":
                 event = [
                     {do:"TEXT",text:[`${name}'s`, "hurt by", "FIRE SPIN!"]}
@@ -843,6 +853,10 @@ class BattleScript {
         const name = getTextName(action[2]);
         const isPlayer = getIsPlayer(action[2]);
         switch(action[3]) {
+            case "Whirlpool":
+                return {do:"TEXT",text:[name, "was released from", "WHIRLPOOL!"]};
+            case "Fire Spin":
+                return {do:"TEXT",text:[name, "was released from", "FIRE SPIN!"]};
             case "move: Future Sight":
                 return [
                     { do: "TEXT", text: [name, "was hit by FUTURE", "SIGHT!"], }

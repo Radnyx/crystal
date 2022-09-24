@@ -816,7 +816,9 @@ const moveInfo: { [move: string]: MoveInfo } = {
       
     },
     "WHIRLPOOL":{
-      
+      sfx: "Whirlpool",
+      pan: 1,
+      shaders: ["surf"]
     },
     "BEAT UP":{
       

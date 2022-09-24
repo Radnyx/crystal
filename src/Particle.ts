@@ -129,6 +129,9 @@ const attackTex = {
 	LASER_SPLASH_1: Graphics.attack(48/8,12,2,3),
 	LASER_SPLASH_2: Graphics.attack(48/8 + 2,12,2,3),
 	SURF: Graphics.attack(176/8,192/8, 10, 1),
+	TORNADO_1: Graphics.attack(120/8,120/8, 1, 1),
+	TORNADO_2: Graphics.attack(120/8 + 1,120/8, 1, 1),
+	TORNADO_3: Graphics.attack(120/8 + 2,120/8, 1, 1),
 };
 
 type AttackTexture = keyof typeof attackTex;

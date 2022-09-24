@@ -1,10 +1,10 @@
 {
     "player": {
         "level": 25,
-        "moves": [ "SURF", "SUNNY DAY", "TACKLE" ]
+        "moves": [ "WHIRLPOOL", "SUNNY DAY", "TACKLE" ]
     },
     "opponent": {
         "level": 20,
-        "moves": [  "BLIZZARD" ]
+        "moves": [  "FIRE SPIN", "TACKLE" ]
     }
 }

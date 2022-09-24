@@ -596,6 +596,14 @@ class View implements IView {
         this.stage.filters?.push(filter);
     }
 
+    setFilterUniform(name: string, uniform: string, value: any) {
+        const filter = this.resources.getShader(name);
+        if (filter == null) {
+            throw new Error(`View.setFilterUniform: filter ${name} doesn't exist`);
+        }
+        filter.uniforms[uniform] = value;
+    }
+
     removeStageFilter(name: string) {
         const filter = this.resources.getShader(name);
         if (filter == null) {
