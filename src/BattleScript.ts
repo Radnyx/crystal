@@ -8,8 +8,8 @@ const convertPSStat: { [stat: string]: string } = {
     "evasiveness": "EVASION",
     "atk": "ATTACK",
     "def": "DEFENSE",
-    "spa": "SPCL.ATTACK",
-    "spd": "SPCL.DEFENSE",
+    "spa": "SPCL.ATK",
+    "spd": "SPCL.DEF",
     "spe": "SPEED"
 };
 

@@ -796,8 +796,8 @@ const moveInfo: { [move: string]: MoveInfo } = {
     "EXTREMESPEED":{
       "sfx":"ExtremeSpeed"
     },
-    "ANCIENT POWER":{
-      
+    "ANCIENTPOWER":{
+      sfx:"AncientPower"
     },
     "SHADOW BALL":{
       "sfx":"ShadowBall"

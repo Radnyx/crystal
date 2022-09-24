@@ -84,7 +84,8 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 194 - Destiny Bond
   - [x] mechanics
   - [ ] vfx
-- [x] 202 - Giga Drain
+- [ ] 202 - Giga Drain
+  - [ ] vfx: use synthesis shader
 - [x] 204 - Charm
 - [x] 216 - Return
 - [x] 223 - Dynamic Punch

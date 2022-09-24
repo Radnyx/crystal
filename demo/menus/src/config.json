@@ -1,7 +1,7 @@
 {
     "player": {
         "level": 20,
-        "moves": [ "SUNNY DAY", "SOLAR BEAM" ]
+        "moves": [ "SUNNY DAY", "SOLAR BEAM", "ANCIENTPOWER" ]
     },
     "opponent": {
         "level": 20,
