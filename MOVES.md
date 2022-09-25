@@ -111,4 +111,5 @@ Among other gameplay videos, this is my main reference: https://www.youtube.com/
 - [ ] 248 - Future Sight
   - [x] mechanics
   - [ ] vfx
+- [x] 250 - Whirlpool
 - [x] 251 - Beat Up
