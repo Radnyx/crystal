@@ -118,6 +118,19 @@ function poisonAnim(isPlayer: boolean): Script {
 	];
 }
 
+function wrapText(text: string) {
+    const lines: string[] = [ "" ];
+    const words = text.split(" ");
+    for (const word of words) {
+        const currentLine = lines[lines.length - 1];
+        if (currentLine.length + word.length > 18) {
+            lines.push("");
+        }
+        lines[lines.length - 1] += word + " ";
+    }
+    return lines.map(line => line.trim());
+}
+
 interface State {
     // name given to the fighter
     name?: string;
@@ -472,10 +485,10 @@ class BattleScript {
     private handleWin(action: string[]): Script {
         if (action[2] === this.playerState.trainerName) {
             return [
-                { do: "TEXT", text: [ this.opponentState.trainerName!, "was defeated!" ] },
                 "PLAY_VICTORY_MUSIC",
+                { do: "TEXT", text: [ this.opponentState.trainerName!, "was defeated!" ] },
                 "SLIDE_IN_OPPONENT_TRAINER",
-                { do: "TEXT", text: [ "I won't lose next", "time, all right?" ] }
+                { do: "TEXT", text: wrapText(this.battleInfo.info.winMessage ?? "") }
             ];
         } else {
             return [
