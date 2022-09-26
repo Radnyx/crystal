@@ -55,6 +55,7 @@ class StatsView {
 		
 		this.stage = stage;
 		this.myStage = new PIXI.Container();
+		this.myStage.filters = [ Graphics.removeAlpha ];
 		this.myStage.zIndex = -1;
 		this.myStage.sortableChildren = true;
 		this.myStage.x = x;

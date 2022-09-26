@@ -111,21 +111,8 @@ class View implements IView {
             opponent: new PIXI.Sprite()
         }
 
-        const removeAlpha = new PIXI.Filter(undefined, `
-            varying vec2 vTextureCoord;
-            uniform sampler2D uSampler;
-            void main(void) {
-                vec4 col = texture2D(uSampler, vTextureCoord.xy);
-                if (col.w >= 0.9 && (col.x <= 0.95 || col.y <= 0.95 || col.z <= 0.95)) {
-                    gl_FragColor = col;
-                } else {
-                    gl_FragColor = vec4(0.0);
-                }
-            }
-        `);
-
         this.memberSprites.player.filters = [ ];
-        this.memberSprites.opponent.filters = [ removeAlpha ];
+        this.memberSprites.opponent.filters = [ Graphics.removeAlpha ];
 
         this.memberSprites.player.x = Graphics.PLAYER_SPRITE_X;
         this.memberSprites.player.y = Graphics.PLAYER_SPRITE_Y;
@@ -137,7 +124,7 @@ class View implements IView {
 	    this.fullStage.addChild(this.stage);
 	    this.fullStage.addChild(this.particleStage);
         this.matrixFilter = new PIXI.filters.ColorMatrixFilter();
-        this.stage.filters = [ removeAlpha, this.matrixFilter ];
+        this.stage.filters = [ this.matrixFilter ];
         this.stage.filterArea = new PIXI.Rectangle(0, 0, Graphics.GAMEBOY_WIDTH, Graphics.GAMEBOY_HEIGHT);
         this.stage.sortableChildren = true;
         this.fullStage.sortableChildren = true;
