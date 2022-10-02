@@ -267,7 +267,7 @@ const moveInfo: { [move: string]: MoveInfo } = {
       text: "took in sunlight",
       pan: -1
     },
-    "POISON POWDER":{
+    "POISONPOWDER":{
     },
     "STUN SPORE":{
       "sfx":"StunSpore",

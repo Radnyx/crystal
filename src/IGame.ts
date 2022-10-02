@@ -5,6 +5,7 @@ interface IGame {
     forcePlayerSwitch(): void;
     getPlayerTeamHealth(): number[];
     getOpponentTeamHealth(): number[];
+    loadMove(move: string): Promise<void>;
 }
 
 export default IGame;

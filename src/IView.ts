@@ -1,9 +1,11 @@
 import { AnimObject, MemberObject } from "./BattleObjects";
 import { Event } from "./Event";
-import { Music } from "./IResources";
+import { IResources, Music } from "./IResources";
 import Status from "./Status";
 
 interface IView {
+    resources: IResources;
+
     update(): void;
 
     getPlayerStatus(): Status;

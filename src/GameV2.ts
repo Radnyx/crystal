@@ -14,6 +14,7 @@ import { Events, EventDriver } from './Event';
 import IGame from './IGame';
 import View from './View';
 import { ObjectReadWriteStream } from '@pkmn/streams';
+import { IResources } from './IResources';
 
 function buildPSGender(gender: "male" | "female" | "none"): string {
     switch (gender) {
@@ -52,14 +53,10 @@ class PlayerController extends RandomPlayerAI {
     }
 } 
 
+type MoveLoader = (move: string) => Promise<IResources>;
 class GameV2 implements IGame {
 
     private eventDriver: EventDriver;
-
-    // all graphical changes or effects are performed here
-    public readonly view: View;
-
-    public battleInfo: BattleInfo;
 
     // Writes script from pokemon-showdown stream
     private battleScript?: BattleScript;
@@ -77,9 +74,7 @@ class GameV2 implements IGame {
 
     private movesState: number = 0;
 
-    constructor (view: View, battleInfo: BattleInfo, private debug: boolean = false) {
-        this.view = view;
-        this.battleInfo = battleInfo;
+    constructor (public readonly view: View, public battleInfo: BattleInfo, private readonly moveLoader: MoveLoader, private debug: boolean = false) {
         if (this.debug) {
             console.log("GameV2.constructor: initializing");
         }
@@ -136,6 +131,12 @@ class GameV2 implements IGame {
         this.streams = streams;
 
         this.view.restart();
+    }
+
+    loadMove(move: string): Promise<void> {
+        return this.moveLoader(move).then(resources => {
+            this.view.resources = resources;
+        });
     }
 
     update() {

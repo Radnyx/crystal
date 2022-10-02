@@ -45,8 +45,6 @@ function animate(
 }
 
 class View implements IView {
-    public readonly app: PIXI.Application;
-    public readonly resources: IResources;
     private matrixFilter: ColorMatrixFilter;
     private grayScale: boolean = false;
 
@@ -79,10 +77,7 @@ class View implements IView {
     private playerMember?: MemberObject;
     private opponentMember?: MemberObject;
 
-    constructor(app: PIXI.Application, resources: IResources, private debug: boolean = false) {
-        this.app = app;
-        this.resources = resources;
-
+    constructor(public readonly app: PIXI.Application, public resources: IResources, private debug: boolean = false) {
         this.playerStats = new HPStatsView(this.stage, 72, 56, {
             nameX: 1, lvlX: 6, lvlY: 1, hpbarX: 1, hpbarY: 2,
             genderX: 8, genderY: 1, hpTextX: 2, hpTextY: 3, texX: 0, texY: 2,
@@ -535,16 +530,18 @@ class View implements IView {
 
     sfx(name: string | undefined, wait: boolean = false, panning: number = 0): Event {
         if (name == null) return {};
-        const sound: PIXI_SOUND.Sound = PIXI_SOUND.sound.find(name);
-        if (sound == null) {
-            console.error(`Could not play sound: "${name}".`);
-            return {};
-        }
-        if (panning !== 0) {
-            sound.filters = [ new PIXI_SOUND.filters.StereoFilter(panning) ];
-        }
         return {
             init: state => { 
+                const sound: PIXI_SOUND.Sound = PIXI_SOUND.sound.find(name);
+                if (sound == null) {
+                    console.error(`Could not play sound: "${name}".`);
+                    state.waiting = false;
+                    return;
+                }
+                if (panning !== 0) {
+                    sound.filters = [ new PIXI_SOUND.filters.StereoFilter(panning) ];
+                }
+
                 if (this.debug) {
                     console.log(`View.sfx: sound started, name=${name} wait=${wait} panning=${panning}`);
                 }

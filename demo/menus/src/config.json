@@ -1,10 +1,10 @@
 {
     "player": {
         "level": 25,
-        "moves": [ "WHIRLPOOL", "SUNNY DAY", "TACKLE" ]
+        "moves": [ "METRONOME" ]
     },
     "opponent": {
         "level": 20,
-        "moves": [  "FIRE SPIN", "TACKLE" ]
+        "moves": [  "METRONOME" ]
     }
 }

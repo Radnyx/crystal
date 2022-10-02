@@ -182,6 +182,17 @@ class Interpreter {
                 return this.moveSfx(command.move, command.isPlayer);
             case "WAIT":
                 return Events.wait(command.frames);
+            case "LOAD_MOVE":
+                Interpreter.assertGameNotNull(game);
+                return {
+                    init: state => {
+                        state.waiting = true;
+                        game.loadMove(command.move).then(() => state.waiting = false);
+                    },
+                    done: (tick, state) => {
+                        return !state.waiting;
+                    }
+                };
             default:
                 throw new Error(`Unsupported script command: ${JSON.stringify(command)}.`);
         }

@@ -6,6 +6,7 @@ import moveInfo from './MoveInfo';
 const convertPSStat: { [stat: string]: string } = {
     "accuracy": "ACCURACY",
     "evasiveness": "EVASION",
+    "evasion": "EVASION",
     "atk": "ATTACK",
     "def": "DEFENSE",
     "spa": "SPCL.ATK",
@@ -337,8 +338,8 @@ class BattleScript {
         }
         const name = getTextName(action[2]);
         const isPlayer = action[2][1] === "1";
-        const miss = action[5] === "[miss]";
-        const still = action[5] === "[still]";
+        const miss = action.includes("[miss]");
+        const still = action.includes("[still]");
         const actualMove = move + (still ? "_STILL" : "");
         const fail = (this.stream[0] == null) ? false 
             : ((this.stream[0][1] === "-fail") ||
@@ -363,6 +364,7 @@ class BattleScript {
     private performMove(move: string, isPlayer: boolean): Script {
         const substituted = this.getState(isPlayer).substituted;
         return [
+            {do:"LOAD_MOVE", move},
             isPlayer 
                 ? "HIDE_PLAYER_STATS"
                 : "HIDE_OPPONENT_STATS",

@@ -112,7 +112,11 @@ const moves = new Set([getMovesFromTeam(battleInfo.info.player), getMovesFromTea
 const resources = new Resources([...moves]);
 resources.load(() => {
 	const view = new View(app!, resources, true);
-	const game = new GameV2(view, battleInfo, true);
+	const game = new GameV2(view, battleInfo, (move: string) => {
+		console.log("LOADING MOVE " + move);
+		resources.loadMoves([ move ]);
+		return resources.forceLoad();
+	}, true);
 
 	view.setPlayerTexture("demo");
 	view.setOpponentTexture("demo");

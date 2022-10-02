@@ -18,6 +18,8 @@ export default class Resources implements IResources {
     private filters: Map<string, PIXI.Filter> = new Map();
     private shaderNames: Set<string> = new Set();
 
+    private moveCache: Set<string> = new Set();
+
     constructor(moves: string[]) {
         this.demoFrontTexture = PIXI.Texture.from("demofront.png");
         this.demoBackTexture = PIXI.Texture.from("demoback.png");
@@ -33,15 +35,15 @@ export default class Resources implements IResources {
         this.loadMoves(moves);
     }
 
-    load(callback: (data?: any) => any) {
+    load(callback: (resources: IResources) => any) {
         this.loader.load((_, resources) => {
             this.createShaders(resources);
-            callback();
+            callback(this);
             this.loader.reset();
         });
     }
 
-    forceLoad() {
+    forceLoad(): Promise<IResources> {
         return new Promise((resolve, reject) => {
             this.loader.onError.add(err => console.error(err));
             this.load(resolve);
@@ -49,15 +51,16 @@ export default class Resources implements IResources {
     }
 
     loadMoves(moves: string[]) {
-        for (const move of [...moves]) {
+        for (const move of moves) {
+            if (this.moveCache.has(move)) continue;
+            this.moveCache.add(move);
             const moveStill = move + "_STILL";
             if (moveInfo[moveStill] != null) {
                 moves.push(moveStill);
             }
-        }
-        for (const move of moves) {
             const moveData = moveInfo[move];
             if (moveData.sfx) {
+                console.log(`Loading sfx "${moveData.sfx}"`);
                 this.loader.add(moveData.sfx, `attacksfx/${moveData.sfx}.wav`);
             }
             if (moveData.shaders) {
