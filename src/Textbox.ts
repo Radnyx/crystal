@@ -51,6 +51,10 @@ class Textbox {
 		this.stage.addChild(contArrowSprite);
 	}
 
+	setVisible(visible: boolean) {
+		textboxSprite.visible = visible;
+	}
+
 	private currentLine(): string {
 		const line = this.data[this.line];
 		if (line == null) {

@@ -248,6 +248,7 @@ class GameV2 implements IGame {
         const currentMember = this.getSimulatedPlayer();
         const member = this.getSimulatedPlayerMember(index);
         this.popAllMenus();
+        this.view.getTextbox().setVisible(true);
         this.eventDriver.append(Events.flatten([
             currentMember.hp > 0 ? [
                 this.view.text([

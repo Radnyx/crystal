@@ -187,8 +187,10 @@ abstract class Menu {
 	selectMessage(text: string[]) {
 		this.game.getEventDriver().append(Events.flatten([
 			() => this.arrowSpr.texture = arrowTexture2,
+			() => this.game.view.getTextbox().setVisible(true),
 			this.game.view.text(text),
 			this.game.view.clearTextbox(),
+			() => this.game.view.getTextbox().setVisible(false),
 			{
 				init: () => this.arrowSpr.visible = false,
 				done: t => t >= 4
@@ -590,7 +592,6 @@ abstract class TeamView extends Menu {
 
 		this.canCancel = canCancel;
 		this.state = 0;
-		// this.state = this.game.teamViewIndex;
 	}
 
 	private generateGraphics() {
@@ -632,24 +633,11 @@ abstract class TeamView extends Menu {
 		this.cancelTxt.change("CANCEL");
 	}
 
-	// refresh team view with a new team
-	/*
-	refresh(team: PlayerMember[]) {
-		const oldState = this.state;
-		this.team = team;
-		const [ trans, pos ] = createTeamViewTransitions(team);
-		this.reset(trans, pos, Input.releaseArrows);
-		this.state = Math.min(oldState, pos.length - 1);
-		this.hide();
-		this.generateGraphics();
-		this.game.addMenu(this);
-	}
-	*/
-
 	exit(then?: DeepEvent) {
 		this.game.getEventDriver().append(Events.flatten([
 			() => this.arrowSpr.texture = arrowTexture2,
 			Events.wait(10),
+			() => this.game.view.getTextbox().setVisible(true),
 			() => this.game.popMenu(),
 			then
 		]));
@@ -673,7 +661,6 @@ abstract class TeamView extends Menu {
 			throw new Error("TeamView.update: updating TeamView before shown");
 		}
 		super.update();
-		// this.game.teamViewIndex = this.state;
 
 		this.stats.forEach(s => s.update());
 		this.iconSpr.forEach((s, i) => {
@@ -745,11 +732,6 @@ abstract class TeamView extends Menu {
 	/* Executed when selecting a team member. */
 	protected abstract handle(): void;
 
-	/* Executed when leaving the menu (before textbox is shown) */
-	protected onExit(): DeepEvent {
-		return {};
-	}
-
 	_show() {
 		this.generateGraphics();
 		const driver = this.game.getEventDriver();
@@ -757,6 +739,7 @@ abstract class TeamView extends Menu {
 		driver.force(this.game.view.hideOpponent());
 		driver.force(this.game.view.hidePlayerStats());
 		driver.force(this.game.view.hideOpponentStats());
+		this.game.view.getTextbox().setVisible(false);
 		this.stage.addChild(this.messageSpr);
 		this.messageTxt.change(this.message);
 		// render icon sprites from bottom to top
