@@ -1,11 +1,12 @@
 {
   "name": "@radnyx/crystal",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Pokemon Crystal battle simulator.",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
   "scripts": {
-    "build": "rm -f -r ./build/* && tsc"
+    "build": "rm -f -r ./build/* && tsc",
+    "postinstall": "cd demo/moves && npm i && cd ../menus && npm i"
   },
   "files": [
     "build/src/"

@@ -8,9 +8,19 @@
   <title>Crystal Demo Moves</title>
 </head>
 <body>
+  <h1>Move Animation Demo</h1>
   <div id="app"></div>
   <script src="moves.js"></script>
   <form name="moveForm" id="moveForm"  action="#" method="get" role="form">
+    <ul>
+      <li>
+        Enter the exact name of a move used in src/MoveInfo.ts, e.g. FLAMETHROWER.
+      </li>
+      <li>
+        Click the game once to see the move's animations from the player and the opponent.
+      </li>
+      <li>The name of the move is saved when you refresh the page.</li>
+    </ul>
     <label for="move">Move:</label>
     <input type="text" id="move"/>
     <button  type="submit" value="submit" form="moveForm" role="button" id="useMove">Use</button>
