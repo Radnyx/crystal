@@ -1,14 +1,14 @@
 # Contributing
 
-I use the latest version of node (`v20.11.0`) and npm (`10.4.0`), but older versions should work too. If `npm install` doesn't work, try upgrade to the latest node and npm.
+I use the latest version of node (`v20.11.0`) and npm (`10.4.0`), but older versions should work too. If `npm install` doesn't work, try upgrading to the latest node and npm.
 
 ## Prerequisites
 
 ### TypeScript
 
-For this project, the most important skill to have is TypeScript programming.
+For this project, the most important skill is TypeScript programming.
 
-If you're new to TypeScript, it’s good to understand what sets apart TypeScript not just from JavaScript, but also other languages. 
+If you're new to TypeScript, it’s good to understand what sets apart TypeScript from other languages.
 
 Here is stuff you'll use frequently:
 * Basic types (objects, unions, enums, ...): https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
@@ -23,7 +23,7 @@ A shader is code that runs on your GPU. They are used all the time in game devel
 
 Here, shaders are mostly used for special move animations. Only a couple moves need them, like SURF and PSYCHIC. Any move that changes the colors of objects or animates the entire screen likely needs a shader.
 
-The easiest way to learn shader programming is on https://www.shadertoy.com. I found [this tutorial](https://www.shadertoy.com/view/Md23DV), which seems to do a good job covering the basics of shader programming.
+The easiest way to learn shader programming is on https://www.shadertoy.com. I found [this tutorial](https://www.shadertoy.com/view/Md23DV), which seems to do a good job covering the basics.
 
 ### PIXI.js (optional)
 
