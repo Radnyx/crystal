@@ -6,7 +6,9 @@
 
 This project is a playable browser simulation of the Pokemon Cystal battle engine.
 
-This uses [modular Pokemon Showdown](https://github.com/pkmn/ps) as the backend, so (almost) every move should be fully functional.
+This uses [modular Pokemon Showdown](https://github.com/pkmn/ps) as the backend.
+
+The battle experience is mostly complete. Not all moves are finished and items aren't supported yet.
 
 ## Quick start ##
 
@@ -43,9 +45,9 @@ Full contribution instructions are in the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Contact ##
 
-Please contact me with any suggestions or bug reports here or via the following sites. I will also be posting frequent updates.
+Please contact me with any suggestions or bug reports.
 
-[![Discord Server](https://dcbadge.vercel.app/api/server/INVITEID)](https://discord.gg/v4P6N77bP3)
+[![Discord Server](https://dcbadge.vercel.app/api/server/v4P6N77bP3)](https://discord.gg/v4P6N77bP3)
 
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/radnyx.svg?style=social&label=Follow%20%40radnyx)](https://twitter.com/radnyx)
 
