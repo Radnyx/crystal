@@ -1,8 +1,8 @@
 # Fully Animated Moves
 
-Here is a list of every move that has been fully animated thus far. Animating moves takes time, so expect it to take a while :). (Pull Requests are greatly appreciated!)
+Here is a list of every move that has been fully animated thus far.
 
-Among other gameplay videos, this is my main reference: https://www.youtube.com/watch?v=oBMqOSxaLC8
+This is my main visual reference: https://www.youtube.com/watch?v=oBMqOSxaLC8
 
 - [ ] 1 - Pound
 - [ ] 2 - Karate Chop

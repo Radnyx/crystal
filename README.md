@@ -4,9 +4,9 @@
 
 ![Simulator in action!](https://i.imgur.com/BlcxUHm.gif)
 
-This project is a playable browser simulation of the Pokemon Cystal battle engine.
+This is a playable browser simulation of the Pokemon Cystal battle engine.
 
-This uses [modular Pokemon Showdown](https://github.com/pkmn/ps) as the backend.
+This uses [modular Pokemon Showdown](https://github.com/pkmn/ps) as the backend and [PIXI.js](https://github.com/pixijs/pixijs) for rendering.
 
 The battle experience is mostly complete. Not all moves are finished and items aren't supported yet.
 
