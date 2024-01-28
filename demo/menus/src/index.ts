@@ -126,8 +126,8 @@ resources.load(() => {
 		app!.renderer.render(view.getFullStage(), { renderTexture: renderTexture! });
 	}
 
-
 	app!.ticker.add(tick);
+	app!.ticker.maxFPS = 60;
 });
 
 
