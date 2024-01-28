@@ -39,7 +39,17 @@ TODO: Describe major `.ts` files.
 
 ## Things to do
 
-TODO: There is lots to do!
+### Move animations and effects
+
+Many moves have yet to be completed. This means animating and applying any other special effects.
+
+[This file](MOVES.md) is a list of all moves that are finished.
+
+TODO: Describe process for adding new moves.
+
+### Folder organization
+
+Right now all `.ts` files live in the same folder. These should be organized into nested folders.
 
 Thank you for checking this out! I appreciate the interest.
 

@@ -39,7 +39,6 @@ Visit `localhost:8000/moves.html` to try out move animations.
 ## Want to contribute? ##
 
 Right now, the best way to help is to animate moves.
-[This file](MOVES.md) is a list of all moves that are finished.
 
 Full contribution instructions are in the [CONTRIBUTING.md](CONTRIBUTING.md).
 
